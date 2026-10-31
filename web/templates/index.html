@@ -207,38 +207,38 @@
             </div>
 
         </div>
-    
-    <!-- Mobile Navigation Drawer -->
-    <div id="mobileNavDrawer" class="hidden fixed inset-x-0 top-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-40 md:hidden space-y-2">
+    </header>
+
+    <!-- Mobile Navigation Drawer & Backdrop -->
+    <div id="mobileNavBackdrop" onclick="toggleMobileNavDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 md:hidden transition-opacity"></div>
+    <div id="mobileNavDrawer" class="hidden fixed inset-x-0 top-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-50 md:hidden space-y-3">
         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-            <button type="button" onclick="openRadarCatalogModal(); toggleMobileNavDrawer();" class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2 text-right">
+            <button type="button" onclick="openRadarCatalogModal(); toggleMobileNavDrawer(false);" class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2 text-right">
                 <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-500"></i>
                 <span>دليل المنح</span>
             </button>
-            <a href="/assistant" class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2">
+            <a href="/assistant" class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2">
                 <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
                 <span>المستشار الذكي</span>
             </a>
-            <a href="/community" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <a href="/community" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
                 <span>مجتمع الطلاب</span>
             </a>
-            <a href="/news" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <a href="/news" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
                 <span>أخبار المنح</span>
             </a>
-            <a href="#matchSection" onclick="toggleMobileNavDrawer()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <a href="#matchSection" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <i data-lucide="target" class="w-4 h-4 text-emerald-500"></i>
                 <span>مطابقة المنح</span>
             </a>
-            <a href="/dashboard" class="p-2.5 rounded-xl bg-blue-600 text-white flex items-center justify-center gap-2 font-black shadow">
+            <a href="/dashboard" class="p-3 rounded-xl bg-blue-600 text-white flex items-center justify-center gap-2 font-black shadow">
                 <i data-lucide="user" class="w-4 h-4"></i>
                 <span>بوابة الطالب</span>
             </a>
         </div>
     </div>
-
-    </header>
 
     <!-- ==================== HERO SECTION ==================== -->
     <section class="relative pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 overflow-hidden topo-contour-bg">
@@ -2446,38 +2446,7 @@
                 <button type="button" onclick="closeRadarCatalogModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="إغلاق النافذة">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-            
-    <!-- Mobile Navigation Drawer -->
-    <div id="mobileNavDrawer" class="hidden fixed inset-x-0 top-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-2xl p-4 z-40 md:hidden space-y-2">
-        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-            <button type="button" onclick="openRadarCatalogModal(); toggleMobileNavDrawer();" class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2 text-right">
-                <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-500"></i>
-                <span>دليل المنح</span>
-            </button>
-            <a href="/assistant" class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex items-center gap-2">
-                <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
-                <span>المستشار الذكي</span>
-            </a>
-            <a href="/community" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
-                <span>مجتمع الطلاب</span>
-            </a>
-            <a href="/news" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
-                <span>أخبار المنح</span>
-            </a>
-            <a href="#matchSection" onclick="toggleMobileNavDrawer()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <i data-lucide="target" class="w-4 h-4 text-emerald-500"></i>
-                <span>مطابقة المنح</span>
-            </a>
-            <a href="/dashboard" class="p-2.5 rounded-xl bg-blue-600 text-white flex items-center justify-center gap-2 font-black shadow">
-                <i data-lucide="user" class="w-4 h-4"></i>
-                <span>بوابة الطالب</span>
-            </a>
-        </div>
-    </div>
-
-    </header>
+            </header>
 
             <!-- Filter Bar: The 3 Classification Icons + All + Instant Search -->
             <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 space-y-3 shrink-0">
@@ -2663,15 +2632,24 @@
             </button>
         </div>
     </aside>
-    <script src="/static/js/notifications.js">
-    function toggleMobileNavDrawer() {
-        const d = document.getElementById('mobileNavDrawer');
-        if (d) {
-            d.classList.toggle('hidden');
+    <script src="/static/js/notifications.js"></script>
+    <script>
+        function toggleMobileNavDrawer(forceState) {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const backdrop = document.getElementById('mobileNavBackdrop');
+            if (!drawer) return;
+            const isHidden = drawer.classList.contains('hidden');
+            const shouldOpen = forceState !== undefined ? forceState : isHidden;
+
+            if (shouldOpen) {
+                drawer.classList.remove('hidden');
+                if (backdrop) backdrop.classList.remove('hidden');
+            } else {
+                drawer.classList.add('hidden');
+                if (backdrop) backdrop.classList.add('hidden');
+            }
             if (window.lucide) lucide.createIcons();
         }
-    }
-    
-</script>
+    </script>
 </body>
 </html>
