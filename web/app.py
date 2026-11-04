@@ -6,7 +6,7 @@ from typing import List, Optional, Dict, Any, Union
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Query, Request, Response, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 
@@ -63,6 +63,14 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 os.makedirs(os.path.join(STATIC_DIR, "uploads", "avatars"), exist_ok=True)
 os.makedirs(os.path.join(STATIC_DIR, "uploads", "covers"), exist_ok=True)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_endpoint():
+    ico_path = os.path.join(STATIC_DIR, "favicon.ico")
+    if os.path.exists(ico_path):
+        return FileResponse(ico_path, media_type="image/x-icon", headers={"Cache-Control": "public, max-age=86400"})
+    return Response(status_code=404)
+
 
 
 # Secure CORS Middleware
