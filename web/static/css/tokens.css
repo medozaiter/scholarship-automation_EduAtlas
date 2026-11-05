@@ -1,92 +1,100 @@
 /**
  * EduAtlas Design System — tokens.css
- * Theme: «الباحث الدافئ — Warm Scholar»
- * Supports Light Mode (Parchment & Forest) and Dark Mode (Deep Pine & Clay)
+ * Theme: «رسام الخرائط الحديث — Modern Cartographer» (Direction B)
+ * Combines Neo-Obsidian, Cyber Violet, Laser Mint, and Pure Frost
  * Fully compatible with legacy ScholarPilot tokens (--sp-*) and EduAtlas tokens (--ea-*)
  */
 
 :root {
   /* ===================================================================
-   * 1. BRAND COLOR PALETTE (WARM SCHOLAR) — LIGHT MODE (DEFAULT PARCHMENT)
+   * 1. BRAND COLOR PALETTE (MODERN CARTOGRAPHER) — LIGHT MODE (PURE FROST)
    * =================================================================== */
   
-  /* Primary: Forest Botanical & Sage (الوقار الأكاديمي) */
-  --ea-forest-900: #14291F;
-  --ea-forest-800: #193629;
-  --ea-forest-700: #1F4232;        /* Main Brand Headers & Core */
-  --ea-forest-600: #26533F;
-  --ea-forest-500: #2E654D;        /* Primary Accents & Active Tabs */
-  --ea-forest-400: #3E7E55;
-  --ea-forest-300: #5C9F76;
-  --ea-forest-200: #88C39F;
-  --ea-forest-100: #C2E3CF;
-  --ea-forest-50:  #E8F5EE;
+  /* Primary: Cyber Violet & Neo Purple (الهوية الرقمية المتقدمة) */
+  --ea-purple-950: #0C0A17;
+  --ea-purple-900: #18142C;
+  --ea-purple-800: #221C3E;
+  --ea-purple-700: #4C1D95;
+  --ea-purple-600: #6D28D9;        /* Main Brand Core */
+  --ea-purple-500: #7C3AED;        /* Interactive Accent */
+  --ea-purple-400: #8B5CF6;
+  --ea-purple-300: #A78BFA;
+  --ea-purple-200: #C4B5FD;
+  --ea-purple-100: #EDE9FE;
+  --ea-purple-50:  #F5F3FF;
 
-  /* Accent: Terracotta Clay (البوصلة التفاعلية ونقاط التحفيز) */
-  --ea-clay-900: #782F1D;
-  --ea-clay-800: #963B25;
-  --ea-clay-700: #B2462C;
-  --ea-clay-600: #C25438;          /* Primary CTA Button Base */
-  --ea-clay-500: #DC6843;          /* Interactive Hover & Glow */
-  --ea-clay-400: #E48364;
-  --ea-clay-300: #F0A993;
-  --ea-clay-200: #F7CEC2;
-  --ea-clay-100: #FDECE7;
-  --ea-clay-50:  #FEF6F3;
+  /* Accent: Laser Cyber Mint (البوصلة التفاعلية ونقاط التحفيز والرادار) */
+  --ea-mint-950: #022C22;
+  --ea-mint-900: #064E3B;
+  --ea-mint-800: #065F46;
+  --ea-mint-700: #047857;
+  --ea-mint-600: #059669;          /* High contrast text on light */
+  --ea-mint-500: #10E599;          /* Glowing Laser Mint Accent */
+  --ea-mint-400: #34D399;
+  --ea-mint-300: #6EE7B7;
+  --ea-mint-200: #A7F3D0;
+  --ea-mint-100: #D1FAE5;
+  --ea-mint-50:  #ECFDF5;
 
-  /* AI Copilot & Guidance: Warm Ochre (المستشار الدافئ) */
-  --ea-ochre-700: #9C572D;
-  --ea-ochre-600: #B86938;
-  --ea-ochre-500: #D98858;
-  --ea-ochre-400: #E6A279;
-  --ea-ochre-100: #FBEFE7;
-  --ea-ochre-50:  #FDF7F3;
+  /* AI Copilot & Guidance: Electric Indigo & Future Blue (مستشار الذكاء الاصطناعي) */
+  --ea-indigo-700: #4338CA;
+  --ea-indigo-600: #4F46E5;
+  --ea-indigo-500: #6366F1;
+  --ea-indigo-400: #818CF8;
+  --ea-indigo-100: #E0E7FF;
+  --ea-indigo-50:  #EEF2FF;
 
-  /* Neutrals: Warm Parchment & Oat Cream (الورق المعتق المهدئ) */
-  --ea-parchment-canvas:  #F8F6F0; /* Clean Academic Parchment */
-  --ea-parchment-surface: #FFFFFF; /* Crisp Clean White Card */
-  --ea-parchment-subtle:  #EFECE2; /* Soft Sand Neutral Surface */
-  --ea-parchment-muted:   #E4DFC9; /* Subtle Borders & Dividers */
-  --ea-parchment-border:  #D5CEBA; /* Default Structural Border */
+  /* Neutrals: Pure Frost & Clean Architecture (الأسطح العصرية) */
+  --ea-canvas:         #F8F9FD;    /* Ultra Clean Pure Frost */
+  --ea-surface:        #FFFFFF;    /* Crisp White Card Surface */
+  --ea-surface-subtle: #EDEBF8;    /* Soft Lavender Mist Sub-surface */
+  --ea-surface-muted:  #E2E0F0;    /* Dividers and borders */
+  --ea-border:         #D6D3EB;    /* Structural Border */
 
-  /* Text Contrast System (Light Mode - WCAG AAA 14:1) */
-  --ea-text-primary:   #18261E;   /* Deep Forest Ink */
-  --ea-text-secondary: #3D4F44;   /* Balanced Readability */
-  --ea-text-muted:     #677A6F;   /* Informational Subtext */
-  --ea-text-dim:       #8B9B91;   /* Tertiary & Placeholders */
+  /* Text Contrast System (Light Mode - WCAG AAA Compliant) */
+  --ea-text-primary:   #130E26;    /* Deep Cyber Obsidian Ink */
+  --ea-text-secondary: #374151;    /* Clean Readability */
+  --ea-text-muted:     #6B7280;    /* Subtext */
+  --ea-text-dim:       #9CA3AF;
   --ea-text-inverse:   #FFFFFF;
 
-  /* Semantic Status Colors */
-  --ea-success-bg: rgba(62, 126, 85, 0.12);
-  --ea-success-border: rgba(62, 126, 85, 0.32);
-  --ea-success-text: #195237;
+  /* Brand Roles */
+  --ea-brand-primary: var(--ea-purple-600);
+  --ea-brand-accent:  var(--ea-mint-600);
+  --ea-brand-accent-text: #FFFFFF;
+  --ea-brand-ai:      var(--ea-indigo-500);
 
-  --ea-warning-bg: rgba(217, 119, 6, 0.12);
-  --ea-warning-border: rgba(217, 119, 6, 0.35);
+  /* Semantic Status Colors */
+  --ea-success-bg: rgba(16, 229, 153, 0.12);
+  --ea-success-border: rgba(16, 229, 153, 0.35);
+  --ea-success-text: #047857;
+
+  --ea-warning-bg: rgba(245, 158, 11, 0.12);
+  --ea-warning-border: rgba(245, 158, 11, 0.35);
   --ea-warning-text: #B45309;
 
-  --ea-danger-bg: rgba(194, 65, 43, 0.12);
-  --ea-danger-border: rgba(194, 65, 43, 0.35);
-  --ea-danger-text: #B91C1C;
+  --ea-danger-bg: rgba(239, 68, 68, 0.12);
+  --ea-danger-border: rgba(239, 68, 68, 0.35);
+  --ea-danger-text: #DC2626;
 
-  --ea-info-bg: rgba(46, 101, 77, 0.10);
-  --ea-info-border: rgba(46, 101, 77, 0.28);
-  --ea-info-text: #26533F;
+  --ea-info-bg: rgba(99, 102, 241, 0.10);
+  --ea-info-border: rgba(99, 102, 241, 0.28);
+  --ea-info-text: #4F46E5;
 
-  --ea-ai-bg: rgba(217, 136, 88, 0.12);
-  --ea-ai-border: rgba(217, 136, 88, 0.32);
-  --ea-ai-text: #B86938;
+  --ea-ai-bg: rgba(124, 58, 237, 0.10);
+  --ea-ai-border: rgba(124, 58, 237, 0.30);
+  --ea-ai-text: #6D28D9;
 
-  /* Topographic Contour Strokes */
-  --ea-contour-stroke: rgba(31, 66, 50, 0.08);
-  --ea-contour-glow: rgba(220, 104, 67, 0.12);
+  /* Topographic Contour Strokes (Modern Cartographer) */
+  --ea-contour-stroke: rgba(109, 40, 217, 0.08);
+  --ea-contour-glow: rgba(16, 229, 153, 0.14);
 
   /* Elevation & Shadows */
-  --ea-shadow-xs: 0 1px 2px 0 rgba(20, 41, 31, 0.04);
-  --ea-shadow-sm: 0 2px 4px 0 rgba(20, 41, 31, 0.06);
-  --ea-shadow-md: 0 6px 14px -2px rgba(20, 41, 31, 0.08), 0 2px 6px -1px rgba(20, 41, 31, 0.04);
-  --ea-shadow-lg: 0 12px 24px -4px rgba(20, 41, 31, 0.10), 0 4px 8px -2px rgba(20, 41, 31, 0.05);
-  --ea-shadow-xl: 0 22px 35px -6px rgba(20, 41, 31, 0.12), 0 8px 12px -4px rgba(20, 41, 31, 0.06);
+  --ea-shadow-xs: 0 1px 2px 0 rgba(19, 14, 38, 0.04);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(19, 14, 38, 0.06);
+  --ea-shadow-md: 0 6px 14px -2px rgba(19, 14, 38, 0.08), 0 2px 6px -1px rgba(19, 14, 38, 0.04);
+  --ea-shadow-lg: 0 12px 24px -4px rgba(19, 14, 38, 0.12), 0 4px 8px -2px rgba(19, 14, 38, 0.06);
+  --ea-shadow-xl: 0 22px 35px -6px rgba(19, 14, 38, 0.15), 0 8px 12px -4px rgba(19, 14, 38, 0.08);
 
   /* Border Radius */
   --ea-radius-xs: 4px;
@@ -116,19 +124,19 @@
   --ea-transition-spring: 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* ===================================================================
-   * LEGACY COMPATIBILITY MAPPINGS (--sp-* & --ea-navy-*)
-   * Ensures 100% regression-free backward compatibility with all pages
+   * LEGACY COMPATIBILITY MAPPINGS (--sp-*)
+   * Ensures 100% backward compatibility with all existing templates
    * =================================================================== */
-  --sp-canvas: var(--ea-parchment-canvas);
-  --sp-surface: var(--ea-parchment-surface);
-  --sp-surface-raised: var(--ea-parchment-surface);
-  --sp-surface-subtle: var(--ea-parchment-subtle);
-  --sp-surface-hover: #ECE7DA;
+  --sp-canvas: var(--ea-canvas);
+  --sp-surface: var(--ea-surface);
+  --sp-surface-raised: var(--ea-surface);
+  --sp-surface-subtle: var(--ea-surface-subtle);
+  --sp-surface-hover: #F0EDFA;
 
-  --sp-border-subtle: var(--ea-parchment-muted);
-  --sp-border-default: var(--ea-parchment-border);
-  --sp-border-strong: #A89F87;
-  --sp-border-focus: var(--ea-clay-500);
+  --sp-border-subtle: var(--ea-surface-muted);
+  --sp-border-default: var(--ea-border);
+  --sp-border-strong: #A78BFA;
+  --sp-border-focus: var(--ea-mint-500);
 
   --sp-text-primary: var(--ea-text-primary);
   --sp-text-secondary: var(--ea-text-secondary);
@@ -136,22 +144,22 @@
   --sp-text-disabled: var(--ea-text-dim);
   --sp-text-inverse: var(--ea-text-inverse);
 
-  --sp-royal-blue: var(--ea-clay-600);
-  --sp-royal-blue-hover: var(--ea-clay-500);
-  --sp-royal-blue-subtle: rgba(220, 104, 67, 0.12);
+  --sp-royal-blue: var(--ea-purple-600);
+  --sp-royal-blue-hover: var(--ea-purple-700);
+  --sp-royal-blue-subtle: rgba(109, 40, 217, 0.12);
 
-  --sp-ai-violet: var(--ea-ochre-500);
-  --sp-ai-violet-hover: var(--ea-ochre-600);
-  --sp-ai-violet-subtle: rgba(217, 136, 88, 0.14);
+  --sp-ai-violet: var(--ea-indigo-500);
+  --sp-ai-violet-hover: var(--ea-indigo-600);
+  --sp-ai-violet-subtle: rgba(99, 102, 241, 0.14);
 
-  --sp-emerald-match: #2E7D52;
-  --sp-emerald-subtle: rgba(46, 125, 82, 0.14);
+  --sp-emerald-match: var(--ea-mint-600);
+  --sp-emerald-subtle: rgba(16, 229, 153, 0.14);
 
-  --sp-amber-warning: #D97706;
-  --sp-amber-subtle: rgba(217, 119, 6, 0.14);
+  --sp-amber-warning: #F59E0B;
+  --sp-amber-subtle: rgba(245, 158, 11, 0.14);
 
-  --sp-rose-danger: #C2412B;
-  --sp-rose-subtle: rgba(194, 65, 43, 0.14);
+  --sp-rose-danger: #EF4444;
+  --sp-rose-subtle: rgba(239, 68, 68, 0.14);
 
   --sp-success-bg: var(--ea-success-bg);
   --sp-success-border: var(--ea-success-border);
@@ -188,72 +196,71 @@
 }
 
 /* ===================================================================
- * 2. DARK MODE — «OBSIDIAN FOREST & CLAY»
+ * 2. DARK MODE — «NEO OBSIDIAN & CYBER LASER MINT»
  * =================================================================== */
 html.dark {
   /* Surfaces */
-  --ea-parchment-canvas:  #0F1512; /* Deep Pine Obsidian */
-  --ea-parchment-surface: #18231C; /* Dark Forest Card Surface */
-  --ea-parchment-subtle:  #213027; /* Raised Elevated Sub-surface */
-  --ea-parchment-muted:   #2C4035; /* Borders & Separators */
-  --ea-parchment-border:  #3A5445; /* Defined Contours */
+  --ea-canvas:         #0C0A17;    /* Deep Neo Obsidian */
+  --ea-surface:        #18142C;    /* Cyber Violet Raised Card */
+  --ea-surface-subtle: #221C3E;    /* Secondary Sub-surface */
+  --ea-surface-muted:  #29224A;    /* Inner Dividers */
+  --ea-border:         #382F64;    /* Tech Contours */
 
-  /* Text (Dark Mode - Contrast 15:1 AAA) */
-  --ea-text-primary:   #FAF7F0;   /* Clean Warm Starlight White */
-  --ea-text-secondary: #C8D6CD;   /* Soft Sage Subtitle */
-  --ea-text-muted:     #93A89B;   /* Dim Calm Details */
-  --ea-text-dim:       #647A6D;
-  --ea-text-inverse:   #0F1512;
+  /* Text (Dark Mode - Contrast 16:1 AAA) */
+  --ea-text-primary:   #FFFFFF;    /* Crisp Starlight White */
+  --ea-text-secondary: #A5B4FC;    /* Soft Lavender Indigo */
+  --ea-text-muted:     #818CF8;    /* Electric Subtext */
+  --ea-text-dim:       #6B7280;
+  --ea-text-inverse:   #0C0A17;
 
   /* Accents in Dark Mode */
-  --ea-forest-700: #2E654D;
-  --ea-forest-500: #428F6C;
-  --ea-clay-600:   #DC6843;        /* Bright Terracotta CTA */
-  --ea-clay-500:   #E87B57;
-  --ea-ochre-500:  #E6A279;
+  --ea-brand-primary: var(--ea-purple-500);
+  --ea-brand-accent:  var(--ea-mint-500);    /* Laser Mint Glowing CTA */
+  --ea-brand-accent-text: #0C0A17;          /* High contrast on neon mint */
+  --ea-brand-ai:      var(--ea-indigo-400);
 
   /* Status Colors */
-  --ea-success-bg: rgba(66, 178, 120, 0.18);
-  --ea-success-border: rgba(66, 178, 120, 0.40);
-  --ea-success-text: #6EE7B7;
+  --ea-success-bg: rgba(16, 229, 153, 0.16);
+  --ea-success-border: rgba(16, 229, 153, 0.40);
+  --ea-success-text: #10E599;
 
-  --ea-warning-bg: rgba(245, 158, 11, 0.18);
-  --ea-warning-border: rgba(245, 158, 11, 0.40);
-  --ea-warning-text: #FCD34D;
+  --ea-warning-bg: rgba(251, 191, 36, 0.16);
+  --ea-warning-border: rgba(251, 191, 36, 0.40);
+  --ea-warning-text: #FDE047;
 
   --ea-danger-bg: rgba(239, 68, 68, 0.20);
   --ea-danger-border: rgba(239, 68, 68, 0.42);
-  --ea-danger-text: #FCA5A5;
+  --ea-danger-text: #F87171;
 
-  --ea-info-bg: rgba(66, 143, 108, 0.18);
-  --ea-info-border: rgba(66, 143, 108, 0.38);
-  --ea-info-text: #88C39F;
+  --ea-info-bg: rgba(99, 102, 241, 0.18);
+  --ea-info-border: rgba(99, 102, 241, 0.38);
+  --ea-info-text: #A5B4FC;
 
-  --ea-ai-bg: rgba(230, 162, 121, 0.18);
-  --ea-ai-border: rgba(230, 162, 121, 0.38);
-  --ea-ai-text: #F3C4A8;
+  --ea-ai-bg: rgba(124, 58, 237, 0.18);
+  --ea-ai-border: rgba(124, 58, 237, 0.40);
+  --ea-ai-text: #C4B5FD;
 
-  --ea-contour-stroke: rgba(220, 104, 67, 0.14);
-  --ea-contour-glow: rgba(220, 104, 67, 0.22);
+  --ea-contour-stroke: rgba(16, 229, 153, 0.16);
+  --ea-contour-glow: rgba(16, 229, 153, 0.24);
 
   /* Shadows for Dark Mode */
-  --ea-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --ea-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  --ea-shadow-md: 0 6px 14px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-  --ea-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.65), 0 4px 8px -2px rgba(0, 0, 0, 0.35);
-  --ea-shadow-xl: 0 22px 35px -6px rgba(0, 0, 0, 0.75), 0 8px 12px -4px rgba(0, 0, 0, 0.4);
+  --ea-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.6);
+  --ea-shadow-md: 0 6px 14px -2px rgba(0, 0, 0, 0.7), 0 2px 6px -1px rgba(0, 0, 0, 0.4);
+  --ea-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.75), 0 4px 8px -2px rgba(0, 0, 0, 0.45);
+  --ea-shadow-xl: 0 22px 35px -6px rgba(0, 0, 0, 0.85), 0 8px 12px -4px rgba(0, 0, 0, 0.5);
 
   /* Legacy dark mappings */
-  --sp-canvas: var(--ea-parchment-canvas);
-  --sp-surface: var(--ea-parchment-surface);
-  --sp-surface-raised: var(--ea-parchment-surface);
-  --sp-surface-subtle: var(--ea-parchment-subtle);
-  --sp-surface-hover: #293D32;
+  --sp-canvas: var(--ea-canvas);
+  --sp-surface: var(--ea-surface);
+  --sp-surface-raised: var(--ea-surface);
+  --sp-surface-subtle: var(--ea-surface-subtle);
+  --sp-surface-hover: #231B40;
 
-  --sp-border-subtle: var(--ea-parchment-muted);
-  --sp-border-default: var(--ea-parchment-border);
-  --sp-border-strong: #4F705D;
-  --sp-border-focus: var(--ea-clay-500);
+  --sp-border-subtle: var(--ea-surface-muted);
+  --sp-border-default: var(--ea-border);
+  --sp-border-strong: #4F46E5;
+  --sp-border-focus: var(--ea-mint-500);
 
   --sp-text-primary: var(--ea-text-primary);
   --sp-text-secondary: var(--ea-text-secondary);
@@ -261,22 +268,22 @@ html.dark {
   --sp-text-disabled: var(--ea-text-dim);
   --sp-text-inverse: var(--ea-text-inverse);
 
-  --sp-royal-blue: var(--ea-clay-600);
-  --sp-royal-blue-hover: var(--ea-clay-500);
-  --sp-royal-blue-subtle: rgba(220, 104, 67, 0.22);
+  --sp-royal-blue: var(--ea-mint-500);
+  --sp-royal-blue-hover: var(--ea-mint-400);
+  --sp-royal-blue-subtle: rgba(16, 229, 153, 0.20);
 
-  --sp-ai-violet: var(--ea-ochre-500);
-  --sp-ai-violet-hover: var(--ea-ochre-600);
-  --sp-ai-violet-subtle: rgba(230, 162, 121, 0.24);
+  --sp-ai-violet: var(--ea-purple-400);
+  --sp-ai-violet-hover: var(--ea-purple-300);
+  --sp-ai-violet-subtle: rgba(124, 58, 237, 0.25);
 
-  --sp-emerald-match: #42B278;
-  --sp-emerald-subtle: rgba(66, 178, 120, 0.22);
+  --sp-emerald-match: var(--ea-mint-500);
+  --sp-emerald-subtle: rgba(16, 229, 153, 0.20);
 
-  --sp-amber-warning: #F59E0B;
-  --sp-amber-subtle: rgba(245, 158, 11, 0.22);
+  --sp-amber-warning: #FBBF24;
+  --sp-amber-subtle: rgba(251, 191, 36, 0.20);
 
   --sp-rose-danger: #EF4444;
-  --sp-rose-subtle: rgba(239, 68, 68, 0.24);
+  --sp-rose-subtle: rgba(239, 68, 68, 0.22);
 
   --sp-success-bg: var(--ea-success-bg);
   --sp-success-border: var(--ea-success-border);

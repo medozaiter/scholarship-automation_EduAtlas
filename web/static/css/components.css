@@ -1,6 +1,7 @@
 /**
  * EduAtlas Design System — components.css
- * Core UI Components: Cards, Badges, Buttons, Inputs, Compass Gauge & AI Chat
+ * Theme: «رسام الخرائط الحديث — Modern Cartographer» (Direction B)
+ * Core UI Components: Cards, Badges, Buttons, Inputs, Laser Compass Gauge & AI Chat
  */
 
 /* ===================================================================
@@ -10,16 +11,16 @@
   position: sticky !important;
   top: 0 !important;
   z-index: 1000 !important;
-  background-color: rgba(248, 246, 240, 0.92);
+  background-color: rgba(248, 249, 253, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--ea-parchment-muted);
+  border-bottom: 1px solid var(--ea-surface-muted);
   transition: background-color var(--ea-transition-base), border-color var(--ea-transition-base);
 }
 
 html.dark .sp-sticky-nav, html.dark .ea-navbar {
-  background-color: rgba(15, 21, 18, 0.92);
-  border-bottom: 1px solid var(--ea-parchment-muted);
+  background-color: rgba(12, 10, 23, 0.92);
+  border-bottom: 1px solid var(--ea-surface-muted);
 }
 
 .ea-nav-link {
@@ -37,13 +38,22 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
 }
 
 .ea-nav-link:hover {
-  color: var(--ea-clay-600);
-  background-color: var(--ea-parchment-subtle);
+  color: var(--ea-purple-500);
+  background-color: var(--ea-surface-subtle);
+}
+
+html.dark .ea-nav-link:hover {
+  color: var(--ea-mint-400);
+  background-color: var(--ea-surface-subtle);
 }
 
 .ea-nav-link.active {
-  color: var(--ea-clay-600);
+  color: var(--ea-purple-600);
   font-weight: 700;
+}
+
+html.dark .ea-nav-link.active {
+  color: var(--ea-mint-500);
 }
 
 .ea-nav-link.active::after {
@@ -53,16 +63,16 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
   right: 0.75rem;
   left: 0.75rem;
   height: 2.5px;
-  background-color: var(--ea-clay-500);
+  background-color: var(--ea-brand-accent);
   border-radius: var(--ea-radius-full);
 }
 
 /* ===================================================================
- * 2. CARDS & TOPOGRAPHIC SURFACES
+ * 2. CARDS & CYBER SURFACES
  * =================================================================== */
 .sp-card, .ea-card {
-  background: var(--ea-parchment-surface);
-  border: 1px solid var(--ea-parchment-border);
+  background: var(--ea-surface);
+  border: 1px solid var(--ea-border);
   border-radius: var(--ea-radius-xl);
   box-shadow: var(--ea-shadow-sm);
   transition: border-color var(--ea-transition-base), box-shadow var(--ea-transition-base), transform var(--ea-transition-base);
@@ -70,28 +80,28 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
 }
 
 .sp-card-hover:hover, .ea-card:hover {
-  border-color: var(--ea-clay-400);
-  box-shadow: var(--ea-shadow-lg), 0 0 0 1px rgba(220, 104, 67, 0.2);
+  border-color: var(--ea-brand-accent);
+  box-shadow: var(--ea-shadow-lg), 0 0 15px -2px rgba(16, 229, 153, 0.25);
   transform: translateY(-2px);
 }
 
 .sp-subcard, .ea-subcard {
-  background: var(--ea-parchment-subtle);
-  border: 1px solid var(--ea-parchment-muted);
+  background: var(--ea-surface-subtle);
+  border: 1px solid var(--ea-surface-muted);
   border-radius: var(--ea-radius-lg);
   transition: background-color var(--ea-transition-fast), border-color var(--ea-transition-fast);
 }
 
 /* ===================================================================
- * 3. BUTTONS (WARM SCHOLAR & LEGACY)
+ * 3. BUTTONS (MODERN CARTOGRAPHER)
  * =================================================================== */
 .ea-btn-primary, .sp-btn-primary {
-  background: linear-gradient(135deg, var(--ea-clay-600), var(--ea-clay-700));
-  color: #FFFFFF !important;
-  font-weight: 700;
+  background: linear-gradient(135deg, var(--ea-mint-500), #059669);
+  color: #0C0A17 !important;
+  font-weight: 800;
   border-radius: var(--ea-radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 12px rgba(194, 84, 56, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 229, 153, 0.35);
   transition: all var(--ea-transition-base);
   display: inline-flex;
   align-items: center;
@@ -102,10 +112,20 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
   text-decoration: none;
 }
 
+:root:not(.dark) .ea-btn-primary, :root:not(.dark) .sp-btn-primary {
+  background: linear-gradient(135deg, var(--ea-purple-600), var(--ea-purple-700));
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.28);
+}
+
 .ea-btn-primary:hover, .sp-btn-primary:hover {
-  background: linear-gradient(135deg, var(--ea-clay-500), var(--ea-clay-600));
-  box-shadow: 0 6px 18px rgba(194, 84, 56, 0.42);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(16, 229, 153, 0.45);
   transform: translateY(-1.5px);
+}
+
+:root:not(.dark) .ea-btn-primary:hover, :root:not(.dark) .sp-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.40);
 }
 
 .ea-btn-primary:active, .sp-btn-primary:active {
@@ -113,9 +133,9 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
 }
 
 .ea-btn-secondary, .sp-btn-secondary {
-  background-color: var(--ea-parchment-surface);
+  background-color: var(--ea-surface);
   color: var(--ea-text-primary);
-  border: 1px solid var(--ea-parchment-border);
+  border: 1px solid var(--ea-border);
   font-weight: 600;
   border-radius: var(--ea-radius-md);
   box-shadow: var(--ea-shadow-xs);
@@ -130,18 +150,18 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
 }
 
 .ea-btn-secondary:hover, .sp-btn-secondary:hover {
-  background-color: var(--ea-parchment-subtle);
-  border-color: var(--ea-forest-400);
+  background-color: var(--ea-surface-subtle);
+  border-color: var(--ea-purple-400);
   transform: translateY(-1px);
 }
 
-.ea-btn-forest {
-  background: linear-gradient(135deg, var(--ea-forest-700), var(--ea-forest-800));
+.ea-btn-purple, .sp-btn-violet {
+  background: linear-gradient(135deg, var(--ea-purple-600), var(--ea-purple-700));
   color: #FFFFFF !important;
   font-weight: 700;
   border-radius: var(--ea-radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(31, 66, 50, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.32);
   transition: all var(--ea-transition-base);
   display: inline-flex;
   align-items: center;
@@ -151,28 +171,9 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
   gap: 0.5rem;
 }
 
-.ea-btn-forest:hover {
-  background: linear-gradient(135deg, var(--ea-forest-600), var(--ea-forest-700));
-  box-shadow: 0 6px 18px rgba(31, 66, 50, 0.35);
-  transform: translateY(-1.5px);
-}
-
-.sp-btn-violet {
-  background: linear-gradient(135deg, var(--ea-ochre-600), var(--ea-ochre-700));
-  color: #FFFFFF !important;
-  font-weight: 700;
-  border-radius: var(--ea-radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 14px rgba(184, 105, 56, 0.28);
-  transition: all var(--ea-transition-base);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.sp-btn-violet:hover {
-  background: linear-gradient(135deg, var(--ea-ochre-500), var(--ea-ochre-600));
+.ea-btn-purple:hover, .sp-btn-violet:hover {
+  background: linear-gradient(135deg, var(--ea-purple-500), var(--ea-purple-600));
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
   transform: translateY(-1.5px);
 }
 
@@ -221,8 +222,8 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
 }
 
 .sp-badge-neutral {
-  background-color: var(--ea-parchment-subtle);
-  border: 1px solid var(--ea-parchment-border);
+  background-color: var(--ea-surface-subtle);
+  border: 1px solid var(--ea-border);
   color: var(--ea-text-secondary);
 }
 
@@ -265,15 +266,15 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
   border-radius: var(--ea-radius-sm);
   font-size: 0.725rem;
   font-weight: 600;
-  background-color: rgba(31, 66, 50, 0.08);
-  border: 1px solid rgba(31, 66, 50, 0.20);
+  background-color: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.22);
   color: var(--ea-text-secondary);
 }
 
 html.dark .sp-coverage-badge {
-  background-color: rgba(33, 48, 39, 0.85);
-  border: 1px solid rgba(58, 84, 69, 0.8);
-  color: #C8D6CD;
+  background-color: rgba(34, 28, 62, 0.85);
+  border: 1px solid rgba(56, 47, 100, 0.8);
+  color: #C4B5FD;
 }
 
 /* ===================================================================
@@ -293,7 +294,7 @@ html.dark .sp-coverage-badge {
 }
 
 .match-ring-bg {
-  stroke: var(--ea-parchment-muted);
+  stroke: var(--ea-surface-muted);
   fill: none;
 }
 
@@ -303,18 +304,18 @@ html.dark .sp-coverage-badge {
   transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.3s ease;
 }
 
-.match-ring-score-emerald { stroke: var(--ea-forest-400); }
-.match-ring-score-violet  { stroke: var(--ea-ochre-500); }
-.match-ring-score-blue    { stroke: var(--ea-clay-500); }
-.match-ring-score-amber   { stroke: #D97706; }
-.match-ring-score-rose    { stroke: var(--ea-clay-600); }
+.match-ring-score-emerald { stroke: var(--ea-mint-500); }
+.match-ring-score-violet  { stroke: var(--ea-purple-400); }
+.match-ring-score-blue    { stroke: var(--ea-indigo-400); }
+.match-ring-score-amber   { stroke: #FBBF24; }
+.match-ring-score-rose    { stroke: #EF4444; }
 
 /* ===================================================================
  * 6. FORMS & SEARCH INPUTS
  * =================================================================== */
 .ea-input, input[type="text"], input[type="email"], input[type="search"], select, textarea {
-  background-color: var(--ea-parchment-surface);
-  border: 1px solid var(--ea-parchment-border);
+  background-color: var(--ea-surface);
+  border: 1px solid var(--ea-border);
   color: var(--ea-text-primary);
   border-radius: var(--ea-radius-md);
   padding: 0.625rem 0.875rem;
@@ -326,8 +327,13 @@ html.dark .sp-coverage-badge {
 
 .ea-input:focus, input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--ea-clay-500);
-  box-shadow: 0 0 0 3px rgba(220, 104, 67, 0.18);
+  border-color: var(--ea-mint-500);
+  box-shadow: 0 0 0 3px rgba(16, 229, 153, 0.20);
+}
+
+:root:not(.dark) .ea-input:focus, :root:not(.dark) input:focus, :root:not(.dark) select:focus, :root:not(.dark) textarea:focus {
+  border-color: var(--ea-purple-500);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
 }
 
 /* ===================================================================
@@ -342,14 +348,14 @@ html.dark .sp-coverage-badge {
 }
 
 .ea-chat-ai {
-  background-color: var(--ea-parchment-subtle);
-  border: 1px solid var(--ea-parchment-muted);
+  background-color: var(--ea-surface-subtle);
+  border: 1px solid var(--ea-surface-muted);
   color: var(--ea-text-primary);
   border-top-right-radius: 4px;
 }
 
 .ea-chat-user {
-  background: linear-gradient(135deg, var(--ea-forest-700), var(--ea-forest-800));
+  background: linear-gradient(135deg, var(--ea-purple-600), var(--ea-purple-700));
   color: #FFFFFF;
   border-top-left-radius: 4px;
   margin-right: auto;

@@ -8,7 +8,7 @@
     <title>مركز التنبيهات | ScholarPilot AI</title>
     <meta name="description" content="EduAtlas - إشارات المسار وتنبيهات المواعيد الحية. تنبيهات مباشرة باقتراب مواعيد المنح وتحديثات الوجهات الأكاديمية.">
             <!-- Official EduAtlas Compass Favicon & Brand Icons -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='26' fill='%231F4232'/><circle cx='50' cy='50' r='38' stroke='%23DC6843' stroke-opacity='0.3' stroke-width='2' stroke-dasharray='4 3' fill='none'/><polygon points='50,16 60,50 50,43 40,50' fill='%23DC6843'/><polygon points='50,84 60,50 50,57 40,50' fill='%23F8F6F0'/><circle cx='50' cy='50' r='5' fill='%23DC6843'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='26' fill='%2318142C'/><circle cx='50' cy='50' r='38' stroke='%2310E599' stroke-opacity='0.4' stroke-width='2' stroke-dasharray='4 3' fill='none'/><polygon points='50,16 60,50 50,43 40,50' fill='%2310E599'/><polygon points='50,84 60,50 50,57 40,50' fill='%23FFFFFF' fill-opacity='0.9'/><circle cx='50' cy='50' r='5' fill='%2310E599'/></svg>"><rect width='100' height='100' rx='26' fill='%231F4232'/><circle cx='50' cy='50' r='38' stroke='%23DC6843' stroke-opacity='0.3' stroke-width='2' stroke-dasharray='4 3' fill='none'/><polygon points='50,16 60,50 50,43 40,50' fill='%23DC6843'/><polygon points='50,84 60,50 50,57 40,50' fill='%23F8F6F0'/><circle cx='50' cy='50' r='5' fill='%23DC6843'/></svg>">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20261105c">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png?v=20261105c">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png?v=20261105c">
@@ -22,25 +22,44 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+                tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
+                        purple: {
+                            50: '#F5F3FF', 100: '#EDE9FE', 200: '#DDD6FE', 300: '#C4B5FD',
+                            400: '#A78BFA', 500: '#8B5CF6', 600: '#7C3AED', 700: '#6D28D9',
+                            800: '#5B21B6', 900: '#4C1D95', 950: '#2E1065'
+                        },
+                        mint: {
+                            50: '#ECFDF5', 100: '#D1FAE5', 200: '#A7F3D0', 300: '#6EE7B7',
+                            400: '#34D399', 500: '#10E599', 600: '#059669', 700: '#047857',
+                            800: '#065F46', 900: '#064E3B'
+                        },
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
+                            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
+                            400: '#34d399', 500: '#10e599', 600: '#059669', 700: '#047857',
+                            800: '#6d28d9', 900: '#18142c', 950: '#0c0a17'
+                        },
+                        deepSlate: '#0C0A17',
+                        midnight: '#18142C',
+                        cardSurface: '#18142C',
+                        subtleBorder: '#382F64',
+                        royalBlue: '#10E599',
+                        aiViolet: '#818CF8',
+                        emeraldMatch: '#10E599',
+                        amberWarning: '#FBBF24',
+                        roseDanger: '#EF4444'
                     },
                     fontFamily: {
-                        sans: ['Tajawal', 'Cairo', 'sans-serif'],
-                        latin: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                        sans: ['Cairo', 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        latin: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
                     }
                 }
             }
+        }
         }
     </script>
 
@@ -88,7 +107,7 @@
         }
     </script>
 </head>
-<body class="min-h-screen selection:bg-blue-600 selection:text-white flex flex-col relative bg-[#F8F6F0] dark:bg-[#0F1512] text-[#16324F] dark:text-[#F4F1EA] transition-colors duration-200 ea-topographic-bg">
+<body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white flex flex-col relative bg-[#F8F9FD] dark:bg-[#0C0A17] text-[#16324F] dark:text-[#F4F1EA] transition-colors duration-200 ea-topographic-bg">
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col items-center gap-2 max-w-md w-full px-4"></div>
@@ -100,19 +119,19 @@
             
             <!-- Brand Logo -->
             <a href="/" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1F4232] to-[#2E654D] border border-emerald-500/30 flex items-center justify-center text-white shadow-md shadow-emerald-950/20 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
-                    <svg class="w-6 h-6 text-[#DC6843]" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="7" fill="none" stroke-opacity="0.3"/>
-                        <polygon points="50,16 60,50 50,43 40,50" fill="#DC6843"/>
-                        <polygon points="50,84 60,50 50,57 40,50" fill="#F8F6F0"/>
-                        <circle cx="50" cy="50" r="6" fill="#DC6843"/>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] border border-violet-400/30 flex items-center justify-center text-white shadow-md shadow-violet-950/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                    <svg class="w-6 h-6 text-[#10E599]" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="7" stroke-opacity="0.35" fill="none"/>
+                        <polygon points="50,16 60,50 50,43 40,50" fill="#10E599"/>
+                        <polygon points="50,84 60,50 50,57 40,50" fill="#EDE9FE"/>
+                        <circle cx="50" cy="50" r="6" fill="#10E599"/>
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#18261E] dark:text-[#FAF7F0] leading-none font-latin">Edu<span class="text-[#DC6843]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#DC6843]/10 text-[#DC6843] font-mono border border-[#DC6843]/20">AI</span></span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-[#130E26] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
                     </div>
-                    <span class="text-[10px] text-[#677A6F] dark:text-[#93A89B] font-medium hidden sm:block mt-0.5">بوصلة ورادار المنح الدراسية العالمية</span>
+                    <span class="text-[10px] text-[#A5B4FC] dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
                 </div>
             </a>
 

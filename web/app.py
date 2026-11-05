@@ -1923,8 +1923,11 @@ async def change_password_endpoint(req: ChangePasswordRequest, request: Request)
     if req.email and req.email.strip().lower() != auth_email and user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="غير مصرح بتغيير كلمة مرور حساب آخر (IDOR Protection).")
 
-    success = auth_service.change_password(auth_email, req.current_password, req.new_password)
-    return {"success": success, "message": "تم تغيير كلمة المرور بنجاح!"}
+    try:
+        success = auth_service.change_password(auth_email, req.current_password, req.new_password)
+        return {"success": success, "message": "تم تغيير كلمة المرور بنجاح!"}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
 
 
 @app.post("/api/user/delete-account")

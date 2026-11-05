@@ -1,26 +1,27 @@
 /**
  * EduAtlas Design System — utilities.css
- * Topographic patterns, glassmorphism, animations & helpers
+ * Theme: «رسام الخرائط الحديث — Modern Cartographer» (Direction B)
+ * Topographic cyber contours, laser grid, neon glows & animations
  */
 
 /* ===================================================================
- * 1. TOPOGRAPHIC CONTOUR PATTERNS & BACKGROUNDS
+ * 1. TOPOGRAPHIC CYBER CONTOURS & LASER GRID
  * =================================================================== */
 .ea-topographic-bg {
-  background-color: var(--ea-parchment-canvas);
+  background-color: var(--ea-canvas);
   background-image: 
     radial-gradient(circle at 85% 12%, var(--ea-contour-glow) 0%, transparent 45%),
     radial-gradient(circle at 10% 80%, var(--ea-contour-glow) 0%, transparent 40%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cpath d='M0 100 Q 100 50, 200 120 T 400 100 M0 200 Q 150 140, 250 240 T 400 200 M0 300 Q 80 260, 220 340 T 400 300' fill='none' stroke='%231F4232' stroke-width='1' stroke-opacity='0.04'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%237C3AED' stroke-width='1' stroke-opacity='0.05'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-attachment: fixed;
 }
 
 html.dark .ea-topographic-bg {
   background-image: 
-    radial-gradient(circle at 85% 12%, var(--ea-contour-glow) 0%, transparent 45%),
-    radial-gradient(circle at 10% 80%, var(--ea-contour-glow) 0%, transparent 40%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cpath d='M0 100 Q 100 50, 200 120 T 400 100 M0 200 Q 150 140, 250 240 T 400 200 M0 300 Q 80 260, 220 340 T 400 300' fill='none' stroke='%23DC6843' stroke-width='1' stroke-opacity='0.06'/%3E%3C/svg%3E");
+    radial-gradient(circle at 85% 12%, rgba(16, 229, 153, 0.16) 0%, transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(124, 58, 237, 0.16) 0%, transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%2310E599' stroke-width='1' stroke-opacity='0.08'/%3E%3C/svg%3E");
 }
 
 /* Glassmorphism surface */
@@ -28,12 +29,12 @@ html.dark .ea-topographic-bg {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--ea-parchment-border);
+  border: 1px solid var(--ea-border);
 }
 
 html.dark .ea-glass {
-  background: rgba(24, 35, 28, 0.85);
-  border: 1px solid var(--ea-parchment-muted);
+  background: rgba(24, 20, 44, 0.85);
+  border: 1px solid var(--ea-border);
 }
 
 /* ===================================================================
@@ -45,7 +46,7 @@ html.dark .ea-glass {
 }
 
 .ea-skeleton {
-  background: linear-gradient(90deg, var(--ea-parchment-subtle) 25%, var(--ea-parchment-muted) 50%, var(--ea-parchment-subtle) 75%);
+  background: linear-gradient(90deg, var(--ea-surface-subtle) 25%, var(--ea-surface-muted) 50%, var(--ea-surface-subtle) 75%);
   background-size: 200% 100%;
   animation: eaShimmer 1.8s infinite;
   border-radius: var(--ea-radius-md);
@@ -53,7 +54,7 @@ html.dark .ea-glass {
 
 @keyframes eaPulseGlow {
   0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.03); }
+  50% { opacity: 0.95; transform: scale(1.03); }
 }
 
 .ea-glow-pulse {
@@ -82,8 +83,8 @@ html.dark .ea-glass {
   justify-content: center;
   text-align: center;
   padding: 3rem 1.5rem;
-  background: var(--ea-parchment-surface);
-  border: 1px dashed var(--ea-parchment-border);
+  background: var(--ea-surface);
+  border: 1px dashed var(--ea-border);
   border-radius: var(--ea-radius-2xl);
   max-width: 540px;
   margin: 2rem auto;
@@ -93,11 +94,11 @@ html.dark .ea-glass {
   width: 64px;
   height: 64px;
   border-radius: var(--ea-radius-xl);
-  background: var(--ea-parchment-subtle);
-  border: 1px solid var(--ea-parchment-muted);
+  background: var(--ea-surface-subtle);
+  border: 1px solid var(--ea-surface-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ea-clay-500);
+  color: var(--ea-brand-accent);
   margin-bottom: 1.25rem;
 }
