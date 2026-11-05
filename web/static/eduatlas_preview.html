@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduAtlas Design System — Visual Identity Lab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', system-ui, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .font-latin {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* 🧭 اتجاه A: Deep Navigator */
+    .theme-direction-a.theme-dark {
+      --bg-page: #060E1A;
+      --bg-card: #0D1C33;
+      --bg-card-hover: #122543;
+      --bg-surface-subtle: #162C4E;
+      --border-color: #213B63;
+      --border-focus: #E8B650;
+      --text-main: #FFFFFF;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --brand-primary: #1A4684;
+      --brand-accent: #E8B650;
+      --brand-accent-text: #060E1A;
+      --brand-ai: #06B6D4;
+      --brand-ai-bg: rgba(6, 182, 212, 0.12);
+      --badge-match-bg: rgba(16, 185, 129, 0.15);
+      --badge-match-text: #34D399;
+      --badge-match-border: rgba(16, 185, 129, 0.35);
+      --contour-stroke: rgba(232, 182, 80, 0.15);
+      --glow-color: rgba(232, 182, 80, 0.25);
+    }
+    .theme-direction-a.theme-light {
+      --bg-page: #F3F6FA;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F8FAFC;
+      --bg-surface-subtle: #EDF2F9;
+      --border-color: #CBD5E1;
+      --border-focus: #B88728;
+      --text-main: #0B192C;
+      --text-muted: #475569;
+      --text-dim: #64748B;
+      --brand-primary: #0A1E3F;
+      --brand-accent: #B88728;
+      --brand-accent-text: #FFFFFF;
+      --brand-ai: #0284C7;
+      --brand-ai-bg: rgba(2, 132, 199, 0.1);
+      --badge-match-bg: #ECFDF5;
+      --badge-match-text: #065F46;
+      --badge-match-border: #A7F3D0;
+      --contour-stroke: rgba(10, 30, 63, 0.08);
+      --glow-color: rgba(11, 25, 44, 0.08);
+    }
+
+    /* 🗺️ اتجاه B: Modern Cartographer */
+    .theme-direction-b.theme-dark {
+      --bg-page: #0C0A17;
+      --bg-card: #18142C;
+      --bg-card-hover: #221C3E;
+      --bg-surface-subtle: #29224A;
+      --border-color: #382F64;
+      --border-focus: #10E599;
+      --text-main: #FFFFFF;
+      --text-muted: #A5B4FC;
+      --text-dim: #6B7280;
+      --brand-primary: #7C3AED;
+      --brand-accent: #10E599;
+      --brand-accent-text: #0C0A17;
+      --brand-ai: #818CF8;
+      --brand-ai-bg: rgba(129, 140, 248, 0.15);
+      --badge-match-bg: rgba(16, 229, 153, 0.15);
+      --badge-match-text: #10E599;
+      --badge-match-border: rgba(16, 229, 153, 0.4);
+      --contour-stroke: rgba(16, 229, 153, 0.18);
+      --glow-color: rgba(16, 229, 153, 0.28);
+    }
+    .theme-direction-b.theme-light {
+      --bg-page: #F8F9FD;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F3F4F9;
+      --bg-surface-subtle: #EDEBF8;
+      --border-color: #E2E0F0;
+      --border-focus: #059669;
+      --text-main: #130E26;
+      --text-muted: #4B5563;
+      --text-dim: #9CA3AF;
+      --brand-primary: #6D28D9;
+      --brand-accent: #059669;
+      --brand-accent-text: #FFFFFF;
+      --brand-ai: #6366F1;
+      --brand-ai-bg: rgba(99, 102, 241, 0.1);
+      --badge-match-bg: #E6FFFA;
+      --badge-match-text: #047857;
+      --badge-match-border: #99F6E4;
+      --contour-stroke: rgba(109, 40, 217, 0.08);
+      --glow-color: rgba(109, 40, 217, 0.1);
+    }
+
+    /* 📜 اتجاه C: Warm Scholar */
+    .theme-direction-c.theme-dark {
+      --bg-page: #101612;
+      --bg-card: #19241E;
+      --bg-card-hover: #22322A;
+      --bg-surface-subtle: #293D33;
+      --border-color: #375345;
+      --border-focus: #DC6843;
+      --text-main: #FAF7F0;
+      --text-muted: #B7C4BB;
+      --text-dim: #7A8E81;
+      --brand-primary: #2D5842;
+      --brand-accent: #E2734F;
+      --brand-accent-text: #FFFFFF;
+      --brand-ai: #D98858;
+      --brand-ai-bg: rgba(226, 115, 79, 0.14);
+      --badge-match-bg: rgba(62, 126, 85, 0.25);
+      --badge-match-text: #6EE7B7;
+      --badge-match-border: rgba(110, 231, 183, 0.35);
+      --contour-stroke: rgba(226, 115, 79, 0.18);
+      --glow-color: rgba(220, 104, 67, 0.25);
+    }
+    .theme-direction-c.theme-light {
+      --bg-page: #F6F3EB;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #FCFAF6;
+      --bg-surface-subtle: #EDE8DC;
+      --border-color: #DBD4C4;
+      --border-focus: #C25438;
+      --text-main: #18261E;
+      --text-muted: #4A5B51;
+      --text-dim: #7B8B82;
+      --brand-primary: #1F4232;
+      --brand-accent: #C25438;
+      --brand-accent-text: #FFFFFF;
+      --brand-ai: #2E654D;
+      --brand-ai-bg: rgba(31, 66, 50, 0.08);
+      --badge-match-bg: #E8F5EE;
+      --badge-match-text: #195237;
+      --badge-match-border: #A7D8BE;
+      --contour-stroke: rgba(31, 66, 50, 0.09);
+      --glow-color: rgba(194, 84, 56, 0.12);
+    }
+
+    .topographic-bg {
+      background-image: radial-gradient(circle at 85% 15%, var(--glow-color) 0%, transparent 45%),
+                        radial-gradient(circle at 10% 80%, var(--glow-color) 0%, transparent 40%);
+    }
+
+    .gauge-circle {
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  </style>
+</head>
+<body id="themeRoot" class="theme-direction-a theme-dark min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] p-4 sm:p-8 transition-all duration-300 topographic-bg">
+
+  <!-- ==================== رأس الصفحة ولوحة التحكم ==================== -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-md">
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-5">
+      
+      <!-- شعار المنصة -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-md bg-[var(--brand-primary)] text-[var(--brand-accent)] border border-[var(--border-color)]">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.4"/>
+            <polygon points="12 3 15 12 12 10 9 12" fill="currentColor"/>
+            <polygon points="12 21 15 12 12 14 9 12" fill="currentColor" fill-opacity="0.3"/>
+            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight font-latin">EduAtlas <span class="text-sm font-sans font-normal text-[var(--brand-accent)]">بوصلة المنح</span></h1>
+          </div>
+          <p class="text-xs text-[var(--text-muted)]">معمل مقارنة الهويات البصرية والأنماط الثلاثة (Interactive Visual Lab)</p>
+        </div>
+      </div>
+
+      <!-- محدد الاتجاهات البصرية الثلاثة -->
+      <div class="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-[var(--bg-surface-subtle)] rounded-xl border border-[var(--border-color)]">
+        <button onclick="setDirection('a')" id="btn-dir-a" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-[var(--brand-accent)] text-[var(--brand-accent-text)] shadow-sm">
+          <span>🧭</span> الاتجاه A: Deep Navigator
+        </button>
+        <button onclick="setDirection('b')" id="btn-dir-b" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)]">
+          <span>🗺️</span> الاتجاه B: Modern Cartographer
+        </button>
+        <button onclick="setDirection('c')" id="btn-dir-c" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)]">
+          <span>📜</span> الاتجاه C: Warm Scholar
+        </button>
+      </div>
+
+      <!-- زر تبديل الوضع الليلي والنهاري -->
+      <button onclick="toggleMode()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-[var(--border-color)] bg-[var(--bg-surface-subtle)] text-[var(--text-main)] hover:border-[var(--brand-accent)] transition-all flex items-center gap-2">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText">الوضع الليلي</span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- ==================== المحتوى والمقارنات الحية ==================== -->
+  <main class="max-w-6xl mx-auto space-y-8">
+
+    <!-- بطاقة تعريفية بالاتجاه الحالي -->
+    <div id="directionBanner" class="p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border-r-4 border-[var(--brand-accent)] border border-[var(--border-color)] shadow-md">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span id="directionBadge" class="text-xs font-bold uppercase tracking-wider text-[var(--brand-accent)]">الاتجاه A المعتمد</span>
+          <h2 id="directionTitle" class="text-xl font-bold mt-0.5">«المستكشف العميق — Deep Navigator»</h2>
+          <p id="directionDesc" class="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 max-w-3xl leading-relaxed">
+            كحلي فلكي عميق (#0A1E3F) + ذهبي ملاحي متوهج (#E8B650) + تركواز الذكاء الاصطناعي. أصالة أكاديمية وهيبة ملاحية رصينة تطمئن الطالب وتمنحه الثقة.
+          </p>
+        </div>
+        <div class="flex flex-col items-end gap-1 shrink-0">
+          <div class="flex items-center gap-2 text-xs font-mono bg-[var(--bg-surface-subtle)] px-3 py-1.5 rounded-lg border border-[var(--border-color)]">
+            <span>نسبة التباين:</span>
+            <span class="text-emerald-400 font-bold">14.8:1 (AAA)</span>
+          </div>
+          <span class="text-[11px] text-[var(--text-dim)]">متوافق 100% مع WCAG</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- شبكة عينات المكونات الحقيقية -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- بطاقة منحة متطورة (7 أعمدة) -->
+      <section class="lg:col-span-7 space-y-5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand-accent)]"></span>
+            عينة بطاقة المنحة الذكية (Smart Scholarship Card)
+          </h3>
+          <span class="text-xs text-[var(--text-dim)]">مكون أساسي في كافة الصفحات</span>
+        </div>
+
+        <article class="relative bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--brand-accent)] rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-2xl group overflow-hidden">
+          
+          <!-- خطوط طبوغرافية في الخلفية -->
+          <svg class="absolute -left-12 -bottom-12 w-56 h-56 opacity-20 pointer-events-none text-[var(--contour-stroke)]" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 100 C 40 60, 80 40, 120 70 C 160 100, 180 140, 200 120"/>
+            <path d="M10 130 C 50 90, 90 80, 140 100 C 170 120, 190 160, 210 150"/>
+            <circle cx="150" cy="50" r="30" stroke-dasharray="4 2"/>
+            <circle cx="150" cy="50" r="15"/>
+          </svg>
+
+          <!-- رأس البطاقة -->
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] flex items-center justify-center text-xl shadow-inner">
+                🇬🇧
+              </div>
+              <div>
+                <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                  <span>المملكة المتحدة</span>
+                  <span>•</span>
+                  <span>جامعة أكسفورد / كامبريدج</span>
+                </div>
+                <h4 class="text-base sm:text-lg font-bold group-hover:text-[var(--brand-accent)] transition-colors">منحة تشيفنينغ البريطانية (Chevening)</h4>
+              </div>
+            </div>
+
+            <!-- شارة التوافق -->
+            <div class="px-3 py-1.5 rounded-full text-xs font-bold border flex items-center gap-1.5 shrink-0 bg-[var(--badge-match-bg)] text-[var(--badge-match-text)] border-[var(--badge-match-border)]">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="9"/>
+                <polygon points="12 6 13.5 10.5 18 12 13.5 13.5 12 18 10.5 13.5 6 12 10.5 10.5" fill="currentColor"/>
+              </svg>
+              <span>توافق 94%</span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mb-5 leading-relaxed">
+            برنامج المنح العالمية الرائد للحكومة البريطانية، يوفر تمويلاً كاملاً لقادة المستقبل لدراسة درجة الماجستير لمدة عام كامل.
+          </p>
+
+          <!-- شريط المعايير -->
+          <div class="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] mb-5 text-center">
+            <div>
+              <span class="block text-[11px] text-[var(--text-dim)] mb-0.5">التغطية المالية</span>
+              <span class="text-xs sm:text-sm font-bold text-[var(--text-main)]">100% شامل السكن</span>
+            </div>
+            <div class="border-x border-[var(--border-color)]">
+              <span class="block text-[11px] text-[var(--text-dim)] mb-0.5">الدرجة العلمية</span>
+              <span class="text-xs sm:text-sm font-bold text-[var(--text-main)]">ماجستير أكاديمي</span>
+            </div>
+            <div>
+              <span class="block text-[11px] text-[var(--text-dim)] mb-0.5">الموعد النهائي</span>
+              <span class="text-xs sm:text-sm font-bold text-amber-500">متبقي 28 يوماً</span>
+            </div>
+          </div>
+
+          <!-- الأزرار التفاعلية -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md hover:scale-[1.02] bg-[var(--brand-accent)] text-[var(--brand-accent-text)] flex items-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15 8 21 9 17 14 18 20 12 17 6 20 7 14 3 9 9 8 12 2" fill="currentColor"/>
+                </svg>
+                <span>احسب فرصة قبولك</span>
+              </button>
+
+              <button class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium border border-[var(--border-color)] bg-[var(--bg-surface-subtle)] text-[var(--text-main)] hover:border-[var(--brand-accent)] transition-all flex items-center gap-2">
+                <svg class="w-4 h-4 text-[var(--brand-ai)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>
+                </svg>
+                <span>استشر رادار AI</span>
+              </button>
+            </div>
+
+            <button class="w-10 h-10 rounded-xl border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--brand-accent)] hover:border-[var(--brand-accent)] transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+          </div>
+
+        </article>
+      </section>
+
+      <!-- حاسبة القبول ومستشار AI (5 أعمدة) -->
+      <section class="lg:col-span-5 space-y-5">
+        
+        <!-- حاسبة القبول -->
+        <div>
+          <h3 class="text-sm font-bold flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand-accent)]"></span>
+            مؤشر بوصلة القبول (Acceptance Compass Gauge)
+          </h3>
+
+          <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-5 text-center shadow-md">
+            
+            <div class="relative w-36 h-36 mx-auto my-2 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="7" class="text-[var(--bg-surface-subtle)]" fill="none"/>
+                <circle id="gaugeProgress" cx="50" cy="50" r="40" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="35" class="gauge-circle text-[var(--brand-accent)]" fill="none"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-2xl font-black tracking-tight" id="gaugeValue">86%</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-accent)]">فرصة مرتفعة</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-[var(--text-muted)]">
+              ملفك الأكاديمي جاهز للتنافس بقوة في الجولة الأولى لجامعة كامبريدج.
+            </p>
+          </div>
+        </div>
+
+        <!-- المستشار الذكي AI -->
+        <div>
+          <h3 class="text-sm font-bold flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[var(--brand-ai)]"></span>
+            مستشار الذكاء الاصطناعي (AI Compass Copilot)
+          </h3>
+
+          <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 shadow-md space-y-3">
+            <div class="flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-[var(--brand-ai-bg)] text-[var(--brand-ai)] border border-[var(--border-color)] flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/>
+                </svg>
+              </div>
+              <div class="bg-[var(--bg-surface-subtle)] p-3 rounded-2xl rounded-tr-none text-xs text-[var(--text-main)] leading-relaxed border border-[var(--border-color)]">
+                لقد راجعت سيرتك الذاتية ومعدلك (3.8/4.0). ننصح بإبراز <strong>خبراتك التطوعية في التنمية المستدامة</strong> لأنها نقطة الحسم في تقييم لجان Chevening لهذا العام!
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input type="text" placeholder="اسأل مستشارك عن متطلبات أي منحة..." class="w-full px-3 py-2 text-xs rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-[var(--text-main)] focus:outline-none focus:border-[var(--brand-accent)] transition-colors">
+              <button class="p-2 rounded-xl bg-[var(--brand-primary)] text-white hover:opacity-90 transition-all shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- جدول الألوان الحية -->
+    <section class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-5 shadow-sm">
+      <h3 class="text-sm font-bold mb-4 flex items-center gap-2">
+        <svg class="w-4 h-4 text-[var(--brand-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"/>
+        </svg>
+        <span>التدرجات اللونية المعتمدة لكل اتجاه (Design Tokens)</span>
+      </h3>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" id="swatchesContainer">
+        <!-- يتم ملؤها ديناميكياً -->
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let currentDir = 'a';
+    let isDark = true;
+
+    const directionsData = {
+      'a': {
+        name: '🧭 الاتجاه A: Deep Navigator',
+        badge: 'الاتجاه A الموصى به',
+        title: '«المستكشف العميق — Deep Navigator»',
+        desc: 'أزرق كحلي فلكي عميق (#0A1E3F) + ذهبي ملاحي متوهج (#E8B650) + تركواز الذكاء الاصطناعي. أصالة أكاديمية وهيبة ملاحية رصينة تطمئن الطالب وتمنحه الثقة.',
+        accent: '#E8B650',
+        swatches: [
+          { name: 'Canvas Dark', hex: '#060E1A', role: 'خلفية الصفحة' },
+          { name: 'Surface Navy', hex: '#0D1C33', role: 'بطاقات وكروت' },
+          { name: 'Royal Core', hex: '#1A4684', role: 'العناصر الحيوية' },
+          { name: 'Stellar Gold', hex: '#E8B650', role: 'البوصلة والإجراء' },
+          { name: 'Naval Teal', hex: '#06B6D4', role: 'رادار AI ومطابقة' },
+          { name: 'Match Emerald', hex: '#10B981', role: 'نسبة القبول' },
+        ]
+      },
+      'b': {
+        name: '🗺️ الاتجاه B: Modern Cartographer',
+        badge: 'الاتجاه B العصري',
+        title: '«رسام الخرائط الحديث — Modern Cartographer»',
+        desc: 'بنفسجي نيو-ماتريكس (#18142C) + نعناعي ليزري مضيء (#10E599) + أسطح حديثة ناصعة. عصري، فائق السرعة، ومصمم لجيل التكنولوجيا والذكاء الاصطناعي.',
+        accent: '#10E599',
+        swatches: [
+          { name: 'Neo Obsidian', hex: '#0C0A17', role: 'خلفية داكنة' },
+          { name: 'Cyber Violet', hex: '#18142C', role: 'كروت وألواح' },
+          { name: 'Electric Purple', hex: '#7C3AED', role: 'لون الهوية' },
+          { name: 'Laser Mint', hex: '#10E599', role: 'إجراء ونشاط' },
+          { name: 'Future Indigo', hex: '#818CF8', role: 'الذكاء الاصطناعي' },
+          { name: 'Pure Frost', hex: '#F8F9FD', role: 'وضع النهار' },
+        ]
+      },
+      'c': {
+        name: '📜 الاتجاه C: Warm Scholar',
+        badge: 'الاتجاه C الإنساني',
+        title: '«الباحث الدافئ — Warm Scholar»',
+        desc: 'أخضر غابي عميق (#19241E) + ورق بردي كريمي (#F6F3EB) + تراكوتا طينية دافئة (#DC6843). إنساني يزيل توتر التقديم ويبعث على الطمأنينة والألفة.',
+        accent: '#DC6843',
+        swatches: [
+          { name: 'Botanical 900', hex: '#101612', role: 'خلفية داكنة' },
+          { name: 'Forest Card', hex: '#19241E', role: 'بطاقات وسطوح' },
+          { name: 'Deep Sage', hex: '#2D5842', role: 'العناصر الرئيسية' },
+          { name: 'Clay Terracotta', hex: '#DC6843', role: 'البوصلة والإجراء' },
+          { name: 'Warm Ochre', hex: '#D98858', role: 'الذكاء الاصطناعي' },
+          { name: 'Parchment Cream', hex: '#F6F3EB', role: 'ورق أكاديمي' },
+        ]
+      }
+    };
+
+    function updateSwatches(dirKey) {
+      const container = document.getElementById('swatchesContainer');
+      const data = directionsData[dirKey];
+      container.innerHTML = '';
+      data.swatches.forEach(swatch => {
+        const item = document.createElement('div');
+        item.className = 'p-3 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] flex flex-col gap-1.5';
+        item.innerHTML = `
+          <div class="w-full h-8 rounded-lg shadow-sm" style="background-color: ${swatch.hex}; border: 1px solid rgba(255,255,255,0.1)"></div>
+          <span class="text-xs font-bold truncate">${swatch.name}</span>
+          <div class="flex items-center justify-between text-[11px] text-[var(--text-dim)] font-mono">
+            <span>${swatch.hex}</span>
+          </div>
+          <span class="text-[10px] text-[var(--text-muted)] truncate">${swatch.role}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function setDirection(dirKey) {
+      currentDir = dirKey;
+      const root = document.getElementById('themeRoot');
+      root.classList.remove('theme-direction-a', 'theme-direction-b', 'theme-direction-c');
+      root.classList.add(`theme-direction-${dirKey}`);
+
+      ['a', 'b', 'c'].forEach(k => {
+        const btn = document.getElementById(`btn-dir-${k}`);
+        if (k === dirKey) {
+          btn.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-[var(--brand-accent)] text-[var(--brand-accent-text)] shadow-sm';
+        } else {
+          btn.className = 'px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)]';
+        }
+      });
+
+      const data = directionsData[dirKey];
+      document.getElementById('directionBadge').innerText = data.badge;
+      document.getElementById('directionTitle').innerText = data.title;
+      document.getElementById('directionDesc').innerText = data.desc;
+
+      updateSwatches(dirKey);
+    }
+
+    function toggleMode() {
+      isDark = !isDark;
+      const root = document.getElementById('themeRoot');
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      
+      if (isDark) {
+        root.classList.remove('theme-light');
+        root.classList.add('theme-dark');
+        icon.innerText = '🌙';
+        text.innerText = 'الوضع الليلي';
+      } else {
+        root.classList.remove('theme-dark');
+        root.classList.add('theme-light');
+        icon.innerText = '☀️';
+        text.innerText = 'وضع النهار';
+      }
+    }
+
+    updateSwatches('a');
+  </script>
+</body>
+</html>

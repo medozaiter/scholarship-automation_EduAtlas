@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduAtlas Design System Styleguide — «الباحث الدافئ»</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='26' fill='%231F4232'/><circle cx='50' cy='50' r='38' stroke='%23DC6843' stroke-opacity='0.3' stroke-width='2' stroke-dasharray='4 3' fill='none'/><polygon points='50,16 60,50 50,43 40,50' fill='%23DC6843'/><polygon points='50,84 60,50 50,57 40,50' fill='%23F8F6F0'/><circle cx='50' cy='50' r='5' fill='%23DC6843'/></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/scholarpilot.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    if (localStorage.theme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="ea-topographic-bg min-h-screen text-[var(--ea-text-primary)] transition-colors duration-200 p-4 sm:p-8">
+
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] p-6 rounded-2xl shadow-sm">
+    <div class="flex items-center gap-3.5">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1F4232] to-[#2E654D] flex items-center justify-center text-white shadow-md border border-emerald-500/20">
+        <svg class="w-7 h-7 text-[#DC6843]" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" fill="none" stroke-opacity="0.3"/>
+          <polygon points="50,16 60,50 50,43 40,50" fill="#DC6843"/>
+          <polygon points="50,84 60,50 50,57 40,50" fill="#F8F6F0"/>
+          <circle cx="50" cy="50" r="6" fill="#DC6843"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black">EduAtlas Design System Styleguide</h1>
+        <p class="text-xs text-[var(--ea-text-muted)]">كتالوج المكونات والهوية البصرية — نمط «الباحث الدافئ — Warm Scholar»</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button onclick="window.toggleEduAtlasTheme()" class="ea-btn-secondary text-xs flex items-center gap-2">
+        <i data-lucide="moon" class="w-4 h-4 ea-theme-toggle-icon"></i>
+        <span>تبديل الوضع (Dark / Light)</span>
+      </button>
+      <a href="/" class="ea-btn-primary text-xs">
+        <i data-lucide="home" class="w-4 h-4"></i>
+        <span>العودة للرئيسية</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-12">
+
+    <!-- 1. Color Palette -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#DC6843]"></span>
+        <span>1. مصفوفة الألوان المعتمدة (Color Tokens)</span>
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#1F4232] mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Forest 700</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#1F4232</span>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#DC6843] mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Terracotta 500</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#DC6843</span>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#D98858] mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Warm Ochre</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#D98858</span>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#F8F6F0] border mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Warm Parchment</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#F8F6F0</span>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#101612] mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Deep Obsidian</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#101612</span>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] text-center">
+          <div class="w-full h-12 rounded-lg bg-[#3E7E55] mb-2 shadow-inner"></div>
+          <span class="text-xs font-bold block">Match Sage</span>
+          <span class="text-[11px] font-mono text-[var(--ea-text-dim)]">#3E7E55</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Buttons -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#1F4232]"></span>
+        <span>2. أزرار الإجراءات (Interactive Buttons)</span>
+      </h2>
+      <div class="p-6 bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] rounded-2xl flex flex-wrap items-center gap-4">
+        <button class="ea-btn-primary">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>زر البوصلة الأساسي (Primary CTA)</span>
+        </button>
+        <button class="ea-btn-forest">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>زر الأخضر الأكاديمي</span>
+        </button>
+        <button class="ea-btn-secondary">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+          <span>زر ثانوي هادئ</span>
+        </button>
+        <button class="sp-btn-violet px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>زر مستشار AI</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. Smart Scholarship Card -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#DC6843]"></span>
+        <span>3. بطاقة المنحة الذكية المعيارية (The Canonical Card)</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- بطاقة 1 -->
+        <article class="sp-card sp-card-hover p-6 rounded-2xl space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl p-2 rounded-xl bg-[var(--ea-parchment-subtle)] border border-[var(--ea-parchment-muted)]">🇬🇧</span>
+              <div>
+                <span class="text-xs text-[var(--ea-text-muted)]">المملكة المتحدة • أكسفورد</span>
+                <h3 class="text-lg font-bold">منحة تشيفنينغ البريطانية 2026</h3>
+              </div>
+            </div>
+            <div class="sp-badge sp-badge-success">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>توافق 94%</span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-[var(--ea-text-secondary)]">
+            برنامج تمويل حكومي شامل لدراسة الماجستير لمدة عام كامل، يغطي نفقات الدراسة والمعيشة وتذاكر السفر.
+          </p>
+
+          <div class="grid grid-cols-3 gap-2.5 p-3 rounded-xl bg-[var(--ea-parchment-subtle)] border border-[var(--ea-parchment-muted)] text-center">
+            <div>
+              <span class="text-[11px] text-[var(--ea-text-dim)] block">التغطية</span>
+              <span class="text-xs font-bold">100% كاملة</span>
+            </div>
+            <div class="border-x border-[var(--ea-parchment-muted)]">
+              <span class="text-[11px] text-[var(--ea-text-dim)] block">الدرجة</span>
+              <span class="text-xs font-bold">ماجستير</span>
+            </div>
+            <div>
+              <span class="text-[11px] text-[var(--ea-text-dim)] block">الموعد</span>
+              <span class="text-xs font-bold text-amber-500">متبقي 28 يوماً</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center gap-2">
+              <button class="ea-btn-primary text-xs">احسب فرصة قبولك</button>
+              <button class="ea-btn-secondary text-xs">استشر AI</button>
+            </div>
+            <button class="p-2 rounded-xl border border-[var(--ea-parchment-border)] text-[var(--ea-text-muted)] hover:text-[#DC6843]">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </article>
+
+        <!-- حاسبة القبول الدائرية -->
+        <div class="sp-card p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#DC6843] mb-2">بوصلة القبول الفورية</span>
+          
+          <div class="relative w-36 h-36 my-2 flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-[var(--ea-parchment-muted)]" fill="none"/>
+              <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="35" class="text-[#DC6843] transition-all duration-700" fill="none"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-3xl font-black">88%</span>
+              <span class="text-[10px] font-bold text-[#DC6843]">فرصة مرتفعة</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-[var(--ea-text-muted)] mt-2 max-w-xs">
+            سجلك الأكاديمي ولغتك الإنجليزية تستوفي المعايير التنافسية للجامعة.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4. Badges and Statuses -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#1F4232]"></span>
+        <span>4. شارات الحالات والمواعيد (Status Badges)</span>
+      </h2>
+      <div class="p-6 bg-[var(--ea-parchment-surface)] border border-[var(--ea-parchment-border)] rounded-2xl flex flex-wrap items-center gap-3">
+        <span class="sp-badge sp-badge-success">✓ تم التحقق رسمياً</span>
+        <span class="sp-badge sp-badge-warning">⏳ موعد نهائي يقترب</span>
+        <span class="sp-badge sp-badge-danger">🚨 متبقي 3 أيام فقط</span>
+        <span class="sp-badge sp-badge-ai">✨ مستشار Gemini نشط</span>
+        <span class="sp-deadline-badge urgent">عاجل: ينتهي هذا الأسبوع</span>
+        <span class="sp-coverage-badge">💰 تمويل وراتب شهري</span>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/warm-scholar.js"></script>
+  <script>
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -888,16 +888,39 @@ def init_db_and_migrate():
                     ("privacy_settings", "TEXT"),
                     ("updated_at", "VARCHAR(50)")
                 ]
+                ALLOWED_COLUMNS = {
+                    "username": "VARCHAR(80)",
+                    "avatar_url": "VARCHAR(500)",
+                    "cover_url": "VARCHAR(500)",
+                    "city": "VARCHAR(100)",
+                    "university": "VARCHAR(150)",
+                    "graduation_year": "VARCHAR(50)",
+                    "bio": "TEXT",
+                    "languages": "TEXT",
+                    "skills": "TEXT",
+                    "interests": "TEXT",
+                    "target_countries": "TEXT",
+                    "scholarship_interests": "TEXT",
+                    "social_links": "TEXT",
+                    "email_verified": "BOOLEAN DEFAULT 0",
+                    "verification_code": "VARCHAR(50)",
+                    "reset_token": "VARCHAR(100)",
+                    "reset_token_expires": "VARCHAR(50)",
+                    "privacy_settings": "TEXT",
+                    "updated_at": "VARCHAR(50)"
+                }
                 with engine.connect() as conn:
                     for col_name, col_type in cols_to_add:
-                        if col_name not in existing_cols:
-                            try:
-                                conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
-                                if hasattr(conn, "commit"):
-                                    conn.commit()
-                                logger.info(f"Added column {col_name} to users table.")
-                            except Exception as ce:
-                                logger.debug(f"Could not add column {col_name}: {ce}")
+                        # Whitelist defense: ensure col_name and type are sanctioned schema attributes
+                        if col_name in ALLOWED_COLUMNS and col_type == ALLOWED_COLUMNS[col_name]:
+                            if col_name not in existing_cols:
+                                try:
+                                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                                    if hasattr(conn, "commit"):
+                                        conn.commit()
+                                    logger.info(f"Added column {col_name} to users table.")
+                                except Exception as ce:
+                                    logger.debug(f"Could not add column {col_name}: {ce}")
         except Exception as insp_e:
             logger.debug(f"Schema inspection warning: {insp_e}")
 

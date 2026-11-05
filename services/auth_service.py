@@ -23,6 +23,10 @@ from services.security_utils import (
     compute_dummy_pbkdf2,
     create_session_token,
     verify_session_token,
+    create_refresh_token,
+    verify_refresh_token,
+    revoke_token,
+    is_token_revoked,
     create_email_verification_token,
     verify_email_verification_token,
     security_rate_limiter,
@@ -375,10 +379,12 @@ class AuthService:
         except Exception as ve_err:
             logger.warning(f"Initial email verification dispatch error: {ve_err}")
 
-        # Issue 24-hour default session token
-        token = create_session_token(email=email_clean, role="student", expires_in_seconds=86400)
+        # Issue 30-minute session token and 7-day refresh token
+        token = create_session_token(email=email_clean, role="student", expires_in_seconds=1800)
+        refresh_tok = create_refresh_token(email=email_clean, role="student", expires_in_seconds=7 * 86400)
         safe_copy = self.get_by_email(email_clean) or new_user
         safe_copy["session_token"] = token
+        safe_copy["refresh_token"] = refresh_tok
         safe_copy["completeness"] = self.calculate_profile_completeness(safe_copy)
         return safe_copy
 
@@ -417,12 +423,18 @@ class AuthService:
                 save_or_update_user(user)
                 logger.info(f"Auto-upgraded hash for {email_clean}")
 
-            # Session expiration: 30 days if remember_me, else 24 hours
-            expires_seconds = (30 * 86400) if remember_me else 86400
+            # Session expiration: capped at 1800 seconds (30m) for session_token
+            # Refresh token: 30 days if remember_me, else 7 days
+            refresh_expiry = (30 * 86400) if remember_me else (7 * 86400)
             token = create_session_token(
                 email=email_clean,
                 role=user.get("role", "student"),
-                expires_in_seconds=expires_seconds
+                expires_in_seconds=1800
+            )
+            refresh_tok = create_refresh_token(
+                email=email_clean,
+                role=user.get("role", "student"),
+                expires_in_seconds=refresh_expiry
             )
 
             safe_copy = dict(user)
@@ -431,13 +443,38 @@ class AuthService:
             safe_copy.pop("verification_code", None)
             safe_copy.pop("reset_token", None)
             safe_copy["session_token"] = token
+            safe_copy["refresh_token"] = refresh_tok
             safe_copy["remember_me"] = remember_me
-            safe_copy["expires_in_seconds"] = expires_seconds
+            safe_copy["expires_in_seconds"] = 1800
+            safe_copy["refresh_expires_in_seconds"] = refresh_expiry
             safe_copy["completeness"] = self.calculate_profile_completeness(safe_copy)
             return safe_copy
 
         security_rate_limiter.record_failed_login(email_clean)
         return None
+
+    def refresh_session(self, refresh_tok: str) -> Dict[str, Any]:
+        """
+        Validates refresh token and issues a new 30-minute session token.
+        Why: Allows users to stay authenticated seamlessly while enforcing a short 30m window on session tokens.
+        """
+        if not refresh_tok:
+            raise ValueError("رمز التحديث مطلوب.")
+        payload = verify_refresh_token(refresh_tok)
+        if not payload:
+            raise ValueError("رمز التحديث غير صالح أو منتهي الصلاحية. يرجى تسجيل الدخول مجدداً.")
+        email = payload.get("email")
+        role = payload.get("role", "student")
+        user = self.get_by_email(email)
+        if not user:
+            raise ValueError("المستخدم غير موجود.")
+        new_session = create_session_token(email=email, role=role, expires_in_seconds=1800)
+        return {
+            "email": email,
+            "session_token": new_session,
+            "expires_in_seconds": 1800,
+            "user": user
+        }
 
     def forgot_password(self, email: str) -> Dict[str, Any]:
         """Generates a cryptographically secure 1-hour reset token and dispatches reset notification."""

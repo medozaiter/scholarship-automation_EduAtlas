@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 from services.subscriber_service import SubscriberService
 from services.scholarship_engine import ScholarshipEngine
@@ -32,7 +32,14 @@ from services.security_utils import (
     validate_uploaded_image,
     sanitize_uploaded_text,
     security_rate_limiter,
+    create_session_token,
     verify_session_token,
+    create_refresh_token,
+    verify_refresh_token,
+    revoke_token,
+    is_token_revoked,
+    generate_csrf_token,
+    verify_csrf_token,
     verify_recaptcha,
     validate_sql_safe,
     detect_sql_injection,
@@ -56,6 +63,7 @@ NOTIFICATIONS_HTML_PATH = os.path.join(TEMPLATES_DIR, "notifications.html")
 PROFILE_HTML_PATH = os.path.join(TEMPLATES_DIR, "profile.html")
 COMMUNITY_HTML_PATH = os.path.join(TEMPLATES_DIR, "community.html")
 NEWS_HTML_PATH = os.path.join(TEMPLATES_DIR, "news.html")
+STYLEGUIDE_HTML_PATH = os.path.join(TEMPLATES_DIR, "styleguide.html")
 CSS_PATH = os.path.join(os.path.dirname(__file__), "static", "css", "scholarpilot.css")
 
 app = FastAPI(
@@ -114,10 +122,11 @@ def require_cron_auth(request: Request):
     )
 
 
-# Secure CORS Middleware
+# Secure CORS Middleware: strictly forbid wildcard '*' when credentials are enabled
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "").strip()
 default_origins = ["http://localhost:8000", "http://127.0.0.1:8000", "https://scholarpilot-ai-mkac.onrender.com"]
-allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()] if allowed_origins_env else default_origins
+parsed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()] if allowed_origins_env else default_origins
+allowed_origins = [o for o in parsed_origins if o != "*"] or default_origins
 
 app.add_middleware(
     CORSMiddleware,
@@ -148,7 +157,9 @@ async def rate_limiting_middleware(request: Request, call_next):
             user_identifier = user["email"].strip().lower()
 
         category = "general"
-        if path.startswith("/api/auth/"):
+        if path == "/api/auth/login":
+            category = "login"
+        elif path.startswith("/api/auth/"):
             category = "auth"
         elif path in [
             "/api/advisor/review-cv", "/api/advisor/upload-cv",
@@ -245,6 +256,77 @@ async def rate_limiting_middleware(request: Request, call_next):
     return await call_next(request)
 
 
+# ==============================================================================
+# CSRF DEFENSE MIDDLEWARE (DOUBLE-SUBMIT / HMAC-SIGNED TOKEN)
+# ==============================================================================
+EXEMPT_CSRF_PATHS = {
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password",
+    "/api/auth/verify-email",
+    "/api/auth/csrf-token",
+    "/api/auth/refresh",
+    "/api/subscribe",
+    "/api/cron/trigger-scan",
+    "/api/advisor/consult",
+    "/api/advisor/chances",
+    "/api/advisor/compare",
+    "/api/match/calculate"
+}
+
+@app.middleware("http")
+async def csrf_protection_middleware(request: Request, call_next):
+    """
+    Guards state-changing API endpoints against Cross-Site Request Forgery (CSRF).
+    - Safe methods (GET, HEAD, OPTIONS) are exempt.
+    - Programmatic API requests sending 'Authorization: Bearer' are exempt (immune to ambient credentials).
+    - Requests with valid X-Cron-Secret header are exempt.
+    - Public unauthenticated onboarding routes are exempt.
+    - Cookie-authenticated mutating requests (POST/PUT/DELETE/PATCH) MUST provide a valid X-CSRF-Token header or parameter.
+    """
+    method = request.method.upper()
+    path = request.url.path
+
+    if method in ("POST", "PUT", "DELETE", "PATCH") and path.startswith("/api/"):
+        # 1. Exempt programmatic Bearer tokens (not ambient browser cookies)
+        auth_hdr = request.headers.get("Authorization", "")
+        if auth_hdr.startswith("Bearer "):
+            return await call_next(request)
+
+        # 2. Exempt Cron Automation with valid secret
+        cron_secret = request.headers.get("X-Cron-Secret") or request.headers.get("x-cron-secret")
+        if cron_secret and verify_cron_secret(cron_secret):
+            return await call_next(request)
+
+        # 3. Exempt public onboarding endpoints
+        if path in EXEMPT_CSRF_PATHS:
+            return await call_next(request)
+
+        # 4. Check if ambient cookies (session_token, minha_token) are present
+        has_session_cookie = bool(request.cookies.get("session_token") or request.cookies.get("minha_token"))
+        if has_session_cookie:
+            csrf_token = (
+                request.headers.get("X-CSRF-Token")
+                or request.headers.get("x-csrf-token")
+                or request.headers.get("X-CSRFToken")
+                or request.headers.get("x-csrftoken")
+                or request.query_params.get("csrf_token")
+            )
+            if not csrf_token or not verify_csrf_token(csrf_token):
+                logger.warning(f"CSRF verification failed on {method} {path} from IP {request.client.host if request.client else 'unknown'}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "success": False,
+                        "detail": "فشل التحقق من رمز حماية الطلبات ضد التزوير (CSRF Token). يرجى تحديث الصفحة والمحاولة مجدداً.",
+                        "error_code": "CSRF_VERIFICATION_FAILED"
+                    }
+                )
+
+    return await call_next(request)
+
+
 # Hardened Helmet-Style Security Headers Middleware
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -278,10 +360,10 @@ async def add_security_headers(request: Request, call_next):
     if "x-powered-by" in response.headers:
         del response.headers["x-powered-by"]
 
-    # 9. Content Security Policy (allows Tailwind CDN, Lucide, Fonts, and Google reCAPTCHA)
+    # 9. Hardened Content Security Policy (allows Tailwind CDN, Lucide, Fonts, and Google reCAPTCHA without unsafe-eval)
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; "
+        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; "
         "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
@@ -317,6 +399,30 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=400,
         content={"success": False, "detail": msg, "errors": clean_errors}
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Catches all unhandled server exceptions globally.
+    Logs full stack trace internally for engineering diagnostics and returns a clean,
+    sanitized response to users without leaking internal system structures or stack traces.
+    """
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"success": False, "detail": exc.detail},
+            headers=getattr(exc, "headers", None)
+        )
+    logger.error(f"Unhandled server exception on {request.method} {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "detail": "حدث خطأ غير متوقع في معالجة طلبك. تم تسجيل تفاصيل الخطأ داخلياً للمتابعة.",
+            "error_code": "INTERNAL_SERVER_ERROR"
+        }
     )
 
 sub_service = SubscriberService()
@@ -410,11 +516,20 @@ async def health_check():
 
 
 @app.get("/api/health/diagnostics", include_in_schema=False)
-async def health_diagnostics():
+async def health_diagnostics(request: Request):
     """
-    Deep diagnostic probe inspecting database connectivity, email provider, and Gemini configuration.
-    Separated from the ultra-fast /healthz ping endpoint.
+    Diagnostic probe inspecting database connectivity, email provider, and Gemini configuration.
+    Public requests return minimal {"status": "ok"} to prevent internal information disclosure.
+    Full subsystem details require authenticated admin user or valid X-Cron-Secret header.
     """
+    user = get_authenticated_user(request)
+    cron_secret = request.headers.get("X-Cron-Secret") or request.query_params.get("secret")
+    is_admin = bool(user and user.get("role") == "admin")
+    is_authorized_cron = bool(cron_secret and verify_cron_secret(cron_secret))
+
+    if not (is_admin or is_authorized_cron):
+        return {"status": "ok"}
+
     raw_db = os.getenv("DATABASE_URL", "")
     db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store"
     email_info = get_email_provider_info()
@@ -462,15 +577,16 @@ async def trigger_cron_radar_scan(
 # ==================== STRICT REQUEST VALIDATION MODELS ====================
 
 class SubscriptionRequest(BaseModel):
-    email: str
-    full_name: Optional[str] = "Student"
-    degree: str = "Undergraduate (Bachelor's)"
-    majors: List[str]
-    gpa: Optional[str] = "85%"
-    talents_experience: Optional[str] = ""
-    english_level: Optional[str] = "Intermediate"
-    target_destinations: Optional[List[str]] = ["Any"]
-    country: Optional[str] = "Palestine"
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    full_name: Optional[str] = Field("Student", max_length=100)
+    degree: str = Field("Undergraduate (Bachelor's)", max_length=80)
+    majors: List[str] = Field(..., max_length=10)
+    gpa: Optional[str] = Field("85%", max_length=20)
+    talents_experience: Optional[str] = Field("", max_length=500)
+    english_level: Optional[str] = Field("Intermediate", max_length=80)
+    target_destinations: Optional[List[str]] = Field(["Any"], max_length=15)
+    country: Optional[str] = Field("Palestine", max_length=80)
     send_welcome_report: Optional[bool] = True
 
     @field_validator("email")
@@ -510,29 +626,30 @@ class SubscriptionRequest(BaseModel):
 
 
 class RegisterRequest(BaseModel):
-    email: str
-    password: str
-    full_name: str
-    username: Optional[str] = None
-    degree: Optional[str] = "Undergraduate (Bachelor's)"
-    majors: Optional[List[str]] = None
-    gpa: Optional[str] = "85%"
-    talents_experience: Optional[str] = ""
-    english_level: Optional[str] = "Intermediate"
-    country: Optional[str] = "Palestine"
-    city: Optional[str] = ""
-    university: Optional[str] = ""
-    graduation_year: Optional[str] = ""
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    password: str = Field(..., min_length=8, max_length=128)
+    full_name: str = Field(..., min_length=2, max_length=100)
+    username: Optional[str] = Field(None, max_length=50)
+    degree: Optional[str] = Field("Undergraduate (Bachelor's)", max_length=80)
+    majors: Optional[List[str]] = Field(None, max_length=10)
+    gpa: Optional[str] = Field("85%", max_length=20)
+    talents_experience: Optional[str] = Field("", max_length=500)
+    english_level: Optional[str] = Field("Intermediate", max_length=80)
+    country: Optional[str] = Field("Palestine", max_length=80)
+    city: Optional[str] = Field("", max_length=80)
+    university: Optional[str] = Field("", max_length=150)
+    graduation_year: Optional[str] = Field("", max_length=20)
     age: Optional[Union[int, str]] = None
-    bio: Optional[str] = ""
-    languages: Optional[List[Any]] = None
-    skills: Optional[List[str]] = None
-    interests: Optional[List[str]] = None
-    target_countries: Optional[List[str]] = None
-    scholarship_interests: Optional[List[str]] = None
+    bio: Optional[str] = Field("", max_length=600)
+    languages: Optional[List[Any]] = Field(None, max_length=20)
+    skills: Optional[List[str]] = Field(None, max_length=30)
+    interests: Optional[List[str]] = Field(None, max_length=30)
+    target_countries: Optional[List[str]] = Field(None, max_length=20)
+    scholarship_interests: Optional[List[str]] = Field(None, max_length=30)
     social_links: Optional[Dict[str, str]] = None
     privacy_settings: Optional[Dict[str, Any]] = None
-    recaptcha_token: Optional[str] = None
+    recaptcha_token: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("email")
     @classmethod
@@ -583,10 +700,11 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    password: str = Field(..., min_length=1, max_length=128)
     remember_me: Optional[bool] = False
-    recaptcha_token: Optional[str] = None
+    recaptcha_token: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("email")
     @classmethod
@@ -600,8 +718,9 @@ class LoginRequest(BaseModel):
 
 
 class ForgotPasswordRequest(BaseModel):
-    email: str
-    recaptcha_token: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    recaptcha_token: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("email")
     @classmethod
@@ -610,9 +729,10 @@ class ForgotPasswordRequest(BaseModel):
 
 
 class ResetPasswordRequest(BaseModel):
-    email: str
-    token: str
-    new_password: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    token: str = Field(..., min_length=10, max_length=120)
+    new_password: str = Field(..., min_length=8, max_length=128)
 
     @field_validator("email")
     @classmethod
@@ -633,9 +753,10 @@ class ResetPasswordRequest(BaseModel):
 
 
 class VerificationCodeRequest(BaseModel):
-    email: Optional[str] = None
-    code: Optional[str] = None
-    token: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    code: Optional[str] = Field(None, max_length=20)
+    token: Optional[str] = Field(None, max_length=500)
 
     @field_validator("email")
     @classmethod
@@ -646,7 +767,8 @@ class VerificationCodeRequest(BaseModel):
 
 
 class SendVerificationRequest(BaseModel):
-    email: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
 
     @field_validator("email")
     @classmethod
@@ -655,26 +777,27 @@ class SendVerificationRequest(BaseModel):
 
 
 class UpdateProfileRequest(BaseModel):
-    email: str
-    username: Optional[str] = None
-    full_name: Optional[str] = None
-    avatar_url: Optional[str] = None
-    cover_url: Optional[str] = None
-    city: Optional[str] = None
-    university: Optional[str] = None
-    degree: Optional[str] = None
-    majors: Optional[List[str]] = None
-    graduation_year: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    username: Optional[str] = Field(None, max_length=50)
+    full_name: Optional[str] = Field(None, max_length=100)
+    avatar_url: Optional[str] = Field(None, max_length=500)
+    cover_url: Optional[str] = Field(None, max_length=500)
+    city: Optional[str] = Field(None, max_length=80)
+    university: Optional[str] = Field(None, max_length=150)
+    degree: Optional[str] = Field(None, max_length=80)
+    majors: Optional[List[str]] = Field(None, max_length=10)
+    graduation_year: Optional[str] = Field(None, max_length=20)
     age: Optional[Union[int, str]] = None
-    bio: Optional[str] = None
-    gpa: Optional[str] = None
-    english_level: Optional[str] = None
-    country: Optional[str] = None
-    languages: Optional[List[Any]] = None
-    skills: Optional[List[str]] = None
-    interests: Optional[List[str]] = None
-    target_countries: Optional[List[str]] = None
-    scholarship_interests: Optional[List[str]] = None
+    bio: Optional[str] = Field(None, max_length=600)
+    gpa: Optional[str] = Field(None, max_length=20)
+    english_level: Optional[str] = Field(None, max_length=80)
+    country: Optional[str] = Field(None, max_length=80)
+    languages: Optional[List[Any]] = Field(None, max_length=20)
+    skills: Optional[List[str]] = Field(None, max_length=30)
+    interests: Optional[List[str]] = Field(None, max_length=30)
+    target_countries: Optional[List[str]] = Field(None, max_length=20)
+    scholarship_interests: Optional[List[str]] = Field(None, max_length=30)
     social_links: Optional[Dict[str, str]] = None
     privacy_settings: Optional[Dict[str, Any]] = None
 
@@ -758,9 +881,10 @@ class UpdateProfileRequest(BaseModel):
 
 
 class ChangePasswordRequest(BaseModel):
-    email: str
-    current_password: str
-    new_password: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    current_password: str = Field(..., min_length=1, max_length=128)
+    new_password: str = Field(..., min_length=8, max_length=128)
 
     @field_validator("email")
     @classmethod
@@ -781,8 +905,9 @@ class ChangePasswordRequest(BaseModel):
 
 
 class DeleteAccountRequest(BaseModel):
-    email: str
-    password: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    password: str = Field(..., min_length=1, max_length=128)
 
     @field_validator("email")
     @classmethod
@@ -798,10 +923,11 @@ class DeleteAccountRequest(BaseModel):
 
 
 class AdvisorChatRequest(BaseModel):
-    query: str
-    email: Optional[str] = None
-    scholarship_id: Optional[str] = None
-    history: Optional[List[Dict[str, Any]]] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    query: str = Field(..., min_length=2, max_length=2000)
+    email: Optional[str] = Field(None, max_length=120)
+    scholarship_id: Optional[str] = Field(None, max_length=100)
+    history: Optional[List[Dict[str, Any]]] = Field(None, max_length=15)
     profile: Optional[Dict[str, Any]] = None
 
     @field_validator("query")
@@ -841,12 +967,13 @@ class AdvisorChatRequest(BaseModel):
 
 
 class MatchCalculationRequest(BaseModel):
-    gpa: str = "85%"
-    degree: str = "Undergraduate (Bachelor's)"
-    majors: List[str] = ["Software Engineering"]
-    talents_experience: Optional[str] = ""
-    country: Optional[str] = "Palestine"
-    scholarship_name: Optional[str] = ""
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    gpa: str = Field("85%", max_length=20)
+    degree: str = Field("Undergraduate (Bachelor's)", max_length=80)
+    majors: List[str] = Field(default_factory=lambda: ["Software Engineering"], max_length=10)
+    talents_experience: Optional[str] = Field("", max_length=500)
+    country: Optional[str] = Field("Palestine", max_length=80)
+    scholarship_name: Optional[str] = Field("", max_length=150)
 
     @field_validator("gpa")
     @classmethod
@@ -868,8 +995,9 @@ class MatchCalculationRequest(BaseModel):
 
 
 class SaveScholarshipRequest(BaseModel):
-    email: str
-    scholarship_name: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    scholarship_name: str = Field(..., min_length=1, max_length=150)
 
     @field_validator("email")
     @classmethod
@@ -877,55 +1005,100 @@ class SaveScholarshipRequest(BaseModel):
         return validate_email(v)
 
 
-
-
 class CreateCommunityPostRequest(BaseModel):
-    title: Optional[str] = ""
-    content: str
-    category: Optional[str] = "general_discussion"
-    post_type: Optional[str] = "text"
-    media_urls: Optional[List[str]] = []
-    video_url: Optional[str] = ""
-    link_url: Optional[str] = ""
-    link_meta: Optional[Dict[str, Any]] = {}
-    scholarship_id: Optional[str] = None
-    scholarship_name: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    title: Optional[str] = Field("", max_length=250)
+    content: str = Field(..., min_length=1, max_length=10000)
+    category: Optional[str] = Field("general_discussion", max_length=60)
+    post_type: Optional[str] = Field("text", max_length=30)
+    media_urls: Optional[List[str]] = Field(default_factory=list, max_length=10)
+    video_url: Optional[str] = Field("", max_length=500)
+    link_url: Optional[str] = Field("", max_length=500)
+    link_meta: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    scholarship_id: Optional[str] = Field(None, max_length=100)
+    scholarship_name: Optional[str] = Field(None, max_length=150)
     is_success_story: Optional[bool] = False
-    success_details: Optional[Dict[str, Any]] = {}
+    success_details: Optional[Dict[str, Any]] = Field(default_factory=dict)
+
+    @field_validator("content")
+    @classmethod
+    def clean_post_content(cls, v: str) -> str:
+        clean = sanitize_text(v, max_length=10000)
+        if not clean:
+            raise ValueError("محتوى المنشور مطلوب.")
+        return clean
+
 
 class NewsCommentCreateRequest(BaseModel):
-    content: str
-    parent_id: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    content: str = Field(..., min_length=1, max_length=2000)
+    parent_id: Optional[str] = Field(None, max_length=100)
+
+    @field_validator("content")
+    @classmethod
+    def clean_comment(cls, v: str) -> str:
+        clean = sanitize_text(v, max_length=2000)
+        if not clean:
+            raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
+        return clean
 
 
 class AddCommunityCommentRequest(BaseModel):
-    content: str
-    parent_id: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    content: str = Field(..., min_length=1, max_length=2000)
+    parent_id: Optional[str] = Field(None, max_length=100)
+
+    @field_validator("content")
+    @classmethod
+    def clean_comment(cls, v: str) -> str:
+        clean = sanitize_text(v, max_length=2000)
+        if not clean:
+            raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
+        return clean
+
 
 class EditCommunityCommentRequest(BaseModel):
-    content: str
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    content: str = Field(..., min_length=1, max_length=2000)
+
+    @field_validator("content")
+    @classmethod
+    def clean_comment(cls, v: str) -> str:
+        clean = sanitize_text(v, max_length=2000)
+        if not clean:
+            raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
+        return clean
+
 
 class ReportContentRequest(BaseModel):
-    target_type: str
-    target_id: str
-    reason: str
-    details: Optional[str] = ""
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    target_type: str = Field(..., max_length=50)
+    target_id: str = Field(..., max_length=100)
+    reason: str = Field(..., min_length=2, max_length=200)
+    details: Optional[str] = Field("", max_length=1000)
+
+    @field_validator("reason", "details")
+    @classmethod
+    def sanitize_report_fields(cls, v: Optional[str]) -> str:
+        return sanitize_text(v or "", max_length=1000)
+
 
 class CommunityStorySubmit(BaseModel):
-    author_name: str
-    author_email: Optional[str] = None
-    author_country: Optional[str] = "فلسطين"
-    scholarship_id: str
-    scholarship_name: str
-    university: Optional[str] = ""
-    degree: Optional[str] = "ماجستير"
-    field_of_study: Optional[str] = "تخصص أكاديمي"
-    acceptance_year: Optional[str] = "2025/2026"
-    title: str
-    story_text: str
-    key_advice: Optional[List[str]] = []
-    gpa: Optional[str] = "85%+"
-    tags: Optional[List[str]] = []
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    author_name: str = Field(..., min_length=2, max_length=100)
+    author_email: Optional[str] = Field(None, max_length=120)
+    author_country: Optional[str] = Field("فلسطين", max_length=80)
+    scholarship_id: str = Field(..., max_length=100)
+    scholarship_name: str = Field(..., max_length=150)
+    university: Optional[str] = Field("", max_length=150)
+    degree: Optional[str] = Field("ماجستير", max_length=80)
+    field_of_study: Optional[str] = Field("تخصص أكاديمي", max_length=100)
+    acceptance_year: Optional[str] = Field("2025/2026", max_length=30)
+    title: str = Field(..., min_length=3, max_length=255)
+    story_text: str = Field(..., min_length=10, max_length=5000)
+    key_advice: Optional[List[str]] = Field(default_factory=list, max_length=10)
+    gpa: Optional[str] = Field("85%+", max_length=20)
+    tags: Optional[List[str]] = Field(default_factory=list, max_length=15)
 
     @field_validator("title")
     @classmethod
@@ -944,14 +1117,15 @@ class CommunityStorySubmit(BaseModel):
 
 
 class UpdatePreferencesRequest(BaseModel):
-    email: str
-    preferred_countries: Optional[List[str]] = None
-    funding_type: Optional[str] = "Any"
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    preferred_countries: Optional[List[str]] = Field(None, max_length=20)
+    funding_type: Optional[str] = Field("Any", max_length=50)
     email_notifications: Optional[bool] = True
     telegram_notifications: Optional[bool] = False
-    telegram_chat_id: Optional[str] = None
-    degree: Optional[str] = None
-    majors: Optional[List[str]] = None
+    telegram_chat_id: Optional[str] = Field(None, max_length=100)
+    degree: Optional[str] = Field(None, max_length=80)
+    majors: Optional[List[str]] = Field(None, max_length=10)
 
     @field_validator("email")
     @classmethod
@@ -960,11 +1134,13 @@ class UpdatePreferencesRequest(BaseModel):
 
 
 class ReadNotificationRequest(BaseModel):
-    email: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
 
 
 class UnifiedPreferencesRequest(BaseModel):
-    email: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
     scholarship_matches: Optional[bool] = None
     approaching_deadlines: Optional[bool] = None
     deadline_extensions: Optional[bool] = None
@@ -979,36 +1155,41 @@ class UnifiedPreferencesRequest(BaseModel):
     system_announcements: Optional[bool] = None
     email_notifications: Optional[bool] = None
     browser_push: Optional[bool] = None
-    email_digest_frequency: Optional[str] = None
-    subscribed_countries: Optional[List[str]] = None
-    subscribed_majors: Optional[List[str]] = None
-    subscribed_degrees: Optional[List[str]] = None
+    email_digest_frequency: Optional[str] = Field(None, max_length=30)
+    subscribed_countries: Optional[List[str]] = Field(None, max_length=20)
+    subscribed_majors: Optional[List[str]] = Field(None, max_length=20)
+    subscribed_degrees: Optional[List[str]] = Field(None, max_length=20)
 
 
 class MarkAllNotificationsReadRequest(BaseModel):
-    email: Optional[str] = None
-    category: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    category: Optional[str] = Field(None, max_length=50)
 
 
 class NotificationActionRequest(BaseModel):
-    email: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
 
 
 class SubscribeInterestsRequest(BaseModel):
-    email: Optional[str] = None
-    countries: Optional[List[str]] = None
-    majors: Optional[List[str]] = None
-    degrees: Optional[List[str]] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    countries: Optional[List[str]] = Field(None, max_length=20)
+    majors: Optional[List[str]] = Field(None, max_length=20)
+    degrees: Optional[List[str]] = Field(None, max_length=20)
 
 
 class ChancesRequest(BaseModel):
-    email: Optional[str] = None
-    scholarship_name: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    scholarship_name: Optional[str] = Field(None, max_length=150)
 
 
 class CompareRequest(BaseModel):
-    email: Optional[str] = None
-    scholarships: List[str] = ["hungaricum", "daad"]
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    scholarships: List[str] = Field(default_factory=lambda: ["hungaricum", "daad"], max_length=5)
 
     @field_validator("scholarships")
     @classmethod
@@ -1017,51 +1198,47 @@ class CompareRequest(BaseModel):
 
 
 class CVReviewRequest(BaseModel):
-    email: Optional[str] = None
-    cv_text: str
-    target_scholarship: Optional[str] = None
-
-    @field_validator("cv_text")
-    @classmethod
-    def check_cv_len(cls, v: str) -> str:
-        if len(v) > 30000:
-            return v[:30000]
-        return v
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    cv_text: str = Field(..., min_length=10, max_length=30000)
+    target_scholarship: Optional[str] = Field(None, max_length=150)
 
 
 class LetterReviewRequest(BaseModel):
-    email: Optional[str] = None
-    letter_text: str
-    target_scholarship: Optional[str] = None
-
-    @field_validator("letter_text")
-    @classmethod
-    def check_letter_len(cls, v: str) -> str:
-        if len(v) > 30000:
-            return v[:30000]
-        return v
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    letter_text: str = Field(..., min_length=10, max_length=30000)
+    target_scholarship: Optional[str] = Field(None, max_length=150)
 
 
 class RoadmapRequest(BaseModel):
-    email: Optional[str] = None
-    scholarship_name: str = "Stipendium Hungaricum"
-
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    scholarship_name: str = Field("Stipendium Hungaricum", max_length=150)
 
 
 class SendDocumentPackageRequest(BaseModel):
-    email: str
-    student_name: Optional[str] = ""
-    scholarship_name: Optional[str] = "منحة دراسية"
-    document_type: Optional[str] = "خطاب الدافع (Motivation Letter)"
-    document_content: str
-    checklist_status: Optional[List[str]] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    student_name: Optional[str] = Field("", max_length=100)
+    scholarship_name: Optional[str] = Field("منحة دراسية", max_length=150)
+    document_type: Optional[str] = Field("خطاب الدافع (Motivation Letter)", max_length=100)
+    document_content: str = Field(..., min_length=1, max_length=30000)
+    checklist_status: Optional[List[str]] = Field(None, max_length=30)
+
+    @field_validator("email")
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        return validate_email(v)
+
 
 class DraftEmailRequest(BaseModel):
-    email: Optional[str] = None
-    email_type: str = "inquiry"
-    target_scholarship: Optional[str] = None
-    recipient_name: Optional[str] = None
-    context: Optional[str] = None
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: Optional[str] = Field(None, max_length=120)
+    email_type: str = Field("inquiry", max_length=50)
+    target_scholarship: Optional[str] = Field(None, max_length=150)
+    recipient_name: Optional[str] = Field(None, max_length=100)
+    context: Optional[str] = Field(None, max_length=3000)
 
 
 def _get_verified_profile_email(request: Request, requested_email: Optional[str] = None, require_auth: bool = False) -> Optional[str]:
@@ -1156,6 +1333,15 @@ async def serve_static_css():
         with open(CSS_PATH, "r", encoding="utf-8") as f:
             return Response(content=f.read(), media_type="text/css")
     return Response(content="/* ScholarPilot AI Design System */", media_type="text/css")
+
+
+@app.get("/styleguide", response_class=HTMLResponse)
+async def serve_styleguide_page():
+    """Serves the EduAtlas Design System living styleguide and component catalog."""
+    if os.path.exists(STYLEGUIDE_HTML_PATH):
+        with open(STYLEGUIDE_HTML_PATH, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>EduAtlas Design System Styleguide</h1>")
 
 
 @app.get("/profile/{username}", response_class=HTMLResponse)
@@ -1276,6 +1462,8 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
             talents_experience=req.talents_experience or ""
         )
         token = user.get("session_token", "")
+        refresh_tok = user.get("refresh_token", "")
+        csrf_tok = generate_csrf_token()
         is_secure = (
             request.url.scheme == "https"
             or request.headers.get("x-forwarded-proto") == "https"
@@ -1285,7 +1473,7 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
         response.set_cookie(
             key="session_token",
             value=token,
-            max_age=86400,
+            max_age=1800,  # Strict 30-minute maximum lifespan
             httponly=True,
             samesite="lax",
             secure=is_secure
@@ -1293,12 +1481,36 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
         response.set_cookie(
             key="minha_token",
             value=token,
-            max_age=86400,
+            max_age=1800,
             httponly=True,
             samesite="lax",
             secure=is_secure
         )
-        return {"success": True, "user": user, "token": token, "message": "تم إنشاء حسابك وتفعيل هويتك الأكاديمية بنجاح!"}
+        if refresh_tok:
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_tok,
+                max_age=7 * 86400,
+                httponly=True,
+                samesite="lax",
+                secure=is_secure
+            )
+        response.set_cookie(
+            key="csrf_token",
+            value=csrf_tok,
+            max_age=7 * 86400,
+            httponly=False,
+            samesite="lax",
+            secure=is_secure
+        )
+        return {
+            "success": True,
+            "user": user,
+            "token": token,
+            "refresh_token": refresh_tok,
+            "csrf_token": csrf_tok,
+            "message": "تم إنشاء حسابك وتفعيل هويتك الأكاديمية بنجاح!"
+        }
     except HTTPException:
         raise
     except ValueError as ve:
@@ -1321,7 +1533,10 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
         if not user:
             raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة.")
         token = user.get("session_token", "")
-        max_age = user.get("expires_in_seconds", 86400)
+        refresh_tok = user.get("refresh_token", "")
+        refresh_max_age = user.get("refresh_expires_in_seconds", (30 * 86400 if req.remember_me else 7 * 86400))
+        csrf_tok = generate_csrf_token()
+
         is_secure = (
             request.url.scheme == "https"
             or request.headers.get("x-forwarded-proto") == "https"
@@ -1331,7 +1546,7 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
         response.set_cookie(
             key="session_token",
             value=token,
-            max_age=max_age,
+            max_age=1800,  # Strict 30-minute maximum session lifespan
             httponly=True,
             samesite="lax",
             secure=is_secure
@@ -1339,12 +1554,35 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
         response.set_cookie(
             key="minha_token",
             value=token,
-            max_age=max_age,
+            max_age=1800,
             httponly=True,
             samesite="lax",
             secure=is_secure
         )
-        return {"success": True, "user": user, "token": token}
+        if refresh_tok:
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_tok,
+                max_age=refresh_max_age,
+                httponly=True,
+                samesite="lax",
+                secure=is_secure
+            )
+        response.set_cookie(
+            key="csrf_token",
+            value=csrf_tok,
+            max_age=refresh_max_age,
+            httponly=False,
+            samesite="lax",
+            secure=is_secure
+        )
+        return {
+            "success": True,
+            "user": user,
+            "token": token,
+            "refresh_token": refresh_tok,
+            "csrf_token": csrf_tok
+        }
     except HTTPException:
         raise
     except ValueError as ve:
@@ -1352,11 +1590,104 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
 
 
 @app.post("/api/auth/logout")
-async def logout_account(response: Response):
-    """Logs out student and deletes session cookie."""
-    response.delete_cookie("minha_token")
-    response.delete_cookie("session_token")
-    return {"success": True, "message": "تم تسجيل الخروج بنجاح."}
+async def logout_account(request: Request, response: Response):
+    """Logs out student, invalidates session and refresh tokens server-side, and deletes cookies."""
+    # Revoke bearer token if present in Authorization header
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        revoke_token(auth_header.split(" ")[1].strip())
+
+    # Revoke tokens stored in cookies
+    for cookie_name in ["session_token", "minha_token", "refresh_token"]:
+        tok = request.cookies.get(cookie_name)
+        if tok:
+            revoke_token(tok)
+        response.delete_cookie(cookie_name)
+
+    response.delete_cookie("csrf_token")
+    return {"success": True, "message": "تم تسجيل الخروج وإبطال الجلسة بنجاح."}
+
+
+class RefreshSessionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    refresh_token: Optional[str] = Field(None, max_length=500)
+
+
+@app.post("/api/auth/refresh")
+async def refresh_session_endpoint(
+    request: Request,
+    response: Response,
+    req: Optional[RefreshSessionRequest] = None
+):
+    """Refreshes expired or expiring session_token using a valid refresh_token."""
+    token = (req.refresh_token if req and req.refresh_token else None) or request.cookies.get("refresh_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="رمز التحديث (refresh_token) غير متوفر.")
+    try:
+        res = auth_service.refresh_session(token)
+        new_session = res["session_token"]
+        is_secure = (
+            request.url.scheme == "https"
+            or request.headers.get("x-forwarded-proto") == "https"
+            or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+            or os.getenv("SECURE_COOKIES", "false").lower() == "true"
+        )
+        response.set_cookie(
+            key="session_token",
+            value=new_session,
+            max_age=1800,
+            httponly=True,
+            samesite="lax",
+            secure=is_secure
+        )
+        response.set_cookie(
+            key="minha_token",
+            value=new_session,
+            max_age=1800,
+            httponly=True,
+            samesite="lax",
+            secure=is_secure
+        )
+        csrf_tok = generate_csrf_token()
+        response.set_cookie(
+            key="csrf_token",
+            value=csrf_tok,
+            max_age=1800,
+            httponly=False,
+            samesite="lax",
+            secure=is_secure
+        )
+        return {
+            "success": True,
+            "session_token": new_session,
+            "csrf_token": csrf_tok,
+            "user": res["user"]
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=401, detail=str(ve))
+
+
+@app.get("/api/auth/csrf-token")
+async def get_csrf_token_endpoint(request: Request, response: Response):
+    """
+    Generates a cryptographically signed HMAC-SHA256 CSRF token.
+    Sets readable 'csrf_token' cookie and returns token in JSON response.
+    """
+    token = generate_csrf_token()
+    is_secure = (
+        request.url.scheme == "https"
+        or request.headers.get("x-forwarded-proto") == "https"
+        or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+    )
+    response.set_cookie(
+        key="csrf_token",
+        value=token,
+        max_age=7200,
+        httponly=False,
+        samesite="lax",
+        secure=is_secure
+    )
+    return {"csrf_token": token}
 
 
 @app.post("/api/auth/forgot-password")

@@ -1,0 +1,147 @@
+/**
+ * EduAtlas Design System — pages.css
+ * Specific layouts for Home, Radar, Match Wizard, Profile, Community & News
+ */
+
+/* ===================================================================
+ * 1. HOME & HERO SECTION
+ * =================================================================== */
+.ea-hero-section {
+  position: relative;
+  padding: clamp(2.5rem, 2rem + 3vw, 5.5rem) 1rem clamp(2rem, 1.5rem + 2vw, 4rem);
+  text-align: center;
+  overflow: hidden;
+}
+
+.ea-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--ea-radius-full);
+  background-color: var(--ea-parchment-surface);
+  border: 1px solid var(--ea-parchment-border);
+  box-shadow: var(--ea-shadow-xs);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ea-clay-600);
+  margin-bottom: 1.5rem;
+}
+
+html.dark .ea-hero-badge {
+  color: var(--ea-clay-400);
+  background-color: var(--ea-parchment-subtle);
+  border-color: var(--ea-parchment-muted);
+}
+
+.ea-hero-title {
+  font-size: clamp(2.2rem, 1.8rem + 2vw, 3.75rem);
+  font-weight: 900;
+  color: var(--ea-text-primary);
+  line-height: 1.2;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.ea-hero-subtitle {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+  color: var(--ea-text-secondary);
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  line-height: 1.75;
+}
+
+/* ===================================================================
+ * 2. MATCH WIZARD STEPPER
+ * =================================================================== */
+.ea-wizard-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.ea-step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ea-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background-color: var(--ea-parchment-subtle);
+  color: var(--ea-text-dim);
+  border: 2px solid var(--ea-parchment-muted);
+  transition: all var(--ea-transition-base);
+}
+
+.ea-step-dot.active {
+  background-color: var(--ea-clay-600);
+  color: #FFFFFF;
+  border-color: var(--ea-clay-600);
+  box-shadow: 0 0 0 4px rgba(220, 104, 67, 0.2);
+}
+
+.ea-step-dot.completed {
+  background-color: var(--ea-forest-600);
+  color: #FFFFFF;
+  border-color: var(--ea-forest-600);
+}
+
+.ea-step-line {
+  flex: 1;
+  max-width: 60px;
+  height: 2px;
+  background-color: var(--ea-parchment-muted);
+}
+
+/* ===================================================================
+ * 3. ADMISSION PROBABILITY GAUGE CONTAINER
+ * =================================================================== */
+.ea-probability-container {
+  background: var(--ea-parchment-surface);
+  border: 1px solid var(--ea-parchment-border);
+  border-radius: var(--ea-radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--ea-shadow-md);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ea-probability-score-lg {
+  font-size: clamp(2rem, 1.8rem + 1vw, 2.75rem);
+  font-weight: 900;
+  color: var(--ea-clay-600);
+  line-height: 1;
+}
+
+html.dark .ea-probability-score-lg {
+  color: var(--ea-clay-400);
+}
+
+/* ===================================================================
+ * 4. COMMUNITY & NEWS DISCUSSIONS
+ * =================================================================== */
+.ea-discussion-card {
+  background: var(--ea-parchment-surface);
+  border: 1px solid var(--ea-parchment-border);
+  border-radius: var(--ea-radius-lg);
+  padding: 1.25rem;
+  transition: all var(--ea-transition-fast);
+}
+
+.ea-discussion-card:hover {
+  border-color: var(--ea-forest-400);
+  box-shadow: var(--ea-shadow-sm);
+}
+
+.ea-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ea-radius-full);
+  border: 2px solid var(--ea-parchment-border);
+  object-fit: cover;
+}

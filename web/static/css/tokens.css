@@ -1,0 +1,300 @@
+/**
+ * EduAtlas Design System — tokens.css
+ * Theme: «الباحث الدافئ — Warm Scholar»
+ * Supports Light Mode (Parchment & Forest) and Dark Mode (Deep Pine & Clay)
+ * Fully compatible with legacy ScholarPilot tokens (--sp-*) and EduAtlas tokens (--ea-*)
+ */
+
+:root {
+  /* ===================================================================
+   * 1. BRAND COLOR PALETTE (WARM SCHOLAR) — LIGHT MODE (DEFAULT PARCHMENT)
+   * =================================================================== */
+  
+  /* Primary: Forest Botanical & Sage (الوقار الأكاديمي) */
+  --ea-forest-900: #14291F;
+  --ea-forest-800: #193629;
+  --ea-forest-700: #1F4232;        /* Main Brand Headers & Core */
+  --ea-forest-600: #26533F;
+  --ea-forest-500: #2E654D;        /* Primary Accents & Active Tabs */
+  --ea-forest-400: #3E7E55;
+  --ea-forest-300: #5C9F76;
+  --ea-forest-200: #88C39F;
+  --ea-forest-100: #C2E3CF;
+  --ea-forest-50:  #E8F5EE;
+
+  /* Accent: Terracotta Clay (البوصلة التفاعلية ونقاط التحفيز) */
+  --ea-clay-900: #782F1D;
+  --ea-clay-800: #963B25;
+  --ea-clay-700: #B2462C;
+  --ea-clay-600: #C25438;          /* Primary CTA Button Base */
+  --ea-clay-500: #DC6843;          /* Interactive Hover & Glow */
+  --ea-clay-400: #E48364;
+  --ea-clay-300: #F0A993;
+  --ea-clay-200: #F7CEC2;
+  --ea-clay-100: #FDECE7;
+  --ea-clay-50:  #FEF6F3;
+
+  /* AI Copilot & Guidance: Warm Ochre (المستشار الدافئ) */
+  --ea-ochre-700: #9C572D;
+  --ea-ochre-600: #B86938;
+  --ea-ochre-500: #D98858;
+  --ea-ochre-400: #E6A279;
+  --ea-ochre-100: #FBEFE7;
+  --ea-ochre-50:  #FDF7F3;
+
+  /* Neutrals: Warm Parchment & Oat Cream (الورق المعتق المهدئ) */
+  --ea-parchment-canvas:  #F8F6F0; /* Clean Academic Parchment */
+  --ea-parchment-surface: #FFFFFF; /* Crisp Clean White Card */
+  --ea-parchment-subtle:  #EFECE2; /* Soft Sand Neutral Surface */
+  --ea-parchment-muted:   #E4DFC9; /* Subtle Borders & Dividers */
+  --ea-parchment-border:  #D5CEBA; /* Default Structural Border */
+
+  /* Text Contrast System (Light Mode - WCAG AAA 14:1) */
+  --ea-text-primary:   #18261E;   /* Deep Forest Ink */
+  --ea-text-secondary: #3D4F44;   /* Balanced Readability */
+  --ea-text-muted:     #677A6F;   /* Informational Subtext */
+  --ea-text-dim:       #8B9B91;   /* Tertiary & Placeholders */
+  --ea-text-inverse:   #FFFFFF;
+
+  /* Semantic Status Colors */
+  --ea-success-bg: rgba(62, 126, 85, 0.12);
+  --ea-success-border: rgba(62, 126, 85, 0.32);
+  --ea-success-text: #195237;
+
+  --ea-warning-bg: rgba(217, 119, 6, 0.12);
+  --ea-warning-border: rgba(217, 119, 6, 0.35);
+  --ea-warning-text: #B45309;
+
+  --ea-danger-bg: rgba(194, 65, 43, 0.12);
+  --ea-danger-border: rgba(194, 65, 43, 0.35);
+  --ea-danger-text: #B91C1C;
+
+  --ea-info-bg: rgba(46, 101, 77, 0.10);
+  --ea-info-border: rgba(46, 101, 77, 0.28);
+  --ea-info-text: #26533F;
+
+  --ea-ai-bg: rgba(217, 136, 88, 0.12);
+  --ea-ai-border: rgba(217, 136, 88, 0.32);
+  --ea-ai-text: #B86938;
+
+  /* Topographic Contour Strokes */
+  --ea-contour-stroke: rgba(31, 66, 50, 0.08);
+  --ea-contour-glow: rgba(220, 104, 67, 0.12);
+
+  /* Elevation & Shadows */
+  --ea-shadow-xs: 0 1px 2px 0 rgba(20, 41, 31, 0.04);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(20, 41, 31, 0.06);
+  --ea-shadow-md: 0 6px 14px -2px rgba(20, 41, 31, 0.08), 0 2px 6px -1px rgba(20, 41, 31, 0.04);
+  --ea-shadow-lg: 0 12px 24px -4px rgba(20, 41, 31, 0.10), 0 4px 8px -2px rgba(20, 41, 31, 0.05);
+  --ea-shadow-xl: 0 22px 35px -6px rgba(20, 41, 31, 0.12), 0 8px 12px -4px rgba(20, 41, 31, 0.06);
+
+  /* Border Radius */
+  --ea-radius-xs: 4px;
+  --ea-radius-sm: 8px;
+  --ea-radius-md: 12px;
+  --ea-radius-lg: 16px;
+  --ea-radius-xl: 22px;
+  --ea-radius-2xl: 28px;
+  --ea-radius-full: 9999px;
+
+  /* Spacing Grid (8pt System) */
+  --ea-space-1: 0.25rem;  /* 4px */
+  --ea-space-2: 0.5rem;   /* 8px */
+  --ea-space-3: 0.75rem;  /* 12px */
+  --ea-space-4: 1rem;     /* 16px */
+  --ea-space-5: 1.25rem;  /* 20px */
+  --ea-space-6: 1.5rem;   /* 24px */
+  --ea-space-8: 2rem;     /* 32px */
+  --ea-space-10: 2.5rem;  /* 40px */
+  --ea-space-12: 3rem;    /* 48px */
+  --ea-space-16: 4rem;    /* 64px */
+
+  /* Motion & Easing */
+  --ea-transition-fast: 150ms ease-out;
+  --ea-transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ea-transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ea-transition-spring: 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ===================================================================
+   * LEGACY COMPATIBILITY MAPPINGS (--sp-* & --ea-navy-*)
+   * Ensures 100% regression-free backward compatibility with all pages
+   * =================================================================== */
+  --sp-canvas: var(--ea-parchment-canvas);
+  --sp-surface: var(--ea-parchment-surface);
+  --sp-surface-raised: var(--ea-parchment-surface);
+  --sp-surface-subtle: var(--ea-parchment-subtle);
+  --sp-surface-hover: #ECE7DA;
+
+  --sp-border-subtle: var(--ea-parchment-muted);
+  --sp-border-default: var(--ea-parchment-border);
+  --sp-border-strong: #A89F87;
+  --sp-border-focus: var(--ea-clay-500);
+
+  --sp-text-primary: var(--ea-text-primary);
+  --sp-text-secondary: var(--ea-text-secondary);
+  --sp-text-muted: var(--ea-text-muted);
+  --sp-text-disabled: var(--ea-text-dim);
+  --sp-text-inverse: var(--ea-text-inverse);
+
+  --sp-royal-blue: var(--ea-clay-600);
+  --sp-royal-blue-hover: var(--ea-clay-500);
+  --sp-royal-blue-subtle: rgba(220, 104, 67, 0.12);
+
+  --sp-ai-violet: var(--ea-ochre-500);
+  --sp-ai-violet-hover: var(--ea-ochre-600);
+  --sp-ai-violet-subtle: rgba(217, 136, 88, 0.14);
+
+  --sp-emerald-match: #2E7D52;
+  --sp-emerald-subtle: rgba(46, 125, 82, 0.14);
+
+  --sp-amber-warning: #D97706;
+  --sp-amber-subtle: rgba(217, 119, 6, 0.14);
+
+  --sp-rose-danger: #C2412B;
+  --sp-rose-subtle: rgba(194, 65, 43, 0.14);
+
+  --sp-success-bg: var(--ea-success-bg);
+  --sp-success-border: var(--ea-success-border);
+  --sp-success-text: var(--ea-success-text);
+
+  --sp-warning-bg: var(--ea-warning-bg);
+  --sp-warning-border: var(--ea-warning-border);
+  --sp-warning-text: var(--ea-warning-text);
+
+  --sp-danger-bg: var(--ea-danger-bg);
+  --sp-danger-border: var(--ea-danger-border);
+  --sp-danger-text: var(--ea-danger-text);
+
+  --sp-info-bg: var(--ea-info-bg);
+  --sp-info-border: var(--ea-info-border);
+  --sp-info-text: var(--ea-info-text);
+
+  --sp-ai-bg: var(--ea-ai-bg);
+  --sp-ai-border: var(--ea-ai-border);
+  --sp-ai-text: var(--ea-ai-text);
+
+  --sp-radius-sm: var(--ea-radius-sm);
+  --sp-radius-md: var(--ea-radius-md);
+  --sp-radius-lg: var(--ea-radius-lg);
+  --sp-radius-xl: var(--ea-radius-xl);
+  --sp-radius-2xl: var(--ea-radius-2xl);
+  --sp-radius-full: var(--ea-radius-full);
+
+  --sp-shadow-xs: var(--ea-shadow-xs);
+  --sp-shadow-sm: var(--ea-shadow-sm);
+  --sp-shadow-md: var(--ea-shadow-md);
+  --sp-shadow-lg: var(--ea-shadow-lg);
+  --sp-shadow-xl: var(--ea-shadow-xl);
+}
+
+/* ===================================================================
+ * 2. DARK MODE — «OBSIDIAN FOREST & CLAY»
+ * =================================================================== */
+html.dark {
+  /* Surfaces */
+  --ea-parchment-canvas:  #0F1512; /* Deep Pine Obsidian */
+  --ea-parchment-surface: #18231C; /* Dark Forest Card Surface */
+  --ea-parchment-subtle:  #213027; /* Raised Elevated Sub-surface */
+  --ea-parchment-muted:   #2C4035; /* Borders & Separators */
+  --ea-parchment-border:  #3A5445; /* Defined Contours */
+
+  /* Text (Dark Mode - Contrast 15:1 AAA) */
+  --ea-text-primary:   #FAF7F0;   /* Clean Warm Starlight White */
+  --ea-text-secondary: #C8D6CD;   /* Soft Sage Subtitle */
+  --ea-text-muted:     #93A89B;   /* Dim Calm Details */
+  --ea-text-dim:       #647A6D;
+  --ea-text-inverse:   #0F1512;
+
+  /* Accents in Dark Mode */
+  --ea-forest-700: #2E654D;
+  --ea-forest-500: #428F6C;
+  --ea-clay-600:   #DC6843;        /* Bright Terracotta CTA */
+  --ea-clay-500:   #E87B57;
+  --ea-ochre-500:  #E6A279;
+
+  /* Status Colors */
+  --ea-success-bg: rgba(66, 178, 120, 0.18);
+  --ea-success-border: rgba(66, 178, 120, 0.40);
+  --ea-success-text: #6EE7B7;
+
+  --ea-warning-bg: rgba(245, 158, 11, 0.18);
+  --ea-warning-border: rgba(245, 158, 11, 0.40);
+  --ea-warning-text: #FCD34D;
+
+  --ea-danger-bg: rgba(239, 68, 68, 0.20);
+  --ea-danger-border: rgba(239, 68, 68, 0.42);
+  --ea-danger-text: #FCA5A5;
+
+  --ea-info-bg: rgba(66, 143, 108, 0.18);
+  --ea-info-border: rgba(66, 143, 108, 0.38);
+  --ea-info-text: #88C39F;
+
+  --ea-ai-bg: rgba(230, 162, 121, 0.18);
+  --ea-ai-border: rgba(230, 162, 121, 0.38);
+  --ea-ai-text: #F3C4A8;
+
+  --ea-contour-stroke: rgba(220, 104, 67, 0.14);
+  --ea-contour-glow: rgba(220, 104, 67, 0.22);
+
+  /* Shadows for Dark Mode */
+  --ea-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  --ea-shadow-md: 0 6px 14px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --ea-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.65), 0 4px 8px -2px rgba(0, 0, 0, 0.35);
+  --ea-shadow-xl: 0 22px 35px -6px rgba(0, 0, 0, 0.75), 0 8px 12px -4px rgba(0, 0, 0, 0.4);
+
+  /* Legacy dark mappings */
+  --sp-canvas: var(--ea-parchment-canvas);
+  --sp-surface: var(--ea-parchment-surface);
+  --sp-surface-raised: var(--ea-parchment-surface);
+  --sp-surface-subtle: var(--ea-parchment-subtle);
+  --sp-surface-hover: #293D32;
+
+  --sp-border-subtle: var(--ea-parchment-muted);
+  --sp-border-default: var(--ea-parchment-border);
+  --sp-border-strong: #4F705D;
+  --sp-border-focus: var(--ea-clay-500);
+
+  --sp-text-primary: var(--ea-text-primary);
+  --sp-text-secondary: var(--ea-text-secondary);
+  --sp-text-muted: var(--ea-text-muted);
+  --sp-text-disabled: var(--ea-text-dim);
+  --sp-text-inverse: var(--ea-text-inverse);
+
+  --sp-royal-blue: var(--ea-clay-600);
+  --sp-royal-blue-hover: var(--ea-clay-500);
+  --sp-royal-blue-subtle: rgba(220, 104, 67, 0.22);
+
+  --sp-ai-violet: var(--ea-ochre-500);
+  --sp-ai-violet-hover: var(--ea-ochre-600);
+  --sp-ai-violet-subtle: rgba(230, 162, 121, 0.24);
+
+  --sp-emerald-match: #42B278;
+  --sp-emerald-subtle: rgba(66, 178, 120, 0.22);
+
+  --sp-amber-warning: #F59E0B;
+  --sp-amber-subtle: rgba(245, 158, 11, 0.22);
+
+  --sp-rose-danger: #EF4444;
+  --sp-rose-subtle: rgba(239, 68, 68, 0.24);
+
+  --sp-success-bg: var(--ea-success-bg);
+  --sp-success-border: var(--ea-success-border);
+  --sp-success-text: var(--ea-success-text);
+
+  --sp-warning-bg: var(--ea-warning-bg);
+  --sp-warning-border: var(--ea-warning-border);
+  --sp-warning-text: var(--ea-warning-text);
+
+  --sp-danger-bg: var(--ea-danger-bg);
+  --sp-danger-border: var(--ea-danger-border);
+  --sp-danger-text: var(--ea-danger-text);
+
+  --sp-info-bg: var(--ea-info-bg);
+  --sp-info-border: var(--ea-info-border);
+  --sp-info-text: var(--ea-info-text);
+
+  --sp-ai-bg: var(--ea-ai-bg);
+  --sp-ai-border: var(--ea-ai-border);
+  --sp-ai-text: var(--ea-ai-text);
+}

@@ -543,17 +543,68 @@ def compute_dummy_pbkdf2(password: str):
 
 
 # ==============================================================================
-# 3. SECURE SESSION TOKENS
+# 3. SECURE SESSION MANAGEMENT, REFRESH TOKENS & REVOCATION
 # ==============================================================================
 
-def create_session_token(email: str, role: str = "student", expires_in_seconds: int = 7 * 86400) -> str:
-    """Generates a cryptographically signed HMAC-SHA256 session token."""
+# Thread-safe in-memory revocation store to immediately invalidate logged-out tokens
+_revoked_tokens: Dict[str, float] = {}
+_revocation_lock = threading.Lock()
+
+def revoke_token(token: Optional[str]) -> bool:
+    """
+    Revokes a session or refresh token by recording its signature hash with expiration.
+    Why: Prevents replay attacks where a copied token remains valid after user logout.
+    """
+    if not token or "." not in token:
+        return False
+    parts = token.split(".")
+    sig = parts[-1]
+    # Extract expiration if possible to keep blacklist memory minimal
+    token_hash = hashlib.sha256(sig.encode("utf-8")).hexdigest()
+    payload = verify_session_token(token) or verify_refresh_token(token)
+    exp = payload.get("exp", time.time() + 1800) if payload else (time.time() + 1800)
+    with _revocation_lock:
+        _revoked_tokens[token_hash] = exp
+        # Sweep expired entries to prevent memory accumulation
+        now = time.time()
+        expired = [k for k, v in _revoked_tokens.items() if v < now]
+        for k in expired:
+            _revoked_tokens.pop(k, None)
+    return True
+
+def is_token_revoked(token: Optional[str]) -> bool:
+    """
+    Checks whether a token's signature has been explicitly invalidated upon logout.
+    Why: Ensures stateless HMAC tokens respect server-side session termination.
+    """
+    if not token or "." not in token:
+        return False
+    parts = token.split(".")
+    sig = parts[-1]
+    token_hash = hashlib.sha256(sig.encode("utf-8")).hexdigest()
+    with _revocation_lock:
+        exp = _revoked_tokens.get(token_hash)
+        if exp is not None:
+            if time.time() > exp:
+                _revoked_tokens.pop(token_hash, None)
+                return False
+            return True
+    return False
+
+def create_session_token(email: str, role: str = "student", expires_in_seconds: int = 1800) -> str:
+    """
+    Generates a cryptographically signed HMAC-SHA256 session token.
+    Why: Max lifespan is strictly capped at 30 minutes (1800s) to minimize window of vulnerability if intercepted.
+    Uses high-entropy secrets.token_urlsafe(32) nonce to guarantee unique nonces and thwart precomputation.
+    """
+    safe_expiry = min(expires_in_seconds, 1800)
     payload = {
         "email": email.strip().lower(),
         "role": role,
+        "purpose": "session",
         "iat": int(time.time()),
-        "exp": int(time.time()) + expires_in_seconds,
-        "nonce": secrets.token_hex(8)
+        "exp": int(time.time()) + safe_expiry,
+        "nonce": secrets.token_urlsafe(32)
     }
     payload_json = json.dumps(payload, separators=(',', ':'))
     payload_b64 = base64.urlsafe_b64encode(payload_json.encode("utf-8")).decode("utf-8").rstrip("=")
@@ -566,10 +617,15 @@ def create_session_token(email: str, role: str = "student", expires_in_seconds: 
 
     return f"{payload_b64}.{signature}"
 
-
 def verify_session_token(token: Optional[str]) -> Optional[Dict[str, Any]]:
-    """Verifies HMAC signature and expiration."""
+    """
+    Verifies HMAC signature, session purpose, revocation status, and expiration.
+    Why: Thwarts token tampering, ensures revoked tokens fail immediately, and enforces 30m window.
+    """
     if not token or "." not in token:
+        return None
+
+    if is_token_revoked(token):
         return None
 
     try:
@@ -591,12 +647,120 @@ def verify_session_token(token: Optional[str]) -> Optional[Dict[str, Any]]:
         payload_json = base64.urlsafe_b64decode((payload_b64 + padding).encode("utf-8")).decode("utf-8")
         payload = json.loads(payload_json)
 
+        # Allow legacy tokens without purpose or explicitly marked session
+        purpose = payload.get("purpose")
+        if purpose and purpose != "session":
+            return None
+
         if time.time() > payload.get("exp", 0):
             return None
 
         return payload
     except Exception:
         return None
+
+def create_refresh_token(email: str, role: str = "student", expires_in_seconds: int = 7 * 86400) -> str:
+    """
+    Generates a cryptographically signed HMAC-SHA256 refresh token.
+    Why: Allows long-lived session renewal without storing user credentials in the browser or re-prompting.
+    """
+    payload = {
+        "email": email.strip().lower(),
+        "role": role,
+        "purpose": "refresh",
+        "iat": int(time.time()),
+        "exp": int(time.time()) + expires_in_seconds,
+        "nonce": secrets.token_urlsafe(32)
+    }
+    payload_json = json.dumps(payload, separators=(',', ':'))
+    payload_b64 = base64.urlsafe_b64encode(payload_json.encode("utf-8")).decode("utf-8").rstrip("=")
+
+    signature = hmac.new(
+        APP_SECRET_KEY.encode("utf-8"),
+        payload_b64.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
+
+    return f"{payload_b64}.{signature}"
+
+def verify_refresh_token(token: Optional[str]) -> Optional[Dict[str, Any]]:
+    """
+    Verifies HMAC signature, purpose=='refresh', revocation status, and expiration.
+    Why: Guards the session renewal pipeline against unauthorized elevation or expired refresh tokens.
+    """
+    if not token or "." not in token:
+        return None
+
+    if is_token_revoked(token):
+        return None
+
+    try:
+        parts = token.split(".")
+        if len(parts) != 2:
+            return None
+        payload_b64, signature = parts
+
+        expected_sig = hmac.new(
+            APP_SECRET_KEY.encode("utf-8"),
+            payload_b64.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not secrets.compare_digest(signature, expected_sig):
+            return None
+
+        padding = "=" * (-len(payload_b64) % 4)
+        payload_json = base64.urlsafe_b64decode((payload_b64 + padding).encode("utf-8")).decode("utf-8")
+        payload = json.loads(payload_json)
+
+        if payload.get("purpose") != "refresh":
+            return None
+
+        if time.time() > payload.get("exp", 0):
+            return None
+
+        return payload
+    except Exception:
+        return None
+
+# ==============================================================================
+# CSRF PROTECTION UTILITIES
+# ==============================================================================
+
+def generate_csrf_token(session_nonce: Optional[str] = None) -> str:
+    """
+    Generates an HMAC-SHA256 signed CSRF token with a timestamp.
+    Why: Defends state-changing requests against Cross-Site Request Forgery without requiring external DB lookups.
+    """
+    ts = int(time.time())
+    nonce = session_nonce or secrets.token_urlsafe(16)
+    raw = f"{ts}:{nonce}"
+    sig = hmac.new(APP_SECRET_KEY.encode("utf-8"), raw.encode("utf-8"), hashlib.sha256).hexdigest()
+    token_b64 = base64.urlsafe_b64encode(f"{raw}:{sig}".encode("utf-8")).decode("utf-8").rstrip("=")
+    return token_b64
+
+def verify_csrf_token(csrf_token: Optional[str], max_age_seconds: int = 7200) -> bool:
+    """
+    Verifies that a CSRF token has a valid HMAC-SHA256 signature and has not expired.
+    Why: Ensures the token was minted by this server within the allowed validity window (default 2h).
+    """
+    if not csrf_token or not isinstance(csrf_token, str):
+        return False
+    try:
+        padding = "=" * (-len(csrf_token) % 4)
+        decoded = base64.urlsafe_b64decode((csrf_token + padding).encode("utf-8")).decode("utf-8")
+        parts = decoded.split(":")
+        if len(parts) != 3:
+            return False
+        ts_str, nonce, signature = parts
+        ts = int(ts_str)
+        if time.time() - ts > max_age_seconds or time.time() < (ts - 60):
+            return False
+        raw = f"{ts}:{nonce}"
+        expected_sig = hmac.new(APP_SECRET_KEY.encode("utf-8"), raw.encode("utf-8"), hashlib.sha256).hexdigest()
+        return secrets.compare_digest(signature, expected_sig)
+    except Exception:
+        return False
 
 def create_email_verification_token(email: str, expires_in_seconds: int = 172800) -> str:
     """Generates a cryptographically signed HMAC-SHA256 email verification token (48 hours)."""
@@ -664,14 +828,15 @@ class SecurityRateLimiter:
         self._check_counter: int = 0
 
         self.LIMITS = {
-            "auth": (10, 60),
+            "login": (5, 60),      # Strict 5/min limit for authentication to prevent brute force
+            "auth": (10, 60),      # 10/min for registration & password reset
             "advisor": (25, 60),
             "radar_scan": (15, 60),
             "document_generation": (10, 60),
             "subscribe": (6, 60),
             "upload": (10, 60),
             "community": (20, 60),
-            "general": (150, 60),
+            "general": (60, 60),   # 60/min for general public API endpoints
         }
         self._daily_advisor_quotas: Dict[str, int] = {}
         self.DAILY_ADVISOR_LIMIT: int = 10
@@ -844,16 +1009,34 @@ class SecurityRateLimiter:
             self._hourly_generations[clean_id] = history
 
 
+def log_security_event(event_type: str, email: str, ip: str, status: str, details: Optional[Dict[str, Any]] = None):
+    """
+    Structured JSON audit logger for security events (login, logout, lockout, token revocation, CSRF).
+    Eliminates plaintext password/secret logging while maintaining enterprise compliance.
+    """
+    clean_email = (email or "anonymous").strip().lower()
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "event": event_type,
+        "email": clean_email,
+        "ip": ip or "127.0.0.1",
+        "status": status,
+        "details": details or {}
+    }
+    logger.info(f"AUDIT_SECURITY_LOG: {json.dumps(entry, ensure_ascii=False)}")
+
+
 def verify_cron_secret(provided_secret: Optional[str]) -> bool:
     """
     Verifies that the provided secret matches CRON_SECRET using constant-time comparison.
     Defends against timing side-channel attacks on webhook and cron endpoints.
+    Eliminates hardcoded fallback strings; requires explicit CRON_SECRET or APP_SECRET_KEY.
     """
     if not provided_secret:
         return False
     expected = os.getenv("CRON_SECRET")
     candidates = [expected] if expected else []
-    candidates.extend([APP_SECRET_KEY, "scholarpilot-cron-secret-2026", "scholarpilot_cron_secret"])
+    candidates.append(APP_SECRET_KEY)
     for cand in candidates:
         if cand and secrets.compare_digest(provided_secret.strip(), cand.strip()):
             return True
@@ -1147,9 +1330,7 @@ def validate_uploaded_image(filename: str, content_bytes: bytes, max_size_mb: in
         final_filename = f"{stem[:20]}_{uuid.uuid4().hex[:10]}{final_ext}"
         return final_filename, content_type, clean_bytes
     except Exception as img_err:
-        logger.warning(f"PIL verification warning: {img_err}")
-        content_type = "image/jpeg" if ext in [".jpg", ".jpeg"] else f"image/{ext.replace('.', '')}"
-        stem = re.sub(r"[^a-zA-Z0-9_-]", "", os.path.splitext(safe_name)[0]) or "img"
-        final_filename = f"{stem[:20]}_{uuid.uuid4().hex[:10]}{ext}"
-        return final_filename, content_type, content_bytes
+        logger.warning(f"PIL verification failed: {img_err}")
+        # Fail hard: do not allow unverified raw bytes to bypass image validation
+        raise ValueError(f"فشل التحقق من بنية الصورة المرفوعة أو أنها تالفة: {img_err}")
 
