@@ -61,7 +61,6 @@
                 }
             }
         }
-        }
     </script>
 
     <!-- Google Fonts -->
@@ -148,9 +147,9 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#130E26] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
                     </div>
-                    <span class="text-[10px] text-[#A5B4FC] dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
+                    <span class="text-[10px] text-slate-600 dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
                 </div>
             </a>
 
@@ -207,7 +206,7 @@
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
                 <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-blue-500 transition shadow-xs">
-                    <i data-lucide="user" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                    <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
 
@@ -275,7 +274,7 @@
                         <!-- User Info -->
                         <div>
                             <h2 id="sideFullName" class="text-sm font-bold text-slate-900 dark:text-white leading-snug">زائر المجتمع</h2>
-                            <p id="sideHandle" class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-medium">@guest</p>
+                            <p id="sideHandle" class="text-[11px] text-purple-700 dark:text-purple-400 font-mono font-medium">@guest</p>
                         </div>
 
                         <p id="sideUniversity" class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 flex items-center gap-1">
@@ -553,7 +552,7 @@
                     </div>
 
                     <!-- Active Filter Pill Indicator -->
-                    <div id="activeFilterBanner" class="hidden flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-600 dark:text-blue-400">
+                    <div id="activeFilterBanner" class="hidden flex items-center justify-between px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/25 text-xs text-purple-700 dark:text-purple-400">
                         <span id="activeFilterLabel" class="font-bold flex items-center gap-1.5">
                             <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                             <span>تصفية نشطة</span>
@@ -617,7 +616,7 @@
                                     <p class="text-[10px] text-slate-400 truncate">TUM ميونخ / منحة DAAD</p>
                                 </div>
                             </a>
-                            <button type="button" onclick="togglePeerFollow('ahmad-tum', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
+                            <button type="button" onclick="togglePeerFollow('ahmad-tum', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
                         </div>
                         <!-- Peer 2 -->
                         <div class="flex items-center justify-between gap-2.5">
@@ -628,7 +627,7 @@
                                     <p class="text-[10px] text-slate-400 truncate">Oxford / تشيفنينغ</p>
                                 </div>
                             </a>
-                            <button type="button" onclick="togglePeerFollow('mariam-oxford', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
+                            <button type="button" onclick="togglePeerFollow('mariam-oxford', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
                         </div>
                         <!-- Peer 3 -->
                         <div class="flex items-center justify-between gap-2.5">
@@ -639,7 +638,7 @@
                                     <p class="text-[10px] text-slate-400 truncate">ETH Zurich / ذكاء اصطناعي</p>
                                 </div>
                             </a>
-                            <button type="button" onclick="togglePeerFollow('dr-nour', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
+                            <button type="button" onclick="togglePeerFollow('dr-nour', this)" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0">متابعة</button>
                         </div>
                     </div>
                 </div>
@@ -1000,7 +999,7 @@
             if (currentUser && !isOwner) {
                 const isFollowed = p.author_is_followed_by_me;
                 followBtnHtml = `
-                    <button type="button" onclick="togglePeerFollow('${escapeHtml(p.author_username)}', this)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isFollowed ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300' : 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50'} hover:bg-blue-600 hover:text-white transition shrink-0">
+                    <button type="button" onclick="togglePeerFollow('${escapeHtml(p.author_username)}', this)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isFollowed ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300' : 'bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 border border-blue-200 dark:border-blue-900/50'} hover:bg-blue-600 hover:text-white transition shrink-0">
                         ${isFollowed ? 'أتابعه' : 'متابعة'}
                     </button>
                 `;
@@ -1600,7 +1599,7 @@
                             showToast(`بدأت بمتابعة نشاط @${targetUsername}`, 'success');
                         } else {
                             btn.textContent = 'متابعة';
-                            btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0';
+                            btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 border border-blue-200 dark:border-blue-900/50 hover:bg-blue-600 hover:text-white transition shrink-0';
                             showToast(`ألغيت متابعة @${targetUsername}`, 'info');
                         }
                     }

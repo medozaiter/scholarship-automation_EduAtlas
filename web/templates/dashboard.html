@@ -60,7 +60,6 @@
                 }
             }
         }
-        }
     </script>
 
     <!-- Google Fonts -->
@@ -108,9 +107,9 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#130E26] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
                     </div>
-                    <span class="text-[10px] text-[#A5B4FC] dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
+                    <span class="text-[10px] text-slate-600 dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
                 </div>
             </a>
 
@@ -166,8 +165,8 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl transition shadow-xs">
-                    <i data-lucide="user" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 rounded-xl transition shadow-xs">
+                    <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
 
@@ -220,7 +219,7 @@
                 
                 <!-- Tab Controls -->
                 <div class="flex border-b border-slate-200 dark:border-slate-800 text-xs font-bold mb-6 gap-3 pb-2">
-                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5">
+                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5">
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         <span>تسجيل الدخول</span>
                     </button>
@@ -260,7 +259,7 @@
                             <input type="checkbox" id="loginRememberMe" class="rounded border-slate-700 text-blue-600 focus:ring-blue-500">
                             <span>تذكرني على هذا الجهاز (30 يوماً)</span>
                         </label>
-                        <button type="button" onclick="openForgotPasswordModal()" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                        <button type="button" onclick="openForgotPasswordModal()" class="text-purple-700 dark:text-purple-400 font-bold hover:underline">
                             نسيت كلمة المرور؟
                         </button>
                     </div>
@@ -379,7 +378,7 @@
                             <span id="userDisplayName">...</span>
                         </h1>
                         <div class="flex flex-wrap items-center gap-2 mt-2">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-600 dark:text-blue-400 font-latin shadow-sm">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-500/10 border border-purple-500/25 text-xs font-bold text-purple-700 dark:text-purple-400 font-latin shadow-sm">
                                 <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-500"></i>
                                 <span id="userDisplayEmail">user@example.com</span>
                             </span>
@@ -418,11 +417,11 @@
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">مؤشر اكتمال الهوية والملف الأكاديمي</h3>
                                 <span id="completenessBadgeText" class="sp-badge sp-badge-info text-[10px]">ملف قيد الإعداد</span>
                             </div>
-                            <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">الملفات الأكثر اكتمالاً تحصل على ترشيحات منح أدق وأسرع</p>
+                            <p class="text-xs text-purple-700 dark:text-purple-400 font-semibold mt-0.5">الملفات الأكثر اكتمالاً تحصل على ترشيحات منح أدق وأسرع</p>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2 font-latin font-black text-xl text-blue-600 dark:text-blue-400">
+                    <div class="flex items-center gap-2 font-latin font-black text-xl text-purple-700 dark:text-purple-400">
                         <span id="completenessNum">0%</span>
                     </div>
                 </div>
@@ -441,7 +440,7 @@
 
             <!-- NAVIGATION TABS -->
             <div class="flex border-b border-slate-200 dark:border-slate-800 gap-2 sm:gap-4 overflow-x-auto pb-1 text-xs sm:text-sm font-bold">
-                <button type="button" id="tabProfileNav" onclick="switchMainTab('profile')" class="tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                <button type="button" id="tabProfileNav" onclick="switchMainTab('profile')" class="tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-purple-700 dark:text-purple-400 flex items-center gap-2">
                     <i data-lucide="user" class="w-4 h-4"></i>
                     <span>الملف الأكاديمي والهوية</span>
                 </button>
@@ -461,7 +460,7 @@
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>إعدادات الحساب والأمان</span>
                 </button>
-                <button type="button" onclick="DashboardApp.openSopStudio()" class="tab-btn px-4 py-2.5 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 flex items-center gap-1.5 mr-auto">
+                <button type="button" onclick="DashboardApp.openSopStudio()" class="tab-btn px-4 py-2.5 rounded-xl text-purple-700 dark:text-purple-400 hover:bg-blue-500/10 flex items-center gap-1.5 mr-auto">
                     <i data-lucide="file-pen" class="w-4 h-4"></i>
                     <span>استوديو الوثائق (SOP)</span>
                 </button>
@@ -728,7 +727,7 @@
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">محرك رادار الفرص الأكاديمية المباشر</span>
+                            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">محرك رادار الفرص الأكاديمية المباشر</span>
                         </div>
                         <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                             <i data-lucide="radar" class="w-5 h-5 text-blue-500"></i>
@@ -759,7 +758,7 @@
                         <!-- Open SOP Studio button -->
                         <button type="button" 
                                 onclick="DashboardApp.openSopStudio()" 
-                                class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400 shadow-xs hover:border-blue-500/50">
+                                class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-400 shadow-xs hover:border-blue-500/50">
                             <i data-lucide="file-pen" class="w-3.5 h-3.5"></i>
                             <span>استوديو الوثائق (SOP)</span>
                         </button>
@@ -797,7 +796,7 @@
                             <span class="text-xs text-slate-400 font-bold block">المعدل الأكاديمي</span>
                             <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
                         </div>
-                        <span id="statGpa" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-latin tabular-nums block">-</span>
+                        <span id="statGpa" class="text-base font-extrabold text-emerald-700 dark:text-emerald-400 font-latin tabular-nums block">-</span>
                     </div>
 
                     <div class="sp-card p-5">
@@ -805,7 +804,7 @@
                             <span class="text-xs text-slate-400 font-bold block">التخصص الأكاديمي</span>
                             <i data-lucide="cpu" class="w-4 h-4 text-indigo-500"></i>
                         </div>
-                        <span id="statMajor" class="text-base font-extrabold text-blue-600 dark:text-blue-400 block">-</span>
+                        <span id="statMajor" class="text-base font-extrabold text-purple-700 dark:text-purple-400 block">-</span>
                     </div>
 
                     <div class="sp-card p-5">
@@ -861,7 +860,7 @@
                                     <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                                     <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">تم الرصد (Matched)</h3>
                                 </div>
-                                <span id="colCount-matched" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">0</span>
+                                <span id="colCount-matched" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/10 text-purple-700 dark:text-purple-400">0</span>
                             </div>
                             <div id="kanbanCards-matched" class="space-y-3 flex-1"></div>
                         </div>
@@ -900,7 +899,7 @@
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                                     <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">النتيجة (Decision)</h3>
                                 </div>
-                                <span id="colCount-decided" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">0</span>
+                                <span id="colCount-decided" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">0</span>
                             </div>
                             <div id="kanbanCards-decided" class="space-y-3 flex-1"></div>
                         </div>
@@ -970,7 +969,7 @@
                             <p class="text-xs text-slate-400 mt-0.5">آخر الفرص المكتشفة وتذكيرات المواعيد المطابقة لملفك الأكاديمي.</p>
                         </div>
 
-                        <a href="/notifications" class="sp-btn-secondary px-3 py-1.5 text-xs font-semibold self-start sm:self-auto flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                        <a href="/notifications" class="sp-btn-secondary px-3 py-1.5 text-xs font-semibold self-start sm:self-auto flex items-center gap-1.5 text-purple-700 dark:text-purple-400">
                             <span>فتح مركز الإشعارات بالكامل</span>
                             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                         </a>
@@ -1151,7 +1150,7 @@
 
             <!-- Step 2: Enter Token & New Password -->
             <div id="forgotStep2" class="hidden space-y-3">
-                <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] text-blue-400">
+                <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/25 text-[11px] text-blue-400">
                     تم إرسال رمز الاستعادة إلى بريدك! يرجى إدخال الرمز وكلمة المرور الجديدة:
                 </div>
                 <div>
@@ -1237,10 +1236,10 @@
             document.getElementById('regForm').classList.toggle('hidden', isLogin);
             
             document.getElementById('tabLoginBtn').className = isLogin 
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
+                ? "text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
                 : "text-slate-400 hover:text-slate-200 pb-2 flex-1 text-center flex items-center justify-center gap-1.5";
             document.getElementById('tabRegBtn').className = !isLogin 
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
+                ? "text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
                 : "text-slate-400 hover:text-slate-200 pb-2 flex-1 text-center flex items-center justify-center gap-1.5";
             if (window.lucide) lucide.createIcons();
         }
@@ -1256,7 +1255,7 @@
                 const content = document.getElementById(`tabContent${capitalize(t)}`);
                 if (navBtn && content) {
                     if (t === tab) {
-                        navBtn.className = "tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center gap-2 font-bold";
+                        navBtn.className = "tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-purple-700 dark:text-purple-400 flex items-center gap-2 font-bold";
                         content.classList.remove('hidden');
                     } else {
                         navBtn.className = "tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2 font-bold";
@@ -1563,7 +1562,7 @@
                 missing.forEach(m => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'px-3 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition flex items-center gap-1';
+                    btn.className = 'px-3 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 text-xs font-semibold text-purple-900 dark:text-purple-300 hover:bg-blue-500/20 transition flex items-center gap-1';
                     btn.innerHTML = `<i data-lucide="plus" class="w-3 h-3"></i><span>${escapeHTML(m.text)}</span>`;
                     btn.onclick = () => {
                         switchMainTab('profile');
@@ -1866,7 +1865,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 space-y-1.5">
-                                <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs">
+                                <div class="flex items-center gap-2 text-purple-700 dark:text-purple-400 font-bold text-xs">
                                     <span class="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center text-[11px] font-latin">1</span>
                                     <span>استكشف رادار المنح</span>
                                 </div>
@@ -1876,7 +1875,7 @@
                             </div>
 
                             <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 space-y-1.5">
-                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                                <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
                                     <span class="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center text-[11px] font-latin">2</span>
                                     <span>احفظ الفرص المهتم بها</span>
                                 </div>
@@ -1909,7 +1908,7 @@
                 list.innerHTML = saved.map((s, idx) => `
                     <div class="flex justify-between items-center p-4 rounded-xl sp-subcard text-xs">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold font-latin">#${idx+1}</span>
+                            <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold font-latin">#${idx+1}</span>
                             <span class="font-bold text-slate-900 dark:text-white text-sm">${escapeHTML(s)}</span>
                         </div>
                         <span class="sp-badge sp-badge-success">
@@ -2553,7 +2552,7 @@
                                                 <p class="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5 line-clamp-2">${escapeHTML(n.message)}</p>
                                             </div>
                                         </div>
-                                        ${n.link ? `<a href="${n.link}" target="_blank" class="shrink-0 text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1"><span>فتح</span><i data-lucide="external-link" class="w-3 h-3"></i></a>` : ''}
+                                        ${n.link ? `<a href="${n.link}" target="_blank" class="shrink-0 text-purple-700 dark:text-purple-400 font-bold hover:underline flex items-center gap-1"><span>فتح</span><i data-lucide="external-link" class="w-3 h-3"></i></a>` : ''}
                                     </div>
                                 `;
                             }).join('');
