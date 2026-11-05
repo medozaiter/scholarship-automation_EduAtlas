@@ -1,0 +1,9 @@
+[
+  {
+    "user_id": "test_hardening_user@eduatlas.com",
+    "scholarship_hash": "hash_abc_123_test_unique",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T19:46:36.649755",
+    "scholarship_name": "Test Scholarship"
+  }
+]

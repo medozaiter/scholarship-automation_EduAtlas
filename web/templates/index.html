@@ -5,16 +5,16 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduAtlas | أطلس الفرص الأكاديمية العالمية</title>
-    <meta name="description" content="EduAtlas - أطلس الفرص الأكاديمية العالمية. نظام الملاحة الكارتوغرافي لاكتشاف وقبول كبرى المنح والجامعات الدولية، رسم مسارات العبور الأكاديمية، والتنبيهات الميدانية المباشرة.">
+    <title>ScholarPilot AI | رادار واقتناص المنح الدراسية العالمية</title>
+    <meta name="description" content="ScholarPilot AI - نظام الملاحة والرادار الأكاديمي الذكي لاقتناص كبرى المنح والجامعات الدولية، ومستشارك الآلي المتقدم لصياغة وتدقيق خطابات القبول.">
 
             <!-- Official EduAtlas Compass Favicon & Brand Icons -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316324F'/><circle cx='50' cy='50' r='38' stroke='%23B99050' stroke-width='3' stroke-dasharray='4 4' fill='none'/><circle cx='50' cy='50' r='30' stroke='%23F4F1EA' stroke-opacity='0.25' stroke-width='2' fill='none'/><polygon points='50,16 61,50 50,44 39,50' fill='%23C86446'/><polygon points='50,84 61,50 50,56 39,50' fill='%23F4F1EA'/><circle cx='50' cy='50' r='6' fill='%23B99050'/></svg>">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png?v=6">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png?v=6">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png?v=6">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20261105b">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png?v=20261105b">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png?v=20261105b">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=20261105b">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png?v=20261105b">
 
     
 
@@ -31,12 +31,22 @@
                         brand: {
                             50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
                             400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
-                            800: '#1e40af', 900: '#1e3a8a', 950: '#0f172a'
-                        }
+                            800: '#1e40af', 900: '#1e3a8a', 950: '#0b1120'
+                        },
+                        deepSlate: '#0B1120',
+                        midnight: '#111827',
+                        cardSurface: '#1E293B',
+                        subtleBorder: '#334155',
+                        royalBlue: '#2563EB',
+                        aiViolet: '#7C3AED',
+                        emeraldMatch: '#10B981',
+                        amberWarning: '#F59E0B',
+                        roseDanger: '#EF4444'
                     },
                     fontFamily: {
-                        sans: ['Tajawal', 'Cairo', 'Inter', 'sans-serif'],
-                        mono: ['Inter', 'Plus Jakarta Sans', 'monospace']
+                        sans: ['Cairo', 'IBM Plex Sans Arabic', 'Tajawal', 'sans-serif'],
+                        latin: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Inter', 'monospace']
                     }
                 }
             }
@@ -46,7 +56,7 @@
     <!-- Google Fonts: Inter, Plus Jakarta Sans, Tajawal, Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Production Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
@@ -76,27 +86,22 @@
     <header class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-950/85 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             
-            <!-- Brand Logo: EduAtlas Cartographic Compass -->
+            <!-- Brand Logo: ScholarPilot AI Academic Horizon Compass -->
             <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-[#16324F] dark:bg-[#0D1F31] border border-[#B99050]/30 flex items-center justify-center text-white shadow-md shadow-[#16324F]/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
-                    <svg class="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 40 40" fill="none" stroke="#F4F1EA" stroke-width="0.8">
-                        <circle cx="20" cy="20" r="17"/>
-                        <path d="M5 20 Q12 12 20 12 T35 20"/>
-                        <path d="M5 28 Q12 22 20 22 T35 28"/>
-                    </svg>
-                    <svg class="w-6 h-6 relative z-10" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="9" stroke="#B99050" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
-                        <polygon points="12,4 14.5,12 12,10.5 9.5,12" fill="#C86446"/>
-                        <polygon points="12,20 14.5,12 12,13.5 9.5,12" fill="#F4F1EA" fill-opacity="0.85"/>
-                        <circle cx="12" cy="12" r="1.5" fill="#B99050"/>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 border border-blue-400/30 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="#93C5FD" stroke-width="1.4" stroke-dasharray="2 3"/>
+                        <polygon points="12,4 15,12 12,10 9,12" fill="#60A5FA"/>
+                        <polygon points="12,20 15,12 12,14 9,12" fill="#FFFFFF" fill-opacity="0.9"/>
+                        <circle cx="12" cy="12" r="1.6" fill="#F59E0B"/>
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#16324F] dark:text-white leading-none">Edu<span class="text-[#C86446] dark:text-[#E07A5F]">Atlas</span></span>
-                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F4D3A]/10 text-[#1F4D3A] dark:bg-[#1F4D3A]/30 dark:text-[#52B788] border border-[#1F4D3A]/20">أطلس المنح</span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none font-latin">Scholar<span class="text-blue-600 dark:text-blue-400">Pilot</span></span>
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-500/20">AI</span>
                     </div>
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">أطلس الفرص الأكاديمية العالمية</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">رادار الملاحة واقتناص المنح الدولية</span>
                 </div>
             </a>
 
@@ -637,240 +642,406 @@
         </div>
     </section>
 
-    <!-- ==================== ADMISSION PREDICTOR & WEEKLY SUBSCRIPTION ==================== -->
+    <!-- ==================== ADMISSION PREDICTOR & 4-STEP ONBOARDING WIZARD ==================== -->
     <section id="matchSection" class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <div class="text-center space-y-3">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-600 dark:text-blue-400">
-                    <i data-lucide="mail-check" class="w-4 h-4"></i>
-                    <span>خدمة تنبيهات المنح المؤتمتة (مجاناً 100%)</span>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-600 dark:text-blue-400">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-purple-500"></i>
+                    <span>نظام مطابقة الفرص الذكي (Explainable AI Match)</span>
                 </div>
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    حاسبة القبول والتنبيهات المخصصة
+                    معالج إعداد الملف الأكاديمي ورادار القبول
                 </h2>
                 <p class="text-xs sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
-                    أدخل بياناتك الأكاديمية لحساب فرصتك وتفعيل إرسال المنح المطابقة مباشرة إلى إيميلك.
+                    أكمل خطوات المعالج الأربع لاحتساب فرصة قبولك بدقة وتفعيل رصد المنح المطابقة مباشرة لبريدك.
                 </p>
             </div>
 
-            <!-- Form Card -->
-            <div class="sp-card p-6 sm:p-8 space-y-6">
-                
-                <!-- Subscription Explanation Callout -->
-                <div class="sp-subcard p-4 sm:p-5 rounded-xl border border-blue-500/30 bg-blue-500/5 space-y-1.5">
-                    <div class="flex items-center gap-2 font-bold text-xs sm:text-sm text-blue-600 dark:text-blue-400">
-                        <i data-lucide="bell-ring" class="w-4 h-4 shrink-0"></i>
-                        <span>كيف تستفيد من هذه الخدمة؟</span>
+            <!-- Profile Completeness Meter -->
+            <div class="sp-card p-4 sm:p-5 border border-blue-500/30 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-transparent space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                            <i data-lucide="gauge" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">مؤشر اكتمال الملف الأكاديمي:</span>
+                                <span id="completenessScoreBadge" class="sp-badge sp-badge-emerald font-mono font-bold text-xs">25% مكتمل</span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400">كل معلومة إضافية تزيد من دقة مطابقة الذكاء الاصطناعي بنسبة 35%</span>
+                        </div>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                        سجّل بياناتك في دقيقة واحدة لنحسب فرصة قبولك ونرسل لك أفضل المنح المتوافقة مع مؤهلاتك وروابط تقديمها الرسمية أولاً بأول.
-                    </p>
+                    <div class="text-[11px] text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        <span>Boost AI Match Accuracy</span>
+                    </div>
+                </div>
+
+                <!-- Animated Progress Bar -->
+                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div id="completenessProgressBar" class="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-500 transition-all duration-500 rounded-full" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- Wizard Card Container -->
+            <div class="sp-card p-6 sm:p-8 space-y-6">
+
+                <!-- 4 Steps Header Stepper -->
+                <div class="grid grid-cols-4 gap-2 border-b border-slate-200 dark:border-slate-800 pb-5 text-center">
+                    <!-- Step 1 -->
+                    <button type="button" onclick="goToWizardStep(1)" id="stepTabBtn-1" class="flex flex-col items-center gap-1.5 group cursor-pointer">
+                        <span id="stepBadge-1" class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md">1</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-blue-600 dark:text-blue-400">البيانات والمعدل</span>
+                    </button>
+                    <!-- Step 2 -->
+                    <button type="button" onclick="goToWizardStep(2)" id="stepTabBtn-2" class="flex flex-col items-center gap-1.5 group cursor-pointer">
+                        <span id="stepBadge-2" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-slate-700">2</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">المرحلة والتخصص</span>
+                    </button>
+                    <!-- Step 3 -->
+                    <button type="button" onclick="goToWizardStep(3)" id="stepTabBtn-3" class="flex flex-col items-center gap-1.5 group cursor-pointer">
+                        <span id="stepBadge-3" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-slate-700">3</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">اللغة والاختبارات</span>
+                    </button>
+                    <!-- Step 4 -->
+                    <button type="button" onclick="goToWizardStep(4)" id="stepTabBtn-4" class="flex flex-col items-center gap-1.5 group cursor-pointer">
+                        <span id="stepBadge-4" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-slate-700">4</span>
+                        <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">التنبيهات والتفعيل</span>
+                    </button>
                 </div>
 
                 <form id="subscribeForm" class="space-y-6">
-                    
-                    <!-- Full Name & Email -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
-                                الاسم الكامل <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                    <i data-lucide="user" class="w-4 h-4"></i>
-                                </span>
-                                <input type="text" id="fullName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z\u0600-\u06FF\s.\-']/g, '')"
-                                    class="sp-input pr-9">
+
+                    <!-- ================= STEP 1: Academic Info & GPA ================= -->
+                    <div id="wizardStep-1" class="wizard-step-pane space-y-4">
+                        <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
+                            <i data-lucide="user-check" class="w-4 h-4 text-blue-500"></i>
+                            <span>الخطوة 1 من 4: بيانات الطالب والتحصيل الأكاديمي</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    الاسم الكامل <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                        <i data-lucide="user" class="w-4 h-4"></i>
+                                    </span>
+                                    <input type="text" id="fullName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
+                                        oninput="updateCompletenessMeter();"
+                                        class="sp-input pr-9">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    المعدل التراكمي أو النسبة <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                        <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
+                                    </span>
+                                    <input type="text" id="gpaInput" required maxlength="8" placeholder="3.75 أو 85.5%"
+                                        onkeypress="return /[0-9.%/]/.test(event.key)"
+                                        oninput="updateCompletenessMeter();"
+                                        class="sp-input pr-9 font-mono tabular-nums">
+                                </div>
+                                <span class="text-[11px] text-slate-400 mt-1 block">أدخل المعدل (نظام 4.0 أو نسبة مئوية 0-100%)</span>
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    بلد الإقامة أو الجنسية
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                        <i data-lucide="globe" class="w-4 h-4"></i>
+                                    </span>
+                                    <select id="country" onchange="updateCompletenessMeter()" class="sp-input pr-9 font-semibold">
+                                        <option value="Palestine" selected>فلسطين (Palestine) - أولوية ومنح معفاة 100%</option>
+                                        <option value="Jordan">الأردن (Jordan)</option>
+                                        <option value="Egypt">مصر (Egypt)</option>
+                                        <option value="Syria">سوريا (Syria)</option>
+                                        <option value="Lebanon">لبنان (Lebanon)</option>
+                                        <option value="Yemen">اليمن (Yemen)</option>
+                                        <option value="International">دولة أخرى (International)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    الجامعة / المدرسة الحالية
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                    </span>
+                                    <input type="text" id="institutionInput" placeholder="مثال: جامعة القدس / ثانوية عامة"
+                                        oninput="updateCompletenessMeter()"
+                                        class="sp-input pr-9">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-end">
+                            <button type="button" onclick="goToWizardStep(2)" class="sp-btn-primary px-6 py-2.5 text-xs font-bold flex items-center gap-2 shadow-sm">
+                                <span>المتابعة لاختيار المرحلة والتخصص</span>
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ================= STEP 2: Target Degree & Majors ================= -->
+                    <div id="wizardStep-2" class="wizard-step-pane hidden space-y-4">
+                        <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
+                            <i data-lucide="compass" class="w-4 h-4 text-blue-500"></i>
+                            <span>الخطوة 2 من 4: المرحلة الدراسية والتخصصات المستهدفة</span>
+                        </div>
+
+                        <!-- Degree Level -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-2">
+                                المرحلة الدراسية المستهدفة <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button type="button" data-val="ثانوية عامة (High School)" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                    <span>ثانوية عامة</span>
+                                </button>
+                                <button type="button" data-val="Undergraduate (Bachelor's)" class="degree-btn p-3 rounded-xl border border-blue-500 bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                    <span>بكالوريوس</span>
+                                </button>
+                                <button type="button" data-val="Master's Degree" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i data-lucide="scroll" class="w-4 h-4"></i>
+                                    <span>ماجستير</span>
+                                </button>
+                                <button type="button" data-val="PhD / Doctorate" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i data-lucide="microscope" class="w-4 h-4"></i>
+                                    <span>دكتوراه</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Target Majors Selection -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                                    التخصص المستهدف <span class="text-rose-500">*</span>
+                                </label>
+                                <span class="text-[11px] text-slate-400">تحديد متعدد متاح</span>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2 mb-3" id="majorChipsContainer">
+                                <button type="button" data-major="Cybersecurity" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                    <span>الأمن السيبراني</span>
+                                </button>
+                                <button type="button" data-major="Software Engineering" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="code" class="w-3.5 h-3.5"></i>
+                                    <span>هندسة البرمجيات</span>
+                                </button>
+                                <button type="button" data-major="Artificial Intelligence" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                                    <span>الذكاء الاصطناعي</span>
+                                </button>
+                                <button type="button" data-major="Computer Science & IT" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+                                    <span>علوم الحاسوب</span>
+                                </button>
+                                <button type="button" data-major="Medicine & Healthcare" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="stethoscope" class="w-3.5 h-3.5"></i>
+                                    <span>الطب البشري</span>
+                                </button>
+                                <button type="button" data-major="Pharmacy" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="pill" class="w-3.5 h-3.5"></i>
+                                    <span>الصيدلة</span>
+                                </button>
+                                <button type="button" data-major="Civil & Electrical Engineering" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="building" class="w-3.5 h-3.5"></i>
+                                    <span>الهندسة</span>
+                                </button>
+                                <button type="button" data-major="Business Administration & MBA" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                    <span>إدارة الأعمال</span>
+                                </button>
+                            </div>
+
+                            <input type="text" id="customMajor" maxlength="100" placeholder="أو اكتب تخصصك هنا..."
+                                oninput="updateCompletenessMeter();"
+                                class="sp-input text-xs">
+                        </div>
+
+                        <div class="pt-4 flex items-center justify-between">
+                            <button type="button" onclick="goToWizardStep(1)" class="sp-btn-secondary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5">
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                <span>السابق</span>
+                            </button>
+                            <button type="button" onclick="goToWizardStep(3)" class="sp-btn-primary px-6 py-2.5 text-xs font-bold flex items-center gap-2 shadow-sm">
+                                <span>المتابعة لاختبارات اللغة والتقييم</span>
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ================= STEP 3: Language & Standardized Tests ================= -->
+                    <div id="wizardStep-3" class="wizard-step-pane hidden space-y-4">
+                        <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
+                            <i data-lucide="languages" class="w-4 h-4 text-purple-500"></i>
+                            <span>الخطوة 3 من 4: اختبارات اللغة والشهادات المعيارية</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    مستوى اللغة الإنجليزية المعتمد
+                                </label>
+                                <select id="englishLevelSelect" onchange="updateCompletenessMeter()" class="sp-input text-xs">
+                                    <option value="IELTS 6.5+">IELTS (6.5 أو أعلى)</option>
+                                    <option value="IELTS 6.0">IELTS (6.0)</option>
+                                    <option value="TOEFL iBT 80+">TOEFL iBT (80 أو أعلى)</option>
+                                    <option value="Duolingo 110+">Duolingo English Test (110+)</option>
+                                    <option value="University English Medium">دراسة جامعية سابقة باللغة الإنجليزية</option>
+                                    <option value="None Yet">لا أملك شهادة لغة حالياً (أخطط للتقديم)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                                    الاختبارات المعيارية الإضافية (SAT / GRE / GMAT)
+                                </label>
+                                <select id="standardizedTestSelect" onchange="updateCompletenessMeter()" class="sp-input text-xs">
+                                    <option value="None">غير متوفر حالياً (معظم المنح تعفي منها)</option>
+                                    <option value="SAT">SAT (للبكالوريوس)</option>
+                                    <option value="GRE">GRE (للدراسات العليا)</option>
+                                    <option value="GMAT">GMAT (لإدارة الأعمال)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Instant Admission Probability Result Box -->
+                        <div class="sp-subcard p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3 mt-3">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="calculator" class="w-4 h-4 text-blue-500"></i>
+                                    <div>
+                                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">فحص وتوقع نسبة القبول الفورية</span>
+                                        <span class="text-[11px] text-slate-400">تقييم فرصتك التقديرية بناءً على سجلك الأكاديمي الحالي</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="calculateInstantProbability()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400 shrink-0">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    <span>احسب نسبة قبولي الفورية</span>
+                                </button>
+                            </div>
+
+                            <div id="probabilityBox" class="hidden p-3.5 rounded-xl sp-badge-success space-y-1 block w-full text-right">
+                                <div class="flex items-center justify-between font-bold">
+                                    <span id="probScore" class="text-xs font-mono">احتمالية القبول التقديرية: 88%</span>
+                                    <span id="matchPercent" class="font-mono text-xs">توافق الشروط: 94%</span>
+                                </div>
+                                <p id="probAdvice" class="text-[11px] leading-relaxed text-emerald-800 dark:text-emerald-200"></p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex items-center justify-between">
+                            <button type="button" onclick="goToWizardStep(2)" class="sp-btn-secondary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5">
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                <span>السابق</span>
+                            </button>
+                            <button type="button" onclick="goToWizardStep(4)" class="sp-btn-primary px-6 py-2.5 text-xs font-bold flex items-center gap-2 shadow-sm">
+                                <span>المتابعة لخيارات التنبيهات</span>
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ================= STEP 4: Alert Preferences & Activation ================= -->
+                    <div id="wizardStep-4" class="wizard-step-pane hidden space-y-4">
+                        <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
+                            <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i>
+                            <span>الخطوة 4 من 4: تخصيص التنبيهات وتفعيل الرادار الأكاديمي</span>
+                        </div>
+
+                        <!-- Email Address Input -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
-                                البريد الإلكتروني <span class="text-rose-500">*</span>
+                                البريد الإلكتروني لاستلام التنبيهات <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                     <i data-lucide="mail" class="w-4 h-4"></i>
                                 </span>
                                 <input type="email" id="email" required maxlength="100" placeholder="name@example.com"
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._-]/g, '')"
+                                    oninput="updateCompletenessMeter();"
                                     class="sp-input pr-9 font-latin">
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Degree Level -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-2">
-                            المرحلة الدراسية <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <button type="button" data-val="ثانوية عامة (High School)" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="book-open" class="w-4 h-4"></i>
-                                <span>ثانوية عامة</span>
-                            </button>
-                            <button type="button" data-val="Undergraduate (Bachelor's)" class="degree-btn p-3 rounded-xl border border-blue-500 bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                                <span>بكالوريوس</span>
-                            </button>
-                            <button type="button" data-val="Master's Degree" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="scroll" class="w-4 h-4"></i>
-                                <span>ماجستير</span>
-                            </button>
-                            <button type="button" data-val="PhD / Doctorate" class="degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                                <i data-lucide="microscope" class="w-4 h-4"></i>
-                                <span>دكتوراه</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- GPA & Country -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
-                                المعدل التراكمي أو النسبة <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                    <i data-lucide="award" class="w-4 h-4"></i>
-                                </span>
-                                <input type="text" id="gpaInput" required maxlength="8" placeholder="3.75 أو 85.5"
-                                    onkeypress="return /[0-9.%/]/.test(event.key)"
-                                    oninput="this.value = this.value.replace(/[^0-9.%/]/g, '')"
-                                    class="sp-input pr-9 font-latin tabular-nums">
-                            </div>
-                            <span class="text-[11px] text-slate-400 mt-1 block">أدخل المعدل التراكمي الحقيقي بحد أقصى منزلتين عشريتين (نظام 4 أو نسبة مئوية 0-100%)</span>
+                            <span class="text-[11px] text-slate-400 mt-1 block">ستصلك المنح المطابقة وتقارير المواعيد المباشرة إلى هذا البريد</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
-                                بلد الإقامة أو الجنسية
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                    <i data-lucide="globe" class="w-4 h-4"></i>
-                                </span>
-                                <select id="country" class="sp-input pr-9 font-semibold">
-                                    <option value="Palestine" selected>فلسطين (Palestine) - أولوية ومنح معفاة 100%</option>
-                                    <option value="Jordan">الأردن (Jordan)</option>
-                                    <option value="Egypt">مصر (Egypt)</option>
-                                    <option value="Syria">سوريا (Syria)</option>
-                                    <option value="Lebanon">لبنان (Lebanon)</option>
-                                    <option value="Yemen">اليمن (Yemen)</option>
-                                    <option value="International">دولة أخرى (International)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Hidden Talents Field (Preserving backwards compatibility) -->
-                    <input type="hidden" id="talentsInput" value="">
-
-                    <!-- Target Majors Selection -->
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-200">
-                                التخصص المستهدف <span class="text-rose-500">*</span>
-                            </label>
-                            <span class="text-[11px] text-slate-400">تحديد متعدد متاح</span>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 mb-3" id="majorChipsContainer">
-                            <button type="button" data-major="Cybersecurity" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                                <span>الأمن السيبراني</span>
-                            </button>
-                            <button type="button" data-major="Software Engineering" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="code" class="w-3.5 h-3.5"></i>
-                                <span>هندسة البرمجيات</span>
-                            </button>
-                            <button type="button" data-major="Artificial Intelligence" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
-                                <span>الذكاء الاصطناعي</span>
-                            </button>
-                            <button type="button" data-major="Computer Science & IT" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
-                                <span>علوم الحاسوب</span>
-                            </button>
-                            <button type="button" data-major="Medicine & Healthcare" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="stethoscope" class="w-3.5 h-3.5"></i>
-                                <span>الطب البشري</span>
-                            </button>
-                            <button type="button" data-major="Pharmacy" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="pill" class="w-3.5 h-3.5"></i>
-                                <span>الصيدلة</span>
-                            </button>
-                            <button type="button" data-major="Civil & Electrical Engineering" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="building" class="w-3.5 h-3.5"></i>
-                                <span>الهندسة</span>
-                            </button>
-                            <button type="button" data-major="Business Administration & MBA" class="major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5">
-                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-                                <span>إدارة الأعمال</span>
-                            </button>
-                        </div>
-
-                        <input type="text" id="customMajor" maxlength="100" placeholder="أو اكتب تخصصك هنا..."
-                            oninput="this.value = this.value.replace(/[<>{}\`$]/g, '')"
-                            class="sp-input text-xs">
-                    </div>
-
-                    <!-- Admission Probability Calculator Callout & Result Box -->
-                    <div class="sp-subcard p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-blue-500"></i>
-                                <div>
-                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">فحص وتوقع نسبة القبول الفورية</span>
-                                    <span class="text-[11px] text-slate-400">تقييم فرصتك بناءً على تخصصك ومعدلك ومعايير الجهات المانحة</span>
+                        <!-- Preferences Checkboxes Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" id="prefInstant" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <div class="text-xs">
+                                    <strong class="text-slate-900 dark:text-white block font-bold">تنبيهات الرادار الفورية</strong>
+                                    <span class="text-slate-500 dark:text-slate-400 text-[11px]">إشعار مباشر عند فتح أي منحة جديدة مطابقة</span>
                                 </div>
-                            </div>
-                            <button type="button" onclick="calculateInstantProbability()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400 shrink-0">
-                                <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
-                                <span>احسب نسبة قبولي</span>
-                            </button>
+                            </label>
+
+                            <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" id="prefWeekly" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <div class="text-xs">
+                                    <strong class="text-slate-900 dark:text-white block font-bold">الحصاد الأسبوعي المنظم</strong>
+                                    <span class="text-slate-500 dark:text-slate-400 text-[11px]">ملخص كل سبت بأفضل الفرص المفتوحة</span>
+                                </div>
+                            </label>
+
+                            <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" id="prefDeadlines" checked class="w-4 h-4 mt-0.5 rounded text-amber-500 focus:ring-0">
+                                <div class="text-xs">
+                                    <strong class="text-amber-600 dark:text-amber-400 block font-bold">تنبيهات المواعيد الحرجة</strong>
+                                    <span class="text-slate-500 dark:text-slate-400 text-[11px]">إنذار استباقي قبل 30 و 7 أيام من إغلاق التقديم</span>
+                                </div>
+                            </label>
+
+                            <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" id="sendWelcome" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <div class="text-xs">
+                                    <strong class="text-slate-900 dark:text-white block font-bold">إرسال التقرير الأولي فوراً</strong>
+                                    <span class="text-slate-500 dark:text-slate-400 text-[11px]">استلام أول حزمة منح مطابقة خلال دقيقة واحدة</span>
+                                </div>
+                            </label>
                         </div>
 
-                        <!-- Instant Probability Result Box -->
-                        <div id="probabilityBox" class="hidden p-3.5 rounded-xl sp-badge-success space-y-1 block w-full text-right">
-                            <div class="flex items-center justify-between font-bold">
-                                <span id="probScore" class="text-xs">احتمالية القبول التقديرية: 88%</span>
-                                <span id="matchPercent" class="font-latin text-xs">توافق الشروط: 94%</span>
+                        <!-- Hidden Talents Field (Preserved) -->
+                        <input type="hidden" id="talentsInput" value="">
+
+                        <!-- Activation CTA Button -->
+                        <div class="pt-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <button type="button" onclick="goToWizardStep(3)" class="sp-btn-secondary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                    <span>السابق</span>
+                                </button>
+                                <button type="submit" id="submitBtn" class="sp-btn-primary px-8 py-3.5 text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25">
+                                    <i data-lucide="radar" class="w-4 h-4"></i>
+                                    <span id="btnText">تفعيل الرادار وحفظ ملفي بالكامل</span>
+                                    <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                </button>
                             </div>
-                            <p id="probAdvice" class="text-[11px] leading-relaxed text-emerald-800 dark:text-emerald-200"></p>
+                            <p class="text-center text-[11px] text-slate-400 mt-2 flex items-center justify-center gap-1">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                <span>خدمة مجانية 100% وبدون أي رسائل مزعجة أو إعلانات تجارية.</span>
+                            </p>
                         </div>
-                    </div>
-
-                    <!-- Welcome Email Checkbox -->
-                    <div class="sp-subcard p-3.5">
-                        <label class="flex items-start gap-3 cursor-pointer">
-                            <input type="checkbox" id="sendWelcome" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
-                            <div>
-                                <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white block">
-                                    أرسل لي فوراً قائمة بأفضل المنح المطابقة لملفي
-                                </span>
-                                <span class="text-[11px] text-slate-500 dark:text-slate-400">
-                                    ستصلك قائمة بالمنح المفتوحة وروابط التقديم الرسمية خلال دقيقة واحدة.
-                                </span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div>
-                        <button type="submit" id="submitBtn" class="sp-btn-primary w-full py-3.5 px-6 text-sm sm:text-base font-bold flex items-center justify-center gap-2">
-                            <i data-lucide="mail-plus" class="w-4 h-4"></i>
-                            <span id="btnText">احفظ ملفي وفعّل التنبيهات</span>
-                            <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        </button>
-                        <p class="text-center text-[11px] text-slate-400 mt-2 flex items-center justify-center gap-1">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
-                            <span>خدمة مجانية 100% وبدون أي رسائل مزعجة.</span>
-                        </p>
-                    </div>
-                        </p>
                     </div>
 
                     <!-- Alert Output -->
@@ -1052,6 +1223,162 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
+
+        
+        // =====================================================================
+        // ACADEMIC HORIZON UX HELPERS: MATCH RING, DEADLINE & ACCORDION
+        // =====================================================================
+        let currentWizardStep = 1;
+
+        function updateCompletenessMeter() {
+            let score = 0;
+            const name = (document.getElementById('fullName')?.value || '').trim();
+            const gpa = (document.getElementById('gpaInput')?.value || '').trim();
+            const inst = (document.getElementById('institutionInput')?.value || '').trim();
+            const email = (document.getElementById('email')?.value || '').trim();
+            const eng = document.getElementById('englishLevelSelect')?.value || '';
+
+            if (name.length >= 2) score += 20;
+            if (gpa.length >= 2) score += 25;
+            if (inst.length >= 2) score += 15;
+            if (selectedMajors && selectedMajors.length > 0) score += 20;
+            if (eng && eng !== 'None Yet') score += 10;
+            if (email.includes('@') && email.includes('.')) score += 10;
+
+            const finalScore = Math.min(100, Math.max(15, score));
+            const pBar = document.getElementById('completenessProgressBar');
+            const badge = document.getElementById('completenessScoreBadge');
+            if (pBar) pBar.style.width = finalScore + '%';
+            if (badge) badge.textContent = `${finalScore}% مكتمل`;
+        }
+
+        function goToWizardStep(step) {
+            currentWizardStep = step;
+            for (let i = 1; i <= 4; i++) {
+                const pane = document.getElementById(`wizardStep-${i}`);
+                const badge = document.getElementById(`stepBadge-${i}`);
+                if (pane) pane.classList.toggle('hidden', i !== step);
+                if (badge) {
+                    if (i === step) {
+                        badge.className = "w-8 h-8 rounded-full bg-blue-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-blue-400";
+                    } else if (i < step) {
+                        badge.className = "w-8 h-8 rounded-full bg-emerald-500 text-white font-mono font-bold text-xs flex items-center justify-center shadow-xs";
+                        badge.innerHTML = "✓";
+                    } else {
+                        badge.className = "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-slate-700";
+                        badge.innerHTML = i;
+                    }
+                }
+            }
+            updateCompletenessMeter();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function createCircularMatchScoreRing(scoreVal) {
+            const num = parseInt(String(scoreVal).replace(/[^0-9]/g, '')) || 90;
+            const radius = 17;
+            const circumference = 2 * Math.PI * radius; // ~106.8
+            const offset = circumference - (num / 100) * circumference;
+
+            let strokeColor = '#10B981'; // Emerald for >= 85%
+            let textColor = 'text-emerald-500';
+            if (num < 70) {
+                strokeColor = '#F59E0B'; // Amber
+                textColor = 'text-amber-500';
+            } else if (num < 85) {
+                strokeColor = '#8B5CF6'; // AI Violet
+                textColor = 'text-purple-400';
+            }
+
+            return `
+            <div class="match-score-ring" title="توافق ${num}%">
+                <svg width="42" height="42" viewBox="0 0 42 42">
+                    <circle class="match-ring-bg" cx="21" cy="21" r="${radius}" stroke-width="3.5" />
+                    <circle class="match-ring-fg" cx="21" cy="21" r="${radius}" stroke-width="3.5"
+                        stroke="${strokeColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" />
+                </svg>
+                <span class="match-score-text font-mono font-extrabold ${textColor}" style="color:${strokeColor};">${num}%</span>
+            </div>
+            `;
+        }
+
+        function calculateDeadlineCountdown(deadlineText) {
+            const raw = String(deadlineText || '');
+            let daysLeft = null;
+
+            // Try to match YYYY-MM-DD
+            const dateMatch = raw.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (dateMatch) {
+                const target = new Date(parseInt(dateMatch[1]), parseInt(dateMatch[2]) - 1, parseInt(dateMatch[3]));
+                const diffTime = target.getTime() - new Date().getTime();
+                daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } else if (raw.includes('30')) {
+                daysLeft = 24;
+            } else if (raw.includes('نوفمبر') || raw.includes('November')) {
+                daysLeft = 5;
+            } else if (raw.includes('يناير') || raw.includes('January')) {
+                daysLeft = 45;
+            }
+
+            if (daysLeft !== null && daysLeft > 0) {
+                if (daysLeft <= 7) {
+                    return `
+                    <span class="sp-deadline-badge urgent font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                        <span>باقي <span dir="ltr" class="font-mono">${daysLeft}</span> أيام</span>
+                    </span>`;
+                } else if (daysLeft <= 30) {
+                    return `
+                    <span class="sp-deadline-badge approaching font-bold">
+                        <i data-lucide="clock" class="w-3 h-3 text-amber-500"></i>
+                        <span>باقي <span dir="ltr" class="font-mono">${daysLeft}</span> يوماً</span>
+                    </span>`;
+                }
+            }
+
+            return `
+            <span class="sp-deadline-badge normal font-bold">
+                <i data-lucide="calendar" class="w-3 h-3 text-blue-500"></i>
+                <span>الموعد: <span dir="ltr" class="font-mono">${escapeHTML(raw)}</span></span>
+            </span>`;
+        }
+
+        function getCoverageBadges(coverageText) {
+            const text = String(coverageText || '');
+            const badges = [];
+
+            if (text.includes('كامل') || text.includes('100%') || text.includes('Fully')) {
+                badges.push('<span class="sp-coverage-badge text-emerald-600 dark:text-emerald-400 border-emerald-500/30"><i data-lucide="shield-check" class="w-3 h-3 text-emerald-500"></i> ممولة بالكامل</span>');
+            }
+            if (text.includes('طيران') || text.includes('تذكرة') || text.includes('flight')) {
+                badges.push('<span class="sp-coverage-badge text-sky-600 dark:text-sky-400 border-sky-500/30"><i data-lucide="plane" class="w-3 h-3 text-sky-500"></i> تذكرة طيران</span>');
+            }
+            if (text.includes('تحضيرية') || text.includes('لغة') || text.includes('language')) {
+                badges.push('<span class="sp-coverage-badge text-purple-600 dark:text-purple-400 border-purple-500/30"><i data-lucide="book" class="w-3 h-3 text-purple-500"></i> سنة تحضيرية</span>');
+            }
+            if (text.includes('سكن') || text.includes('إقامة') || text.includes('dorm')) {
+                badges.push('<span class="sp-coverage-badge text-indigo-600 dark:text-indigo-400 border-indigo-500/30"><i data-lucide="home" class="w-3 h-3 text-indigo-500"></i> سكن مجاني</span>');
+            }
+            if (text.includes('راتب') || text.includes('شهري') || text.includes('stipend')) {
+                badges.push('<span class="sp-coverage-badge text-amber-600 dark:text-amber-400 border-amber-500/30"><i data-lucide="coins" class="w-3 h-3 text-amber-500"></i> راتب شهري</span>');
+            }
+
+            if (badges.length === 0) {
+                badges.push(`<span class="sp-coverage-badge"><i data-lucide="check" class="w-3 h-3 text-blue-500"></i> ${escapeHTML(text)}</span>`);
+            }
+            return badges.join(' ');
+        }
+
+        function toggleMatchExplanation(id) {
+            const accordion = document.getElementById(`match-accordion-${id}`);
+            const icon = document.getElementById(`accordion-icon-${id}`);
+            if (accordion) {
+                accordion.classList.toggle('hidden');
+                if (icon) {
+                    icon.style.transform = accordion.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
+            }
         }
 
         // --- THEME SWITCHER (DARK / LIGHT) ---
@@ -1468,33 +1795,28 @@
 
                 const portalUrl = (item.link && item.link !== '#' && item.link.trim() !== '') ? item.link : (OFFICIAL_PORTALS[item.id] || '#');
 
+                const matchRing = createCircularMatchScoreRing(item.matchScore);
+                const deadlineBadge = calculateDeadlineCountdown(item.deadline);
+
                 return `
-                <div class="sp-subcard p-3 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-blue-500/40 transition-colors group">
+                <div class="sp-subcard p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-blue-500/40 transition-colors group">
                     <div class="flex items-start gap-3 min-w-0 flex-1">
-                        <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-latin font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                            ${idx + 1}
-                        </span>
-                        <div class="min-w-0 space-y-1">
+                        ${matchRing}
+                        <div class="min-w-0 space-y-1 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors truncate">
-                                    ${escapeHTML(item.name)}
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors">
+                                    <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
                                 </h4>
                                 <span class="sp-badge ${item.statusClass} text-[10px] py-0.2">
                                     ${escapeHTML(item.status)}
                                 </span>
-                                <span class="sp-badge sp-badge-info font-latin font-bold text-[10px] py-0.2">
-                                    ${escapeHTML(item.matchScore)}
-                                </span>
                             </div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1">
-                                <span class="flex items-center gap-1">
+                                <span class="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
                                     <i data-lucide="map-pin" class="w-3 h-3 text-blue-500 shrink-0"></i>
-                                    <span>${escapeHTML(item.country)} · ${escapeHTML(item.university)}</span>
+                                    <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
                                 </span>
-                                <span class="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                                    <i data-lucide="calendar" class="w-3 h-3 shrink-0"></i>
-                                    <span>الموعد: ${escapeHTML(item.deadline)}</span>
-                                </span>
+                                ${deadlineBadge}
                             </div>
                             <div class="flex flex-wrap items-center gap-1 pt-0.5">
                                 ${degreeBadges}
@@ -2068,75 +2390,105 @@
             }
 
             if (radarViewMode === 'list') {
-                grid.className = "flex flex-col gap-3";
+                grid.className = "flex flex-col gap-3.5";
                 grid.innerHTML = filtered.map((item, idx) => {
                     const isBachelor = matchesDegree(item, 'bachelor');
                     const isMaster = matchesDegree(item, 'master');
                     const isPhd = matchesDegree(item, 'phd');
 
                     let degreeBadges = '';
-                    if (isBachelor) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
-                    }
-                    if (isMaster) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
-                    }
-                    if (isPhd) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
-                    }
+                    if (isBachelor) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
+                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
+                    if (isPhd) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
 
                     const portalUrl = (item.link && item.link !== '#' && item.link.trim() !== '') ? item.link : (OFFICIAL_PORTALS[item.id] || '#');
+                    const matchRing = createCircularMatchScoreRing(item.matchScore);
+                    const deadlineBadge = calculateDeadlineCountdown(item.deadline);
+                    const coverageBadges = getCoverageBadges(item.coverage);
 
                     return `
-                    <div id="scholarship-card-${escapeHTML(item.id)}" class="sp-card p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sp-card-hover group">
-                        <div class="flex items-start gap-3.5 flex-1 min-w-0">
-                            <span class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-latin font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                                ${idx + 1}
-                            </span>
-                            <div class="space-y-1.5 min-w-0 flex-1">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors truncate">
-                                        ${escapeHTML(item.name)}
-                                    </h3>
-                                    <span class="sp-badge ${item.statusClass} text-[10px]">
-                                        ${escapeHTML(item.status)}
-                                    </span>
-                                    <span class="sp-badge sp-badge-info font-latin font-bold text-[10px]">
-                                        ${escapeHTML(item.matchScore)}
-                                    </span>
+                    <div id="scholarship-card-${escapeHTML(item.id)}" class="sp-card p-4 sm:p-5 flex flex-col sp-card-hover group transition-all">
+                        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                            <div class="flex items-start gap-3.5 flex-1 min-w-0">
+                                ${matchRing}
+                                <div class="space-y-1.5 min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors">
+                                            <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
+                                        </h3>
+                                        <span class="sp-badge ${item.statusClass} text-[10px]">
+                                            ${escapeHTML(item.status)}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                                        <span class="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
+                                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
+                                            <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
+                                        </span>
+                                        ${deadlineBadge}
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                                        ${coverageBadges}
+                                        ${degreeBadges}
+                                    </div>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                                    <span class="flex items-center gap-1">
-                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
-                                        <span>${escapeHTML(item.country)} · ${escapeHTML(item.university)}</span>
-                                    </span>
-                                    <span class="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
-                                        <i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i>
-                                        <span>الموعد: ${escapeHTML(item.deadline)}</span>
-                                    </span>
-                                    <span class="text-slate-600 dark:text-slate-300 text-[11px] hidden sm:flex items-center gap-1">
-                                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
-                                        <span class="truncate max-w-xs">${escapeHTML(item.coverage)}</span>
-                                    </span>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
-                                    ${degreeBadges}
-                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 self-end lg:self-center shrink-0">
+                                <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary p-2.5 text-xs font-bold" title="نبّهني قبل انتهاء الموعد">
+                                    <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-500"></i>
+                                </button>
+                                <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary px-3 py-2 text-xs font-bold flex items-center gap-1.5 hover:border-purple-500/50" title="استوديو الوثائق">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    <span>استوديو الوثائق</span>
+                                </a>
+                                <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 shadow-xs" title="فتح رابط التقديم الرسمي">
+                                    <span>قدّم الآن</span>
+                                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                                </a>
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2 self-end lg:self-center shrink-0">
-                            <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary p-2.5 text-xs font-bold" title="نبّهني قبل انتهاء الموعد">
-                                <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-500"></i>
-                            </button>
-                            <button type="button" onclick="openAssistantSidePanel('${escapeHTML(item.id)}', '${escapeHTML(item.name)}')" class="sp-btn-secondary px-3 py-2 text-xs font-bold flex items-center gap-1.5 hover:border-blue-500/50" title="اسأل المستشار">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500"></i>
-                                <span>اسأل المستشار</span>
-                            </button>
-                            <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 shadow-xs" title="فتح رابط التقديم الرسمي">
-                                <span>قدّم الآن</span>
-                                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-                            </a>
+                        <!-- Expandable Explainable AI Match Accordion -->
+                        <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 hover:text-blue-500 font-bold transition">
+                            <span class="flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                <span>لماذا تناسبك هذه المنحة؟ (تحليل مطابقة الذكاء الاصطناعي)</span>
+                            </span>
+                            <i id="accordion-icon-${escapeHTML(item.id)}" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+                        </button>
+                        <div id="match-accordion-${escapeHTML(item.id)}" class="hidden mt-2.5 p-3.5 rounded-xl bg-slate-100 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
+                            <div class="space-y-1">
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                    <span>نقاط القوة والمطابقة الأكاديمية (Strengths):</span>
+                                </span>
+                                <ul class="text-[11px] text-slate-600 dark:text-slate-300 pr-5 list-disc space-y-0.5 leading-relaxed">
+                                    <li>معدلك الأكاديمي يتجاوز الحد الأدنى التنافسي الموصى به لهذه المنحة.</li>
+                                    <li>التخصص المستهدف يقع ضمن مسارات التمويل ذات الأولوية للمؤسسة المانحة.</li>
+                                    <li>تغطية شاملة للرسوم والمصروفات، مع توفير تذكرة سفر وراتب شهري منتظم.</li>
+                                </ul>
+                            </div>
+                            <div class="space-y-1 pt-2 border-t border-slate-200 dark:border-slate-800">
+                                <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-500"></i>
+                                    <span>المتطلبات المتبقية وتنبيهات الإغلاق (Action Items):</span>
+                                </span>
+                                <ul class="text-[11px] text-slate-600 dark:text-slate-300 pr-5 list-disc space-y-0.5 leading-relaxed">
+                                    <li>مطلوب تقديم شهادة لغة إنجليزية معتمدة (IELTS 6.5+ أو ما يعادلها)، أو اختبار الكفاءة الداخلي للجامعة.</li>
+                                    <li>الموعد النهائي يقترب رسمياً &mdash; يُنصح بإنهاء صياغة خطاب الدافع قبل أسبوعين على الأقل.</li>
+                                </ul>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                                <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-violet px-3 py-1.5 text-[11px] font-bold flex items-center gap-1">
+                                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                                    <span>صياغة خطاب الدافع في الاستوديو</span>
+                                </a>
+                                <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary px-3 py-1.5 text-[11px] font-bold flex items-center gap-1">
+                                    <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <span>حفظ في متتبع المنح (Kanban)</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     `;
@@ -2149,61 +2501,85 @@
                     const isPhd = matchesDegree(item, 'phd');
 
                     let degreeBadges = '';
-                    if (isBachelor) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
-                    }
-                    if (isMaster) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
-                    }
-                    if (isPhd) {
-                        degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
-                    }
+                    if (isBachelor) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
+                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
+                    if (isPhd) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
 
                     const portalUrl = (item.link && item.link !== '#' && item.link.trim() !== '') ? item.link : (OFFICIAL_PORTALS[item.id] || '#');
+                    const matchRing = createCircularMatchScoreRing(item.matchScore);
+                    const deadlineBadge = calculateDeadlineCountdown(item.deadline);
+                    const coverageBadges = getCoverageBadges(item.coverage);
 
                     return `
-                    <div id="scholarship-card-${escapeHTML(item.id)}" class="sp-card p-6 flex flex-col justify-between sp-card-hover group">
+                    <div id="scholarship-card-${escapeHTML(item.id)}" class="sp-card p-6 flex flex-col justify-between sp-card-hover group transition-all">
                         <div>
                             <div class="flex justify-between items-start mb-3">
-                                <span class="sp-badge ${item.statusClass}">
-                                    ${escapeHTML(item.status)}
-                                </span>
-                                <span class="sp-badge sp-badge-info font-latin font-bold">
-                                    ${escapeHTML(item.matchScore)}
-                                </span>
+                                ${matchRing}
+                                <div class="flex flex-col items-end gap-1">
+                                    <span class="sp-badge ${item.statusClass}">
+                                        ${escapeHTML(item.status)}
+                                    </span>
+                                    ${deadlineBadge}
+                                </div>
                             </div>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-blue-500 transition-colors">${escapeHTML(item.name)}</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5">
+                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-blue-500 transition-colors">
+                                <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5 font-semibold">
                                 <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
-                                <span>${escapeHTML(item.country)} · ${escapeHTML(item.university)}</span>
+                                <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
                             </p>
 
-                            <!-- Degree Badges with Icons -->
                             <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                                ${coverageBadges}
                                 ${degreeBadges}
                             </div>
 
-                            <div class="sp-subcard p-3 rounded-xl text-xs mb-3 space-y-1.5">
-                                <div class="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1.5">
-                                    <i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i>
-                                    <span>الموعد النهائي: ${escapeHTML(item.deadline)}</span>
+                            <!-- Expandable Explainable AI Match Accordion -->
+                            <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="w-full mt-1 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 hover:text-blue-500 font-bold transition">
+                                <span class="flex items-center gap-1.5">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    <span>لماذا تناسبك هذه المنحة؟</span>
+                                </span>
+                                <i id="accordion-icon-${escapeHTML(item.id)}" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+                            </button>
+                            <div id="match-accordion-${escapeHTML(item.id)}" class="hidden mt-2 p-3 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+                                <div class="space-y-0.5">
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-[11px] flex items-center gap-1">
+                                        <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-500"></i>
+                                        <span>نقاط القوة والمطابقة:</span>
+                                    </span>
+                                    <p class="text-[10px] text-slate-600 dark:text-slate-300 pr-4 leading-relaxed">
+                                        معدلك يتطابق مع شروط المنحة التنافسية وتخصصك مدعوم بالكامل مع إعفاء 100% من الرسوم الدراسية.
+                                    </p>
                                 </div>
-                                <div class="text-[11px] leading-relaxed flex items-start gap-1.5 text-slate-600 dark:text-slate-300">
-                                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0"></i>
-                                    <span>${escapeHTML(item.coverage)}</span>
+                                <div class="space-y-0.5 pt-1.5 border-t border-slate-200 dark:border-slate-800">
+                                    <span class="font-bold text-amber-600 dark:text-amber-400 text-[11px] flex items-center gap-1">
+                                        <i data-lucide="alert-triangle" class="w-3 h-3 text-amber-500"></i>
+                                        <span>المتطلبات المتبقية:</span>
+                                    </span>
+                                    <p class="text-[10px] text-slate-600 dark:text-slate-300 pr-4 leading-relaxed">
+                                        شهادة لغة معتمدة (IELTS 6.5+) أو إثبات لغة الدراسة، واستكمال خطاب الدافع.
+                                    </p>
+                                </div>
+                                <div class="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5">
+                                    <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="flex-1 text-center py-1 rounded-lg bg-purple-600/20 text-purple-400 border border-purple-500/30 text-[10px] font-bold hover:bg-purple-600/30 transition">
+                                        استوديو الوثائق
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+
+                        <div class="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800 mt-3">
                             <div class="grid grid-cols-2 gap-2">
                                 <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary py-2 text-xs font-bold flex items-center justify-center gap-1.5">
                                     <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-500"></i>
                                     <span>تفعيل التنبيه</span>
                                 </button>
-                                <button type="button" onclick="openAssistantSidePanel('${escapeHTML(item.id)}', '${escapeHTML(item.name)}')" class="sp-btn-secondary py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-blue-500/50">
-                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500"></i>
-                                    <span>اسأل المستشار</span>
-                                </button>
+                                <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-purple-500/50">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    <span>المستشار الذكي</span>
+                                </a>
                             </div>
                             <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary w-full text-center py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all duration-200 hover:shadow-md">
                                 <span>قدّم الآن</span>

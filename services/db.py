@@ -7,6 +7,7 @@ Provides automatic table creation and automatic data migration from JSON files o
 import os
 import json
 import logging
+import time
 from datetime import datetime
 from typing import Optional, Dict, Any, List, Union
 from contextlib import contextmanager
@@ -56,10 +57,11 @@ CommunityNotificationDB = None
 NewsArticleDB = None
 NewsCommentDB = None
 UnifiedNotificationDB = None
+SentNotificationDB = None
 
 try:
     from sqlalchemy import (
-        create_engine, Column, Integer, String, Text, Boolean, JSON, inspect, text
+        create_engine, Column, Integer, String, Text, Boolean, JSON, inspect, text, Index
     )
     from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -705,6 +707,30 @@ try:
                 "updated_at": self.updated_at
             }
 
+    class SentNotificationDB(Base):
+        __tablename__ = "sent_notifications"
+
+        id = Column(Integer, primary_key=True, autoincrement=True)
+        user_id = Column(String(120), index=True, nullable=False)
+        scholarship_hash = Column(String(64), index=True, nullable=False)
+        notification_type = Column(String(50), default="match_alert", nullable=False)
+        sent_at = Column(String(50), default=lambda: datetime.now().isoformat())
+        scholarship_name = Column(String(255), default="")
+
+        __table_args__ = (
+            Index("idx_sent_user_sch", "user_id", "scholarship_hash", unique=True),
+        )
+
+        def to_dict(self) -> Dict[str, Any]:
+            return {
+                "id": self.id,
+                "user_id": self.user_id,
+                "scholarship_hash": self.scholarship_hash,
+                "notification_type": self.notification_type,
+                "sent_at": self.sent_at,
+                "scholarship_name": self.scholarship_name or ""
+            }
+
     # Connect to PostgreSQL (Neon) or fallback to SQLite
     active_url = raw_db_url
     if not active_url:
@@ -713,17 +739,36 @@ try:
         active_url = f"sqlite:///{sqlite_path}"
 
     connect_args = {}
+    engine_kwargs = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
     if active_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False}
-    elif "sslmode" not in active_url and "neon.tech" in active_url:
-        connect_args = {"sslmode": "require"}
+    else:
+        # Neon Serverless PostgreSQL Connection Tuning:
+        # 1. connect_timeout prevents indefinite hangs on cold-start
+        # 2. keepalives maintain active TCP session across cloud proxies
+        connect_args = {
+            "connect_timeout": 10,
+            "keepalives": 1,
+            "keepalives_idle": 30,
+            "keepalives_interval": 10,
+            "keepalives_count": 5
+        }
+        if "sslmode" not in active_url and "neon.tech" in active_url:
+            connect_args["sslmode"] = "require"
+        engine_kwargs.update({
+            "pool_size": 10,
+            "max_overflow": 20,
+            "pool_timeout": 10
+        })
 
     try:
         engine = create_engine(
             active_url,
             connect_args=connect_args,
-            pool_pre_ping=True,
-            pool_recycle=300
+            **engine_kwargs
         )
     except Exception as d_err:
         if "psycopg" in str(d_err).lower() and active_url.startswith("postgresql://") and not active_url.startswith("postgresql+"):
@@ -731,8 +776,7 @@ try:
             engine = create_engine(
                 alt_url,
                 connect_args=connect_args,
-                pool_pre_ping=True,
-                pool_recycle=300
+                **engine_kwargs
             )
         else:
             raise d_err
@@ -746,33 +790,62 @@ except Exception as e:
 
 
 @contextmanager
-def get_db_session():
-    """Context manager for safe database transactions with auto-rollback."""
+def get_db_session(max_retries: int = 2):
+    """Context manager for safe database transactions with auto-rollback and exponential retry for Neon serverless cold starts."""
     if not HAS_SQLALCHEMY or SessionLocal is None:
         yield None
         return
 
-    session = SessionLocal()
-    try:
-        yield session
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        logger.error(f"Database transaction error: {e}")
-        raise
-    finally:
-        session.close()
+    attempt = 0
+    backoff = 0.25
+    while attempt <= max_retries:
+        session = SessionLocal()
+        try:
+            yield session
+            session.commit()
+            break
+        except Exception as e:
+            session.rollback()
+            err_str = str(e).lower()
+            is_conn_error = any(phrase in err_str for phrase in [
+                "server closed the connection", "connection refused", "operationalerror",
+                "closed connection", "ssl connection has been closed", "timeout"
+            ])
+            if is_conn_error and attempt < max_retries:
+                attempt += 1
+                logger.warning(f"Neon connection drop/cold-start (attempt {attempt}/{max_retries}). Retrying in {backoff}s... Error: {e}")
+                time.sleep(backoff)
+                backoff *= 2
+                continue
+            logger.error(f"Database transaction error: {e}")
+            raise
+        finally:
+            session.close()
 
 
-def is_db_available() -> bool:
-    """Returns True if database engine is configured and reachable."""
+_last_db_check_time = 0.0
+_last_db_status = False
+
+def is_db_available(fast_check: bool = True) -> bool:
+    """Returns True if database engine is configured and reachable, with 30s cache to avoid blocking event loop on health checks."""
+    global _last_db_check_time, _last_db_status
     if not HAS_SQLALCHEMY or engine is None:
         return False
+
+    now = time.time()
+    if fast_check and (now - _last_db_check_time < 30.0):
+        return _last_db_status
+
     try:
         with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+            _last_db_status = True
+            _last_db_check_time = now
             return True
     except Exception as e:
         logger.debug(f"Database ping failed: {e}")
+        _last_db_status = False
+        _last_db_check_time = now
         return False
 
 
@@ -4065,4 +4138,127 @@ def get_all_users():
                 return json.load(f)
         except Exception:
             pass
+    return []
+
+
+# ==============================================================================
+# SENT NOTIFICATIONS PERSISTENCE & IDEMPOTENCY
+# ==============================================================================
+SENT_NOTIFICATIONS_JSON = os.path.join(DATA_DIR, "sent_notifications.json")
+
+def record_sent_notification(
+    user_id: str,
+    scholarship_hash: str,
+    notification_type: str = "match_alert",
+    scholarship_name: str = ""
+) -> bool:
+    """
+    Records a sent notification idempotently across Neon PostgreSQL and atomic JSON store.
+    Returns True if successfully recorded, or False if already recorded previously.
+    """
+    clean_user = user_id.strip().lower()
+    clean_hash = scholarship_hash.strip().lower()
+    clean_type = notification_type.strip()
+    now_iso = datetime.now().isoformat()
+    record = {
+        "user_id": clean_user,
+        "scholarship_hash": clean_hash,
+        "notification_type": clean_type,
+        "sent_at": now_iso,
+        "scholarship_name": scholarship_name
+    }
+
+    # 1. SQL Database
+    if is_db_available() and SentNotificationDB is not None:
+        try:
+            with get_db_session() as db:
+                if db is not None:
+                    existing = db.query(SentNotificationDB).filter(
+                        SentNotificationDB.user_id == clean_user,
+                        SentNotificationDB.scholarship_hash == clean_hash
+                    ).first()
+                    if existing:
+                        return False
+                    db.add(SentNotificationDB(**record))
+        except Exception as e:
+            logger.warning(f"Error persisting sent_notification to SQL: {e}")
+
+    # 2. JSON store dual-write
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        items = []
+        if os.path.exists(SENT_NOTIFICATIONS_JSON):
+            with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
+                items = json.load(f)
+        for item in items:
+            if item.get("user_id") == clean_user and item.get("scholarship_hash") == clean_hash:
+                return False
+        items.append(record)
+        temp_file = f"{SENT_NOTIFICATIONS_JSON}.tmp"
+        with open(temp_file, "w", encoding="utf-8") as f:
+            json.dump(items, f, ensure_ascii=False, indent=2)
+        os.replace(temp_file, SENT_NOTIFICATIONS_JSON)
+        return True
+    except Exception as je:
+        logger.error(f"Error persisting sent_notification to JSON: {je}")
+        return True
+
+
+def is_scholarship_already_sent(
+    user_id: str,
+    scholarship_hash: str,
+    notification_type: str = "match_alert"
+) -> bool:
+    """Returns True if a notification for this scholarship has already been sent to this user."""
+    clean_user = user_id.strip().lower()
+    clean_hash = scholarship_hash.strip().lower()
+
+    if is_db_available() and SentNotificationDB is not None:
+        try:
+            with get_db_session() as db:
+                if db is not None:
+                    row = db.query(SentNotificationDB).filter(
+                        SentNotificationDB.user_id == clean_user,
+                        SentNotificationDB.scholarship_hash == clean_hash
+                    ).first()
+                    if row:
+                        return True
+        except Exception as e:
+            logger.debug(f"SQL check in is_scholarship_already_sent error: {e}")
+
+    if os.path.exists(SENT_NOTIFICATIONS_JSON):
+        try:
+            with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
+                items = json.load(f)
+            return any(
+                it.get("user_id") == clean_user and it.get("scholarship_hash") == clean_hash
+                for it in items
+            )
+        except Exception:
+            return False
+    return False
+
+
+def get_sent_notifications_for_user(user_id: str) -> List[Dict[str, Any]]:
+    """Retrieves all sent notifications for a given user."""
+    clean_user = user_id.strip().lower()
+    if is_db_available() and SentNotificationDB is not None:
+        try:
+            with get_db_session() as db:
+                if db is not None:
+                    rows = db.query(SentNotificationDB).filter(
+                        SentNotificationDB.user_id == clean_user
+                    ).all()
+                    if rows:
+                        return [r.to_dict() for r in rows]
+        except Exception as e:
+            logger.debug(f"SQL lookup in get_sent_notifications_for_user error: {e}")
+
+    if os.path.exists(SENT_NOTIFICATIONS_JSON):
+        try:
+            with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
+                items = json.load(f)
+            return [it for it in items if it.get("user_id") == clean_user]
+        except Exception:
+            return []
     return []

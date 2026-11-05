@@ -2,8 +2,9 @@ import os
 import re
 import asyncio
 import logging
+from datetime import datetime, date
 from typing import List, Optional, Dict, Any, Union
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Query, Request, Response, UploadFile, File, Form
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Query, Header, Request, Response, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
@@ -14,11 +15,11 @@ from services.subscriber_service import SubscriberService
 from services.scholarship_engine import ScholarshipEngine
 from services.advisor_service import AdvisorService
 from services.auth_service import AuthService
-from services.automation_service import AutomationService, start_automation_daemon
+from services.automation_service import AutomationService, start_automation_daemon, run_radar_scan_job
 from services.community_service import community_service
 from services.news_service import news_service
 from services.db import init_db_and_migrate, is_db_available, get_notification_history
-from services.email_service import get_email_provider_info, dispatch_email, get_last_dispatch_meta
+from services.email_service import get_email_provider_info, dispatch_email, get_last_dispatch_meta, email_service
 from services.security_utils import (
     validate_email,
     validate_name,
@@ -38,7 +39,9 @@ from services.security_utils import (
     validate_age,
     validate_graduation_year,
     validate_phone_number,
-    validate_social_url
+    validate_social_url,
+    verify_cron_secret,
+    validate_environment_at_startup
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -68,24 +71,56 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 async def favicon_endpoint():
     ico_path = os.path.join(STATIC_DIR, "favicon.ico")
     if os.path.exists(ico_path):
-        return FileResponse(ico_path, media_type="image/x-icon", headers={"Cache-Control": "public, max-age=86400"})
+        return FileResponse(ico_path, media_type="image/x-icon", headers={"Cache-Control": "public, max-age=3600, must-revalidate"})
     return Response(status_code=404)
 
 
 
+auth_service = AuthService()
+
+def get_authenticated_user(request: Request) -> Optional[Dict[str, Any]]:
+    """Extracts bearer token or session cookie and authenticates student."""
+    token = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1].strip()
+    if not token:
+        token = request.cookies.get("session_token") or request.cookies.get("minha_token")
+    if token:
+        return auth_service.authenticate_token(token)
+    return None
+
+
+def require_cron_auth(request: Request):
+    """Protects webhook and cron automation endpoints with X-Cron-Secret verification."""
+    cron_header = request.headers.get("X-Cron-Secret") or request.headers.get("x-cron-secret")
+    if cron_header and verify_cron_secret(cron_header):
+        return True
+
+    # Also permit authenticated admin accounts
+    user = get_authenticated_user(request)
+    if user and user.get("role") == "admin":
+        return True
+
+    raise HTTPException(
+        status_code=401,
+        detail="المسار محمي ومخصص لمهام الأتمتة والجدولة (Cron). يرجى إرسال الترويسة السرية X-Cron-Secret أو تسجيل الدخول كمسؤول."
+    )
+
+
 # Secure CORS Middleware
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "").strip()
-allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()] if allowed_origins_env else ["*"]
+default_origins = ["http://localhost:8000", "http://127.0.0.1:8000", "https://scholarpilot-ai-mkac.onrender.com"]
+allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()] if allowed_origins_env else default_origins
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_credentials=bool(allowed_origins_env),
+    allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
 )
 
-# Application Rate Limiting Middleware with Anti-Spoofing Defense
 # Application Rate Limiting Middleware with Anti-Spoofing Defense and RFC Metrics
 @app.middleware("http")
 async def rate_limiting_middleware(request: Request, call_next):
@@ -100,18 +135,33 @@ async def rate_limiting_middleware(request: Request, call_next):
         else:
             client_ip = peer_ip
 
+        # Identify authenticated user for per-user rate limiting
+        user_identifier = None
+        user = get_authenticated_user(request)
+        if user and user.get("email"):
+            user_identifier = user["email"].strip().lower()
+
         category = "general"
         if path.startswith("/api/auth/"):
             category = "auth"
+        elif path in [
+            "/api/advisor/review-cv", "/api/advisor/upload-cv",
+            "/api/advisor/review-letter", "/api/advisor/upload-letter",
+            "/api/advisor/roadmap", "/api/advisor/draft-email"
+        ]:
+            category = "document_generation"
         elif path.startswith("/api/advisor/upload-") or path.startswith("/api/user/upload-"):
             category = "upload"
         elif path.startswith("/api/advisor/"):
             category = "advisor"
+        elif path in ["/api/match/calculate", "/api/scholarships/live", "/api/student/send-report"]:
+            category = "radar_scan"
         elif path == "/api/subscribe":
             category = "subscribe"
         elif path.startswith("/api/community/") or "/comments" in path:
             category = "community"
 
+        # 1. IP rate limiting
         allowed, retry_after, limit, remaining = security_rate_limiter.get_rate_limit_metrics(client_ip, category)
         security_rate_limiter.check_rate_limit(client_ip, category)
 
@@ -132,7 +182,55 @@ async def rate_limiting_middleware(request: Request, call_next):
                 }
             )
 
+        # 2. Per-user rate limiting
+        if user_identifier:
+            u_allowed, u_retry, u_limit, u_rem = security_rate_limiter.get_rate_limit_metrics(f"user:{user_identifier}", category)
+            security_rate_limiter.check_rate_limit(f"user:{user_identifier}", category)
+            if not u_allowed:
+                logger.warning(f"Rate limit exceeded for User {user_identifier} on category '{category}'")
+                return JSONResponse(
+                    status_code=429,
+                    content={
+                        "success": False,
+                        "detail": f"تم تجاوز عدد الطلبات المسموح به لحسابك الأكاديمي. يرجى الانتظار {u_retry} ثانية والمحاولة مجدداً.",
+                        "retry_after": u_retry
+                    },
+                    headers={
+                        "Retry-After": str(u_retry),
+                        "X-RateLimit-Limit": str(u_limit),
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "60"
+                    }
+                )
+
+        # 3. Hourly limit on expensive AI Assistant and Document Generation (Max 10 per hour per user / IP)
+        is_expensive = (category in ["advisor", "document_generation"]) and request.method == "POST"
+        gen_id = f"gen:{user_identifier}" if user_identifier else f"gen:{client_ip}"
+        if is_expensive:
+            gen_ok, gen_retry, gen_limit, gen_remaining = security_rate_limiter.check_hourly_generation_limit(gen_id)
+            if not gen_ok:
+                logger.warning(f"Hourly AI generation limit exceeded for {gen_id}")
+                return JSONResponse(
+                    status_code=429,
+                    content={
+                        "success": False,
+                        "detail": f"تم استنفاد الحد الأقصى لتوليد الوثائق والاستشارات الذكية (بحد أقصى {gen_limit} عمليات في الساعة لحماية رصيد النظام). يرجى الانتظار {max(1, gen_retry // 60)} دقيقة والمحاولة مجدداً.",
+                        "retry_after": gen_retry,
+                        "limit": gen_limit,
+                        "remaining": 0
+                    },
+                    headers={
+                        "Retry-After": str(gen_retry),
+                        "X-RateLimit-Limit": str(gen_limit),
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": str(gen_retry)
+                    }
+                )
+
         response = await call_next(request)
+        if is_expensive and response.status_code == 200:
+            security_rate_limiter.record_hourly_generation(gen_id)
+
         response.headers["X-RateLimit-Limit"] = str(limit)
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         response.headers["X-RateLimit-Reset"] = "60"
@@ -218,20 +316,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 sub_service = SubscriberService()
 engine = ScholarshipEngine()
 advisor_service = AdvisorService()
-auth_service = AuthService()
-
-def get_authenticated_user(request: Request) -> Optional[Dict[str, Any]]:
-    """Extracts bearer token or session cookie and authenticates student."""
-    token = None
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1].strip()
-    if not token:
-        token = request.cookies.get("session_token") or request.cookies.get("minha_token")
-    if token:
-        return auth_service.authenticate_token(token)
-    return None
-
 automation_service = AutomationService()
 
 
@@ -251,7 +335,17 @@ async def start_news_sync_daemon():
 
 @app.on_event("startup")
 async def startup_event():
-    """Initializes database schema migrations, notification queue, and background daemon."""
+    """Initializes security validation, database migrations, notification queue, and background daemons."""
+    logger.info("Conducting Production Environment & Security Validation...")
+    try:
+        env_report = validate_environment_at_startup()
+        if env_report.get("issues"):
+            for issue in env_report["issues"]:
+                logger.warning(f"Security validation notice: {issue}")
+        else:
+            logger.info("All required production environment variables and security controls verified successfully.")
+    except Exception as e:
+        logger.error(f"Environment validation error: {e}")
     logger.info("Initializing database migrations and tables...")
     try:
         init_db_and_migrate()
@@ -278,10 +372,27 @@ async def startup_event():
     asyncio.create_task(start_automation_daemon())
 
 
-@app.get("/healthz")
-@app.get("/api/health")
+@app.get("/healthz", include_in_schema=False)
+@app.get("/api/health", include_in_schema=False)
 async def health_check():
-    """Production health check probe for Render, Uptime Robot, and cloud load balancers."""
+    """
+    Ultra-fast (<5ms) liveness and readiness probe for Render, Cron-job.org, and uptime monitors.
+    Returns 200 OK immediately without blocking on external network calls or database wakes.
+    """
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "2.5.0",
+        "service": "EduAtlas"
+    }
+
+
+@app.get("/api/health/diagnostics", include_in_schema=False)
+async def health_diagnostics():
+    """
+    Deep diagnostic probe inspecting database connectivity, email provider, and Gemini configuration.
+    Separated from the ultra-fast /healthz ping endpoint.
+    """
     raw_db = os.getenv("DATABASE_URL", "")
     db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store"
     email_info = get_email_provider_info()
@@ -289,7 +400,7 @@ async def health_check():
 
     return {
         "status": "healthy",
-        "timestamp": asyncio.get_event_loop().time(),
+        "timestamp": datetime.now().isoformat(),
         "database": {
             "type": db_type,
             "connected": is_db_available(),
@@ -302,6 +413,32 @@ async def health_check():
             "configured": bool(gemini_key and len(gemini_key) > 5)
         },
         "version": "2.5.0"
+    }
+
+
+@app.api_route("/api/cron/trigger-scan", methods=["GET", "POST"], status_code=202)
+async def trigger_cron_radar_scan(
+    background_tasks: BackgroundTasks,
+    x_cron_secret: Optional[str] = Header(None, alias="X-Cron-Secret"),
+    secret: Optional[str] = Query(None)
+):
+    """
+    Dedicated cron trigger endpoint for Cron-job.org and external schedulers.
+    - Protected by CRON_SECRET token via X-Cron-Secret header or ?secret= query param.
+    - Decoupled: Immediately returns 202 Accepted in <20ms and runs scan asynchronously.
+    """
+    configured_secret = os.getenv("CRON_SECRET", "scholarpilot_cron_secret").strip()
+    provided_secret = (x_cron_secret or secret or "").strip()
+
+    if not provided_secret or provided_secret != configured_secret:
+        logger.warning("Unauthorized attempt to trigger cron radar scan without valid secret.")
+        raise HTTPException(status_code=401, detail="Unauthorized: Invalid or missing cron secret")
+
+    background_tasks.add_task(run_radar_scan_job)
+    return {
+        "status": "accepted",
+        "message": "Radar scan and consolidated email digest job enqueued successfully in background.",
+        "timestamp": datetime.now().isoformat()
     }
 
 
@@ -893,6 +1030,15 @@ class RoadmapRequest(BaseModel):
     scholarship_name: str = "Stipendium Hungaricum"
 
 
+
+class SendDocumentPackageRequest(BaseModel):
+    email: str
+    student_name: Optional[str] = ""
+    scholarship_name: Optional[str] = "منحة دراسية"
+    document_type: Optional[str] = "خطاب الدافع (Motivation Letter)"
+    document_content: str
+    checklist_status: Optional[List[str]] = None
+
 class DraftEmailRequest(BaseModel):
     email: Optional[str] = None
     email_type: str = "inquiry"
@@ -903,37 +1049,46 @@ class DraftEmailRequest(BaseModel):
 
 def _get_verified_profile_email(request: Request, requested_email: Optional[str] = None) -> Optional[str]:
     """
-    Resolves the verified student email from:
-    1. Authorization Bearer session token.
-    2. Session cookie.
-    3. Requested email parameter (when authenticated or active student).
-    Ensures legitimate users get immediate profile-awareness without unnecessary friction.
+    Strictly resolves verified student email from authenticated session (Bearer token or cookie).
+    Guarantees zero IDOR by strictly disallowing arbitrary requested_email without authentication.
     """
-    clean_target = requested_email.strip().lower() if requested_email and requested_email.strip() else None
+    user = get_authenticated_user(request)
+    if not user or not user.get("email"):
+        if requested_email:
+            raise HTTPException(
+                status_code=401,
+                detail="يرجى تسجيل الدخول للوصول إلى استشارات أو بيانات هذا الحساب الأكاديمي."
+            )
+        return None
 
-    # 1. Bearer Header Verification
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1].strip()
-        payload = verify_session_token(token)
-        if payload and payload.get("email"):
-            return payload.get("email").strip().lower()
-
-    # 2. Session Cookie Verification
-    cookie_token = request.cookies.get("session_token") or request.cookies.get("minha_token")
-    if cookie_token:
-        payload = verify_session_token(cookie_token)
-        if payload and payload.get("email"):
-            return payload.get("email").strip().lower()
-
-    # 3. Direct Requested Email
-    if clean_target and "@" in clean_target:
-        return clean_target
-
-    return None
+    auth_email = user["email"].strip().lower()
+    if requested_email:
+        clean_target = requested_email.strip().lower()
+        if clean_target and clean_target != auth_email and user.get("role") != "admin":
+            raise HTTPException(
+                status_code=403,
+                detail="غير مصرح لك بالوصول إلى بيانات أو استشارات حساب طالب آخر (IDOR Protection)."
+            )
+    return auth_email
 
 
-resolve_target_email = _get_verified_profile_email
+def resolve_target_email(request: Request, requested_email: Optional[str] = None) -> Optional[str]:
+    """Resolves email for notifications/preferences with strict IDOR protection."""
+    user = get_authenticated_user(request)
+    if not user or not user.get("email"):
+        if requested_email:
+            raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول للوصول إلى التنبيهات والتفضيلات.")
+        return None
+
+    auth_email = user["email"].strip().lower()
+    if requested_email:
+        clean = requested_email.strip().lower()
+        if clean and clean != auth_email and user.get("role") != "admin":
+            raise HTTPException(
+                status_code=403,
+                detail="غير مصرح بالوصول إلى إشعارات أو تفضيلات حساب آخر (IDOR Protection)."
+            )
+    return auth_email
 
 
 # ==================== BACKGROUND TASKS & ENDPOINTS ====================
@@ -1008,8 +1163,11 @@ async def serve_own_profile(request: Request):
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def serve_dashboard():
-    """Serves the user account portal & admin control panel."""
+async def serve_dashboard(request: Request):
+    """Serves the user account portal & admin control panel. Requires valid authentication."""
+    user = get_authenticated_user(request)
+    if not user:
+        return RedirectResponse(url="/?auth=login&redirect=/dashboard", status_code=302)
     if os.path.exists(DASHBOARD_HTML_PATH):
         with open(DASHBOARD_HTML_PATH, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
@@ -1026,8 +1184,11 @@ async def serve_community_page():
     return HTMLResponse(content="<h1>المجتمع الأكاديمي - ScholarPilot Academic Community Hub</h1>")
 
 @app.get("/assistant", response_class=HTMLResponse)
-async def serve_assistant_page():
-    """Serves the dedicated full-page ChatGPT-like AI Scholarship Assistant."""
+async def serve_assistant_page(request: Request):
+    """Serves the dedicated full-page ChatGPT-like AI Scholarship Assistant. Requires valid authentication."""
+    user = get_authenticated_user(request)
+    if not user:
+        return RedirectResponse(url="/?auth=login&redirect=/assistant", status_code=302)
     if os.path.exists(ASSISTANT_HTML_PATH):
         with open(ASSISTANT_HTML_PATH, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
@@ -1044,7 +1205,7 @@ async def serve_notifications_page():
 
 
 @app.post("/api/auth/register")
-async def register_account(req: RegisterRequest, response: Response):
+async def register_account(req: RegisterRequest, request: Request, response: Response):
     """Creates a new student account with full academic identity attributes and sets session cookie."""
     try:
         user = auth_service.register(
@@ -1081,13 +1242,27 @@ async def register_account(req: RegisterRequest, response: Response):
             talents_experience=req.talents_experience or ""
         )
         token = user.get("session_token", "")
+        is_secure = (
+            request.url.scheme == "https"
+            or request.headers.get("x-forwarded-proto") == "https"
+            or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+            or os.getenv("SECURE_COOKIES", "false").lower() == "true"
+        )
+        response.set_cookie(
+            key="session_token",
+            value=token,
+            max_age=86400,
+            httponly=True,
+            samesite="lax",
+            secure=is_secure
+        )
         response.set_cookie(
             key="minha_token",
             value=token,
             max_age=86400,
             httponly=True,
             samesite="lax",
-            secure=False
+            secure=is_secure
         )
         return {"success": True, "user": user, "token": token, "message": "تم إنشاء حسابك وتفعيل هويتك الأكاديمية بنجاح!"}
     except ValueError as ve:
@@ -1099,7 +1274,7 @@ async def register_account(req: RegisterRequest, response: Response):
 
 @app.post("/api/auth/login")
 async def login_account(req: LoginRequest, request: Request, response: Response):
-    """Authenticates student with bcrypt verification, lockout protection, remember-me support, and cookie."""
+    """Authenticates student with bcrypt verification, lockout protection, remember-me support, and secure cookies."""
     try:
         # reCAPTCHA Verification
         client_ip = request.client.host if request.client else "127.0.0.1"
@@ -1111,13 +1286,27 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
             raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة.")
         token = user.get("session_token", "")
         max_age = user.get("expires_in_seconds", 86400)
+        is_secure = (
+            request.url.scheme == "https"
+            or request.headers.get("x-forwarded-proto") == "https"
+            or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+            or os.getenv("SECURE_COOKIES", "false").lower() == "true"
+        )
+        response.set_cookie(
+            key="session_token",
+            value=token,
+            max_age=max_age,
+            httponly=True,
+            samesite="lax",
+            secure=is_secure
+        )
         response.set_cookie(
             key="minha_token",
             value=token,
             max_age=max_age,
             httponly=True,
             samesite="lax",
-            secure=False
+            secure=is_secure
         )
         return {"success": True, "user": user, "token": token}
     except ValueError as ve:
@@ -1240,23 +1429,15 @@ async def verify_email_get_endpoint(token: str):
 
 @app.get("/api/user/profile")
 async def get_user_profile_endpoint(request: Request, email: Optional[str] = None):
-    """Returns authenticated student full profile and completeness metrics."""
-    token = None
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1].strip()
-    if not token:
-        token = request.cookies.get("minha_token")
-
-    user = None
-    if token:
-        user = auth_service.authenticate_token(token)
-
-    if not user and email:
-        user = auth_service.get_by_email(email)
-
+    """Returns authenticated student full profile. Requires valid authentication with IDOR protection."""
+    user = get_authenticated_user(request)
     if not user:
         raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول لعرض الملف الأكاديمي.")
+
+    if email:
+        clean_email = email.strip().lower()
+        if clean_email != user.get("email", "").lower() and user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="غير مصرح بالاطلاع على بيانات حساب طالب آخر (IDOR Protection).")
 
     return {"success": True, "profile": user}
 
@@ -1333,58 +1514,49 @@ async def upload_user_cover_endpoint(request: Request, file: UploadFile = File(.
 @app.post("/api/user/profile")
 @app.put("/api/user/profile")
 async def update_user_profile_endpoint(req: UpdateProfileRequest, request: Request):
-    """Updates student profile info, skills, languages, social links, and privacy settings."""
-    try:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header.split(" ")[1].strip()
-            token_user = auth_service.authenticate_token(token)
-            if token_user and token_user.get("email"):
-                req.email = token_user["email"]
+    """Updates student profile info. Enforces valid authentication and strict IDOR protection."""
+    user = get_authenticated_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول لتحديث الملف الأكاديمي.")
 
-        payload = req.model_dump(exclude_unset=True)
-        email = payload.pop("email")
-        updated = auth_service.update_profile(email, payload)
-        return {"success": True, "profile": updated, "message": "تم تحديث الملف الأكاديمي بنجاح!"}
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        logger.error(f"Update profile error: {e}")
-        raise HTTPException(status_code=500, detail="تعذر حفظ تعديلات الملف.")
+    auth_email = user["email"].strip().lower()
+    if req.email and req.email.strip().lower() != auth_email and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="غير مصرح بتعديل بيانات حساب طالب آخر (IDOR Protection).")
+
+    payload = req.model_dump(exclude_unset=True)
+    payload.pop("email", None)
+    updated = auth_service.update_profile(auth_email, payload)
+    return {"success": True, "profile": updated, "message": "تم تحديث الملف الأكاديمي بنجاح!"}
 
 
 @app.post("/api/user/change-password")
 async def change_password_endpoint(req: ChangePasswordRequest, request: Request):
-    """Changes password for authenticated student."""
-    try:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header.split(" ")[1].strip()
-            token_user = auth_service.authenticate_token(token)
-            if token_user and token_user.get("email"):
-                req.email = token_user["email"]
+    """Changes password for authenticated student with IDOR protection."""
+    user = get_authenticated_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول لتغيير كلمة المرور.")
 
-        success = auth_service.change_password(req.email, req.current_password, req.new_password)
-        return {"success": success, "message": "تم تغيير كلمة المرور بنجاح!"}
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        logger.error(f"Change password error: {e}")
-        raise HTTPException(status_code=500, detail="تعذر تغيير كلمة المرور.")
+    auth_email = user["email"].strip().lower()
+    if req.email and req.email.strip().lower() != auth_email and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="غير مصرح بتغيير كلمة مرور حساب آخر (IDOR Protection).")
+
+    success = auth_service.change_password(auth_email, req.current_password, req.new_password)
+    return {"success": success, "message": "تم تغيير كلمة المرور بنجاح!"}
 
 
 @app.post("/api/user/delete-account")
 async def delete_account_endpoint(req: DeleteAccountRequest, request: Request, response: Response):
-    """Permanently deletes student account with password verification."""
+    """Permanently deletes student account with password verification and IDOR protection."""
     try:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header.split(" ")[1].strip()
-            token_user = auth_service.authenticate_token(token)
-            if token_user and token_user.get("email"):
-                req.email = token_user["email"]
+        user = get_authenticated_user(request)
+        if not user:
+            raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول لحذف الحساب.")
 
-        success = auth_service.delete_account(req.email, req.password)
+        auth_email = user["email"].strip().lower()
+        if req.email and req.email.strip().lower() != auth_email and user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="غير مصرح بحذف حساب طالب آخر (IDOR Protection).")
+
+        success = auth_service.delete_account(auth_email, req.password)
         response.delete_cookie("minha_token")
         response.delete_cookie("session_token")
         return {"success": success, "message": "تم حذف الحساب نهائياً بنجاح."}
@@ -2111,6 +2283,40 @@ async def generate_roadmap_route(req: RoadmapRequest, request: Request):
         logger.error(f"Roadmap error: {e}")
         raise HTTPException(status_code=500, detail="حدث خطأ أثناء توليد خطة التقديم.")
 
+
+
+@app.post("/api/advisor/send-document-package")
+async def send_document_package_route(req: SendDocumentPackageRequest, request: Request):
+    """Sends drafted Motivation or Recommendation Letter package directly to student's email."""
+    try:
+        clean_email = validate_email(req.email)
+        clean_name = sanitize_text(req.student_name, max_length=100) if req.student_name else "طالب أكاديمي"
+        clean_sch = sanitize_text(req.scholarship_name, max_length=200) if req.scholarship_name else "منحة دراسية"
+        clean_type = sanitize_text(req.document_type, max_length=100) if req.document_type else "خطاب الدافع"
+        clean_content = sanitize_text(req.document_content, max_length=25000)
+        # Post-processing validator to eliminate any bracketed placeholders before dispatch
+        validated_content = advisor_service.clean_and_validate_document_output(
+            text=clean_content,
+            student_profile={"full_name": clean_name, "email": clean_email},
+            scholarship={"name": clean_sch}
+        )
+
+        success = await email_service.send_document_package(
+            student_email=clean_email,
+            student_name=clean_name,
+            scholarship_name=clean_sch,
+            document_type=clean_type,
+            document_content=validated_content,
+            checklist_status=req.checklist_status
+        )
+        if success:
+            return {"success": True, "message": "تم إرسال حزمة الوثائق بنجاح إلى بريدك الإلكتروني!"}
+        else:
+            meta = get_last_dispatch_meta()
+            return {"success": False, "message": meta.get("error_detail") or "تعذر إرسال البريد حالياً. يرجى مراجعة الإعدادات."}
+    except Exception as e:
+        logger.error(f"Send document package error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/advisor/draft-email")
 async def draft_email_route(req: DraftEmailRequest, request: Request):

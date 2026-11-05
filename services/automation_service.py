@@ -1,9 +1,12 @@
 import os
+import re
 import json
 import asyncio
 import logging
+import hashlib
+import unicodedata
 from datetime import datetime, date, timedelta
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 
 from services.subscriber_service import SubscriberService
 from services.scholarship_engine import ScholarshipEngine
@@ -14,6 +17,53 @@ logger = logging.getLogger("scholarpilot.automation")
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 LIVE_SCHOLARSHIPS_FILE = os.path.join(DATA_DIR, "live_scholarships.json")
+
+
+def normalize_scholarship_title(title: str) -> str:
+    """
+    Normalizes scholarship title for robust hashing and deduplication.
+    Converts variations like 'Türkiye Bursları' and 'Türkiye Bursları (YTB)' to canonical 'turkiye'.
+    """
+    if not title:
+        return ""
+    # 1. Decompose unicode accents (e.g., ü -> u, é -> e)
+    text = unicodedata.normalize('NFKD', title)
+    text = ''.join(c for c in text if not unicodedata.combining(c)).lower()
+
+    # 2. Strip bracketed and parenthetical noise: (YTB), [UK], {2026}, etc.
+    text = re.sub(r'[\(\[\{].*?[\)\]\}]', ' ', text)
+
+    # 3. Strip common noise words and dates
+    noise_words = sorted([
+        'scholarships', 'scholarship', 'bursları', 'burslari', 'bursu',
+        'fellowships', 'fellowship', 'programmes', 'programme', 'programs',
+        'program', 'grants', 'grant', 'awards', 'award', 'opportunity',
+        'opportunities', 'منحة', 'منح', 'برنامج', 'دراسات', 'جامعة',
+        'حكومة', 'للطلاب', '2024', '2025', '2026', '2027', '2028',
+        'fully funded', 'full funding', 'government', 'international'
+    ], key=len, reverse=True)
+
+    for w in noise_words:
+        text = re.sub(r'\b' + re.escape(w) + r'\b', ' ', text, flags=re.IGNORECASE)
+        text = text.replace(w, ' ')
+
+    # 4. Remove punctuation and normalize spaces
+    text = re.sub(r'[^\w\s]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
+def compute_scholarship_hash(sch: Union[str, Dict[str, Any]]) -> str:
+    """Computes a canonical SHA-256 hash for a scholarship."""
+    if isinstance(sch, dict):
+        raw_name = sch.get("name") or sch.get("title") or ""
+        country = (sch.get("country") or "").strip().lower()
+    else:
+        raw_name = str(sch)
+        country = ""
+    norm_name = normalize_scholarship_title(raw_name)
+    canonical = f"{norm_name}:{country}".strip(":")
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 # Verified base roster of flagship global scholarships
 DEFAULT_LIVE_SCHOLARSHIPS = [
@@ -430,20 +480,20 @@ class AutomationService:
         """
         Automatic Student Matching & Notification Engine:
         Evaluates newly discovered scholarships against all active students and user preferences.
-        Considers: Degree, Country, Category/Field of study, Funding type, and Keywords.
-        Dispatches multi-channel notifications (In-App, Email, Telegram) via async NotificationQueue.
-        Guarantees strict deduplication (never alerts twice for the same scholarship).
+        Guarantees strict idempotency and deduplication using sent_notifications table & normalized title hash.
+        Consolidates newly discovered matches into a SINGLE 'Smart Radar Digest Email' per student per scan.
         """
         from services.advisor_service import AdvisorService
-        from services.email_service import render_new_match_template
+        from services.email_service import email_service
         from services.notification_queue import enqueue_notification
-        from services.db import is_notification_sent, get_user_preferences
+        from services.db import is_scholarship_already_sent, record_sent_notification, get_user_preferences
 
         advisor = AdvisorService()
         students = self._get_all_active_students()
-        logger.info(f"Matching {len(new_scholarships)} new scholarships against {len(students)} active students...")
+        logger.info(f"Matching {len(new_scholarships)} new scholarships against {len(students)} active students using Consolidated Digest...")
 
         total_alerts_queued = 0
+        total_digests_sent = 0
 
         for student in students:
             email = student.get("email")
@@ -451,10 +501,6 @@ class AutomationService:
                 continue
 
             name = student.get("full_name") or "Student"
-            gpa = student.get("gpa") or "85%"
-            majors = student.get("majors") or ["Software Engineering"]
-            degree = student.get("degree") or "Undergraduate (Bachelor's)"
-
             # Load extended preferences
             prefs = get_user_preferences(email)
             pref_countries = [c.lower() for c in prefs.get("preferred_countries", ["any"])]
@@ -463,8 +509,11 @@ class AutomationService:
             telegram_enabled = prefs.get("telegram_notifications", False)
             telegram_chat_id = (prefs.get("telegram_chat_id") or "").strip()
 
+            student_new_matches = []
+
             for sch in new_scholarships:
-                sch_id = sch.get("id") or str(abs(hash(sch.get("name", ""))))
+                sch_hash = compute_scholarship_hash(sch)
+                sch_id = sch.get("id") or sch_hash[:16]
                 sch_name = sch.get("name", "منحة دراسية جديدة")
                 sch_country = (sch.get("country") or "").lower()
                 sch_coverage = (sch.get("coverage") or "").lower()
@@ -479,20 +528,26 @@ class AutomationService:
                 if pref_funding in ["full", "كامل", "تغطية كاملة"] and "100%" not in sch_coverage and "كامل" not in sch_coverage:
                     continue
 
-                # Deduplication key across channels
-                notification_target = f"new_match_alert_{sch_id}_{email.lower()}"
-                if is_notification_sent(email, "new_scholarship_alert", notification_target):
+                # STRICT IDEMPOTENCY CHECK: has this student EVER been alerted for this scholarship?
+                if is_scholarship_already_sent(email, sch_hash, "match_alert"):
                     continue
 
-                # 5-D Match Score calculation (Degree, Major, GPA, Country, Prerequisites)
+                # 4-D Match Score calculation (GPA 35%, Major 30%, Nationality 20%, Language 15%)
                 match_res = advisor.calculate_smart_match(student, sch)
                 score = match_res.get("match_score", 0.0)
 
                 if score >= match_threshold:
                     logger.info(f"🎯 High Match found: {sch_name} ({score}%) for {email}")
-                    link = sch.get("link") or sch.get("official_link", "https://scholarpilot-ai-mkac.onrender.com")
+                    link = sch.get("link") or sch.get("official_link", "https://eduatlas-irxv.onrender.com")
+
+                    sch_entry = dict(sch)
+                    sch_entry["match_score"] = int(score)
+                    sch_entry["reasons"] = match_res.get("strengths", [])
+                    sch_entry["scholarship_hash"] = sch_hash
+                    student_new_matches.append(sch_entry)
 
                     # 1. ALWAYS Queue In-App Notification
+                    notification_target = f"new_match_alert_{sch_hash}_{email.lower()}"
                     await enqueue_notification(
                         channel="in_app",
                         recipient=email,
@@ -519,30 +574,7 @@ class AutomationService:
                     except Exception as ne:
                         logger.warning(f"Unified notification error: {ne}")
 
-                    # 2. Queue Email Notification if user preference is ON
-                    if email_enabled:
-                        html_content, text_content = render_new_match_template(
-                            student_name=name,
-                            scholarship=sch,
-                            match_score=int(score),
-                            reasons=match_res.get("strengths", [])
-                        )
-                        email_ok = await enqueue_notification(
-                            channel="email",
-                            recipient=email,
-                            notification_type="new_scholarship_alert",
-                            target_id=notification_target,
-                            payload={
-                                "subject": f"🎯 رصد منحة جديدة متوافقة مع ملفك بنسبة {int(score)}%: {sch_name}",
-                                "html_content": html_content,
-                                "text_content": text_content,
-                                "details": {"scholarship_id": sch_id, "score": score}
-                            }
-                        )
-                        if email_ok:
-                            total_alerts_queued += 1
-
-                    # 3. Queue Telegram Notification if user enabled Telegram
+                    # 2. Queue Telegram Notification if user enabled Telegram
                     if telegram_enabled and telegram_chat_id:
                         await enqueue_notification(
                             channel="telegram",
@@ -555,7 +587,31 @@ class AutomationService:
                             }
                         )
 
-        return {"alerts_queued": total_alerts_queued}
+            # CONSOLIDATED EMAIL DISPATCH: Send ONE consolidated digest email if there are matches
+            if student_new_matches and email_enabled:
+                logger.info(f"📨 Dispatching 1 consolidated Smart Radar Digest ({len(student_new_matches)} matches) to {email}...")
+                send_ok = await email_service.send_smart_radar_digest(
+                    student_email=email,
+                    student_name=name,
+                    matches=student_new_matches,
+                    student_profile=student
+                )
+                if send_ok:
+                    total_digests_sent += 1
+                    # Record each scholarship as sent in sent_notifications DB table
+                    for item in student_new_matches:
+                        record_sent_notification(
+                            user_id=email,
+                            scholarship_hash=item["scholarship_hash"],
+                            notification_type="match_alert",
+                            scholarship_name=item.get("name", "")
+                        )
+                        total_alerts_queued += 1
+
+        return {
+            "alerts_queued": total_alerts_queued,
+            "digests_sent": total_digests_sent
+        }
 
     # ==========================================================================
     # 4 & 6. WEEKLY AUTOMATED REPORTS (RECURRING 7-DAY PERSONALIZED DIGESTS)
@@ -875,3 +931,19 @@ async def start_automation_daemon():
         # Sleep for 3 hours between background cycles
         logger.info("Automation cycle complete. Sleeping for 3 hours before next autonomous scan...")
         await asyncio.sleep(3 * 3600)
+
+
+async def run_radar_scan_job() -> Dict[str, Any]:
+    """
+    Safely executes the scholarship discovery and student matching job in the background.
+    Decoupled from HTTP request lifecycle so cron-job.org and webhooks return immediately.
+    """
+    logger.info("Executing asynchronous radar scan job triggered by cron/webhook...")
+    automation = AutomationService()
+    try:
+        res = await automation.auto_refresh_scholarships_from_web()
+        logger.info(f"Asynchronous radar scan job completed successfully: {res}")
+        return res
+    except Exception as e:
+        logger.error(f"Error executing asynchronous radar scan job: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}

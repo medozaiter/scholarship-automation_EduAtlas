@@ -5,15 +5,15 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduAtlas | غرفة القيادة وسجل المستكشف</title>
-    <meta name="description" content="EduAtlas - غرفة القيادة وسجل المستكشف الأكاديمي الدولي. رصد المسارات التعليمية، متابعة الترشيحات، وجواز السفر الأكاديمي المعتمد.">
+    <title>ScholarPilot AI | غرفة القيادة ومتتبع طلبات المنح</title>
+    <meta name="description" content="ScholarPilot AI - غرفة القيادة الأكاديمية والمتتبع التفاعلي (Kanban) لطلبات المنح الدراسية، المستشار الذكي، وسجل القبول الدولي.">
             <!-- Official EduAtlas Compass Favicon & Brand Icons -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316324F'/><circle cx='50' cy='50' r='38' stroke='%23B99050' stroke-width='3' stroke-dasharray='4 4' fill='none'/><circle cx='50' cy='50' r='30' stroke='%23F4F1EA' stroke-opacity='0.25' stroke-width='2' fill='none'/><polygon points='50,16 61,50 50,44 39,50' fill='%23C86446'/><polygon points='50,84 61,50 50,56 39,50' fill='%23F4F1EA'/><circle cx='50' cy='50' r='6' fill='%23B99050'/></svg>">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=6">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png?v=6">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png?v=6">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=6">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png?v=6">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20261105b">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png?v=20261105b">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png?v=20261105b">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=20261105b">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png?v=20261105b">
 
     
 
@@ -30,12 +30,22 @@
                         brand: {
                             50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
                             400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
-                            800: '#1e40af', 900: '#1e3a8a', 950: '#0f172a'
-                        }
+                            800: '#1e40af', 900: '#1e3a8a', 950: '#0b1120'
+                        },
+                        deepSlate: '#0B1120',
+                        midnight: '#111827',
+                        cardSurface: '#1E293B',
+                        subtleBorder: '#334155',
+                        royalBlue: '#2563EB',
+                        aiViolet: '#7C3AED',
+                        emeraldMatch: '#10B981',
+                        amberWarning: '#F59E0B',
+                        roseDanger: '#EF4444'
                     },
                     fontFamily: {
-                        sans: ['Tajawal', 'Cairo', 'Inter', 'sans-serif'],
-                        mono: ['Inter', 'Plus Jakarta Sans', 'monospace']
+                        sans: ['Cairo', 'IBM Plex Sans Arabic', 'Tajawal', 'sans-serif'],
+                        latin: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Inter', 'monospace']
                     }
                 }
             }
@@ -45,7 +55,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Production Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
@@ -76,25 +86,20 @@
             <!-- Brand Logo -->
             <div class="flex items-center gap-3">
                 <a href="/" class="flex items-center gap-2.5 sm:gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-[#16324F] dark:bg-[#0D1F31] border border-[#B99050]/30 flex items-center justify-center text-white shadow-md shadow-[#16324F]/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
-                    <svg class="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 40 40" fill="none" stroke="#F4F1EA" stroke-width="0.8">
-                        <circle cx="20" cy="20" r="17"/>
-                        <path d="M5 20 Q12 12 20 12 T35 20"/>
-                        <path d="M5 28 Q12 22 20 22 T35 28"/>
-                    </svg>
-                    <svg class="w-6 h-6 relative z-10" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="9" stroke="#B99050" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
-                        <polygon points="12,4 14.5,12 12,10.5 9.5,12" fill="#C86446"/>
-                        <polygon points="12,20 14.5,12 12,13.5 9.5,12" fill="#F4F1EA" fill-opacity="0.85"/>
-                        <circle cx="12" cy="12" r="1.5" fill="#B99050"/>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 border border-blue-400/30 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="#93C5FD" stroke-width="1.4" stroke-dasharray="2 3"/>
+                        <polygon points="12,4 15,12 12,10 9,12" fill="#60A5FA"/>
+                        <polygon points="12,20 15,12 12,14 9,12" fill="#FFFFFF" fill-opacity="0.9"/>
+                        <circle cx="12" cy="12" r="1.6" fill="#F59E0B"/>
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#16324F] dark:text-white leading-none">Edu<span class="text-[#C86446] dark:text-[#E07A5F]">Atlas</span></span>
-                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F4D3A]/10 text-[#1F4D3A] dark:bg-[#1F4D3A]/30 dark:text-[#52B788] border border-[#1F4D3A]/20">غرفة القيادة</span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none font-latin">Scholar<span class="text-blue-600 dark:text-blue-400">Pilot</span></span>
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-500/20">لوحة التحكم</span>
                     </div>
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block mt-0.5">سجل رحلتي الأكاديمية</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block mt-0.5">متتبع الطلبات وغرفة القيادة الأكاديمية</span>
                 </div>
             </a>
             </div>
@@ -420,17 +425,25 @@
                     <i data-lucide="user" class="w-4 h-4"></i>
                     <span>الملف الأكاديمي والهوية</span>
                 </button>
+                <button type="button" id="tabRadarNav" onclick="switchMainTab('radar')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                    <span>رادار المنح والمقارنة</span>
+                </button>
                 <button type="button" id="tabWatchlistNav" onclick="switchMainTab('watchlist')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <i data-lucide="bookmark" class="w-4 h-4 text-purple-500"></i>
                     <span>المنح المحفوظة ورادار المتابعة</span>
                 </button>
                 <button type="button" id="tabNotifsNav" onclick="switchMainTab('notifs')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
-                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i>
                     <span>مركز التنبيهات</span>
                 </button>
                 <button type="button" id="tabSettingsNav" onclick="switchMainTab('settings')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>إعدادات الحساب والأمان</span>
+                </button>
+                <button type="button" onclick="DashboardApp.openSopStudio()" class="tab-btn px-4 py-2.5 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 flex items-center gap-1.5 mr-auto">
+                    <i data-lucide="file-pen" class="w-4 h-4"></i>
+                    <span>استوديو الوثائق (SOP)</span>
                 </button>
             </div>
 
@@ -688,7 +701,66 @@
                 </form>
             </div>
 
-            <!-- ==================== TAB 2: WATCHLIST & DEADLINE REMINDERS ==================== -->
+            <!-- ==================== TAB 2: LIVE SCHOLARSHIP RADAR & COMPARISON ==================== -->
+            <div id="tabContentRadar" class="hidden space-y-6">
+                <!-- Radar Header with Mode Toggle & Stats -->
+                <div class="sp-card p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">محرك رادار الفرص الأكاديمية المباشر</span>
+                        </div>
+                        <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="radar" class="w-5 h-5 text-blue-500"></i>
+                            <span>رادار المنح المفتوحة والمقارنة المتقدمة</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">تصفية فورية، فرز ذكي، وتحويل مباشر بين بطاقات الفرص وجدول المقارنة الشامل (11 معياراً) دون إعادة تحميل الصفحة.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
+                        <!-- View Mode Switcher: Cards Grid vs 11-Column Comparison Table -->
+                        <div class="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60">
+                            <button type="button" 
+                                    id="viewModeGridBtn" 
+                                    onclick="DashboardApp.setViewMode('grid')" 
+                                    class="p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow-xs">
+                                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">عرض البطاقات</span>
+                            </button>
+                            <button type="button" 
+                                    id="viewModeTableBtn" 
+                                    onclick="DashboardApp.setViewMode('table')" 
+                                    class="p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                                <i data-lucide="table-2" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">جدول المقارنة (11 معياراً)</span>
+                            </button>
+                        </div>
+
+                        <!-- Open SOP Studio button -->
+                        <button type="button" 
+                                onclick="DashboardApp.openSopStudio()" 
+                                class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-blue-600 dark:text-blue-400 shadow-xs hover:border-blue-500/50">
+                            <i data-lucide="file-pen" class="w-3.5 h-3.5"></i>
+                            <span>استوديو الوثائق (SOP)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Radar Layout: 2 Columns on Desktop (Sidebar Filters + Results) -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                    <!-- Instant Client-Side Filter Sidebar -->
+                    <div id="dashboardFilterSidebarContainer" class="lg:col-span-1 lg:sticky lg:top-20 z-10">
+                        <!-- Populated dynamically by FilterSidebar.js -->
+                    </div>
+
+                    <!-- Radar Feed / Comparison Table Content -->
+                    <div id="radarContentContainer" class="lg:col-span-3 min-w-0">
+                        <!-- Populated dynamically by DashboardApp & ScholarshipCard / ComparisonTable -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB 3: WATCHLIST & DEADLINE REMINDERS ==================== -->
             <div id="tabContentWatchlist" class="hidden space-y-6">
                 <!-- Key Metrics Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -725,24 +797,143 @@
                     </div>
                 </div>
 
-                <!-- WATCHLIST & DEADLINE REMINDERS -->
-                <div class="sp-card p-6 sm:p-8 space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-2">
+                <!-- KANBAN APPLICATION TRACKER (4 COLUMNS) -->
+                <div class="sp-card p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-3">
                         <div>
-                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i data-lucide="bell" class="w-4 h-4 text-emerald-500"></i>
-                                <span>قائمة متابعة المنح وتنبيهات المواعيد</span>
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-0.5">المنح المحفوظة لتلقي تنبيهات بريدية آلية ذكية عند 30، 14، 7، 3، و 1 يوم قبل الموعد النهائي رسمياً.</p>
+                            <div class="flex items-center gap-2">
+                                <span class="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                                    <i data-lucide="kanban" class="w-4 h-4"></i>
+                                </span>
+                                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                                    متتبع طلبات المنح الأكاديمية (Kanban Tracker)
+                                </h2>
+                                <span class="sp-badge sp-badge-ai text-[10px]">تفاعلي بالسحب والإفلات</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                انقل المنح بين مراحل التقديم الأربع لتتبع ملفاتك خطوة بخطوة من لحظة الرصد وحتى الحصول على القبول النهائي.
+                            </p>
                         </div>
 
-                        <a href="/#radarSection" class="sp-btn-secondary px-3 py-1.5 text-xs font-semibold self-start sm:self-auto flex items-center gap-1.5">
-                            <i data-lucide="plus" class="w-3.5 h-3.5 text-blue-500"></i>
-                            <span>إضافة منح من الرادار</span>
-                        </a>
+                        <div class="flex items-center gap-2 self-start sm:self-auto">
+                            <button type="button" onclick="openAddScholarshipToKanbanModal()" class="sp-btn-primary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>إضافة منحة للمتتبع</span>
+                            </button>
+                            <a href="/#radarSection" class="sp-btn-secondary px-3 py-2 text-xs font-semibold flex items-center gap-1.5">
+                                <i data-lucide="radar" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <span>استعراض الرادار</span>
+                            </a>
+                        </div>
                     </div>
 
-                    <div id="savedScholarshipsList" class="space-y-3 pt-2"></div>
+                    <!-- Hidden legacy list anchor for test compatibility -->
+                    <div id="savedScholarshipsList" class="hidden"></div>
+
+                    <!-- 4 Columns Kanban Board Grid -->
+                    <div class="kanban-grid">
+                        
+                        <!-- Column 1: تم الرصد (Matched) -->
+                        <div class="kanban-column" id="kanbanCol-matched"
+                             ondragover="onKanbanDragOver(event)" ondragleave="onKanbanDragLeave(event)" ondrop="onKanbanDrop(event, 'matched')">
+                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">تم الرصد (Matched)</h3>
+                                </div>
+                                <span id="colCount-matched" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">0</span>
+                            </div>
+                            <div id="kanbanCards-matched" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column 2: قيد التجهيز (Preparing Docs) -->
+                        <div class="kanban-column" id="kanbanCol-preparing"
+                             ondragover="onKanbanDragOver(event)" ondragleave="onKanbanDragLeave(event)" ondrop="onKanbanDrop(event, 'preparing')">
+                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                    <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">قيد التجهيز (Preparing Docs)</h3>
+                                </div>
+                                <span id="colCount-preparing" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400">0</span>
+                            </div>
+                            <div id="kanbanCards-preparing" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column 3: تم التقديم (Applied) -->
+                        <div class="kanban-column" id="kanbanCol-applied"
+                             ondragover="onKanbanDragOver(event)" ondragleave="onKanbanDragLeave(event)" ondrop="onKanbanDrop(event, 'applied')">
+                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                    <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">تم التقديم (Applied)</h3>
+                                </div>
+                                <span id="colCount-applied" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">0</span>
+                            </div>
+                            <div id="kanbanCards-applied" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column 4: النتيجة (Accepted/Rejected) -->
+                        <div class="kanban-column" id="kanbanCol-decided"
+                             ondragover="onKanbanDragOver(event)" ondragleave="onKanbanDragLeave(event)" ondrop="onKanbanDrop(event, 'decided')">
+                            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">النتيجة (Decision)</h3>
+                                </div>
+                                <span id="colCount-decided" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">0</span>
+                            </div>
+                            <div id="kanbanCards-decided" class="space-y-3 flex-1"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Add Scholarship Quick Modal -->
+                <div id="addKanbanModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div class="sp-card w-full max-w-md p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-2xl">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-500"></i>
+                                <span>إضافة منحة جديدة إلى متتبع الطلبات</span>
+                            </h3>
+                            <button type="button" onclick="closeAddScholarshipToKanbanModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المنحة</label>
+                                <input type="text" id="newKanbanName" class="sp-input text-xs" placeholder="مثال: Lester B. Pearson Scholarship">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الدولة</label>
+                                    <input type="text" id="newKanbanCountry" class="sp-input text-xs" placeholder="Canada">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الجامعة</label>
+                                    <input type="text" id="newKanbanUniversity" class="sp-input text-xs" placeholder="University of Toronto">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الموعد النهائي</label>
+                                    <input type="date" id="newKanbanDeadline" class="sp-input text-xs font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المرحلة الحالية</label>
+                                    <select id="newKanbanStage" class="sp-input text-xs">
+                                        <option value="matched">تم الرصد (Matched)</option>
+                                        <option value="preparing">قيد التجهيز (Preparing Docs)</option>
+                                        <option value="applied">تم التقديم (Applied)</option>
+                                        <option value="decided">النتيجة (Accepted/Rejected)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                            <button type="button" onclick="closeAddScholarshipToKanbanModal()" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold">إلغاء</button>
+                            <button type="button" onclick="submitNewKanbanScholarship()" class="sp-btn-primary px-4 py-1.5 text-xs font-bold">إضافة للمتتبع</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1035,7 +1226,11 @@
         }
 
         function switchMainTab(tab) {
-            const tabs = ['profile', 'watchlist', 'notifs', 'settings'];
+            if (window.DashboardApp && typeof window.DashboardApp.switchMainTab === 'function') {
+                window.DashboardApp.switchMainTab(tab);
+                return;
+            }
+            const tabs = ['profile', 'radar', 'watchlist', 'notifs', 'settings'];
             tabs.forEach(t => {
                 const navBtn = document.getElementById(`tab${capitalize(t)}Nav`);
                 const content = document.getElementById(`tabContent${capitalize(t)}`);
@@ -1375,7 +1570,264 @@
             if (window.lucide) lucide.createIcons();
         }
 
+        
+        // =====================================================================
+        // KANBAN APPLICATION TRACKER LOGIC
+        // =====================================================================
+        let draggedItemId = null;
+
+        const DEFAULT_KANBAN_ITEMS = [
+            {
+                id: "pearson",
+                name: "Lester B. Pearson International Scholarship",
+                university: "University of Toronto",
+                country: "كندا (Canada)",
+                status: "preparing",
+                deadline: "2026-11-06",
+                daysLeft: 5,
+                matchScore: "95%",
+                coverage: "ممولة بالكامل (رسوم + سكن + تأمين)"
+            },
+            {
+                id: "hungaricum",
+                name: "Stipendium Hungaricum Scholarship",
+                university: "ELTE & BME Budapest",
+                country: "المجر (Hungary)",
+                status: "matched",
+                deadline: "2027-01-15",
+                daysLeft: 42,
+                matchScore: "92%",
+                coverage: "إعفاء 100% + راتب شهري"
+            },
+            {
+                id: "turkiye",
+                name: "Türkiye Bursları Government Scholarship",
+                university: "METU & ITU",
+                country: "تركيا (Turkey)",
+                status: "matched",
+                deadline: "2027-02-20",
+                daysLeft: 75,
+                matchScore: "90%",
+                coverage: "تمويل كامل + تذكرة طيران"
+            },
+            {
+                id: "chevening",
+                name: "Chevening UK Master's Scholarship",
+                university: "Leading UK Universities",
+                country: "بريطانيا (UK)",
+                status: "applied",
+                deadline: "2026-11-05",
+                daysLeft: 2,
+                matchScore: "88%",
+                coverage: "تمويل كامل لماجستير بريطانيا"
+            }
+        ];
+
+        function getKanbanItems() {
+            try {
+                const stored = localStorage.getItem('scholarpilot_kanban_state');
+                if (stored) return JSON.parse(stored);
+            } catch(e) {}
+            return [...DEFAULT_KANBAN_ITEMS];
+        }
+
+        function saveKanbanItems(items) {
+            localStorage.setItem('scholarpilot_kanban_state', JSON.stringify(items));
+            renderKanbanBoard();
+        }
+
         function renderSavedScholarships(saved) {
+            // Synchronize user profile saved scholarships into kanban state
+            let current = getKanbanItems();
+            if (Array.isArray(saved) && saved.length > 0) {
+                saved.forEach(s => {
+                    const name = typeof s === 'string' ? s : (s.name || s.title || '');
+                    if (name && !current.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                        current.push({
+                            id: 'item_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                            name: name,
+                            university: "الجامعة المانحة",
+                            country: "دولي",
+                            status: "matched",
+                            deadline: "قريباً",
+                            daysLeft: 20,
+                            matchScore: "91%",
+                            coverage: "تمويل دراسي"
+                        });
+                    }
+                });
+                localStorage.setItem('scholarpilot_kanban_state', JSON.stringify(current));
+            }
+            renderKanbanBoard();
+        }
+
+        function renderKanbanBoard() {
+            const items = getKanbanItems();
+            const cols = {
+                matched: document.getElementById('kanbanCards-matched'),
+                preparing: document.getElementById('kanbanCards-preparing'),
+                applied: document.getElementById('kanbanCards-applied'),
+                decided: document.getElementById('kanbanCards-decided')
+            };
+
+            if (!cols.matched) return;
+
+            const counts = { matched: 0, preparing: 0, applied: 0, decided: 0 };
+            Object.values(cols).forEach(col => col.innerHTML = '');
+
+            items.forEach(item => {
+                const st = item.status || 'matched';
+                if (!cols[st]) return;
+                counts[st]++;
+
+                let daysBadge = '';
+                const days = item.daysLeft !== undefined ? item.daysLeft : 15;
+                if (days <= 7) {
+                    daysBadge = `<span class="sp-deadline-badge urgent text-[10px]"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>باقي <span dir="ltr">${days}</span> أيام</span>`;
+                } else if (days <= 30) {
+                    daysBadge = `<span class="sp-deadline-badge approaching text-[10px]"><i data-lucide="clock" class="w-3 h-3 text-amber-500"></i>باقي <span dir="ltr">${days}</span> يوماً</span>`;
+                } else {
+                    daysBadge = `<span class="sp-deadline-badge normal text-[10px]"><i data-lucide="calendar" class="w-3 h-3 text-blue-500"></i><span dir="ltr">${escapeHTML(item.deadline || '')}</span></span>`;
+                }
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'kanban-card space-y-2.5';
+                cardEl.draggable = true;
+                cardEl.ondragstart = (e) => onKanbanDragStart(e, item.id);
+
+                cardEl.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="sp-badge sp-badge-emerald text-[10px] font-mono font-bold">${item.matchScore || '90%'} تطابق</span>
+                        <div class="flex items-center gap-1">
+                            ${daysBadge}
+                            <button type="button" onclick="deleteKanbanItem('${item.id}')" title="حذف من المتتبع" class="text-slate-400 hover:text-rose-500 p-0.5 transition">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                            <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
+                        </h4>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                            <i data-lucide="map-pin" class="w-3 h-3 text-blue-500 shrink-0"></i>
+                            <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.university)}</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Links -->
+                    <div class="flex items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+                        <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="flex-1 py-1 px-2 rounded-lg bg-purple-600/15 hover:bg-purple-600/25 text-purple-600 dark:text-purple-300 text-[10px] font-bold text-center flex items-center justify-center gap-1 transition">
+                            <i data-lucide="sparkles" class="w-3 h-3 text-purple-500"></i>
+                            <span>استوديو الوثائق</span>
+                        </a>
+                        <select onchange="moveKanbanItem('${item.id}', this.value)" class="sp-input py-0.5 px-1.5 text-[10px] font-bold w-auto bg-slate-100 dark:bg-slate-800">
+                            <option value="matched" ${st==='matched'?'selected':''}>تم الرصد</option>
+                            <option value="preparing" ${st==='preparing'?'selected':''}>قيد التجهيز</option>
+                            <option value="applied" ${st==='applied'?'selected':''}>تم التقديم</option>
+                            <option value="decided" ${st==='decided'?'selected':''}>النتيجة</option>
+                        </select>
+                    </div>
+                `;
+                cols[st].appendChild(cardEl);
+            });
+
+            // Update Column Badges & Header Stat
+            const totalCount = items.length;
+            document.getElementById('colCount-matched').textContent = counts.matched;
+            document.getElementById('colCount-preparing').textContent = counts.preparing;
+            document.getElementById('colCount-applied').textContent = counts.applied;
+            document.getElementById('colCount-decided').textContent = counts.decided;
+            const statSaved = document.getElementById('statSavedCount');
+            if (statSaved) statSaved.textContent = `${totalCount} منح`;
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function onKanbanDragStart(e, id) {
+            draggedItemId = id;
+            e.dataTransfer.setData('text/plain', id);
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function onKanbanDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drop-target');
+        }
+
+        function onKanbanDragLeave(e) {
+            e.currentTarget.classList.remove('drop-target');
+        }
+
+        function onKanbanDrop(e, targetCol) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drop-target');
+            if (!draggedItemId) return;
+            moveKanbanItem(draggedItemId, targetCol);
+            draggedItemId = null;
+        }
+
+        function moveKanbanItem(id, targetCol) {
+            let items = getKanbanItems();
+            const idx = items.findIndex(i => i.id === id);
+            if (idx !== -1) {
+                const oldCol = items[idx].status;
+                items[idx].status = targetCol;
+                saveKanbanItems(items);
+                const colNames = {
+                    matched: "تم الرصد",
+                    preparing: "قيد التجهيز",
+                    applied: "تم التقديم",
+                    decided: "النتيجة"
+                };
+                showToast("success", "تم تحديث حالة المنحة! 📋", `تم نقل "${items[idx].name}" إلى مرحلة: ${colNames[targetCol] || targetCol}`);
+            }
+        }
+
+        function deleteKanbanItem(id) {
+            let items = getKanbanItems().filter(i => i.id !== id);
+            saveKanbanItems(items);
+            showToast("info", "تم الحذف", "تمت إزالة المنحة من متتبع الطلبات.");
+        }
+
+        function openAddScholarshipToKanbanModal() {
+            document.getElementById('addKanbanModal')?.classList.remove('hidden');
+        }
+
+        function closeAddScholarshipToKanbanModal() {
+            document.getElementById('addKanbanModal')?.classList.add('hidden');
+        }
+
+        function submitNewKanbanScholarship() {
+            const name = (document.getElementById('newKanbanName')?.value || '').trim();
+            if (!name) return alert('يرجى إدخال اسم المنحة');
+            const country = (document.getElementById('newKanbanCountry')?.value || 'دولي').trim();
+            const uni = (document.getElementById('newKanbanUniversity')?.value || '').trim();
+            const deadline = document.getElementById('newKanbanDeadline')?.value || 'قريباً';
+            const stage = document.getElementById('newKanbanStage')?.value || 'matched';
+
+            const newItem = {
+                id: 'custom_' + Date.now(),
+                name: name,
+                university: uni || country,
+                country: country,
+                status: stage,
+                deadline: deadline,
+                daysLeft: 30,
+                matchScore: '92%',
+                coverage: 'تمويل دراسي'
+            };
+
+            let items = getKanbanItems();
+            items.unshift(newItem);
+            saveKanbanItems(items);
+            closeAddScholarshipToKanbanModal();
+            showToast("success", "تمت إضافة المنحة بنجاح! 🎯", `أضيفت "${name}" إلى المتتبع.`);
+        }
+
+        function legacy_renderSavedScholarships(saved) {
             const list = document.getElementById('savedScholarshipsList');
             if (!list) return;
 
@@ -2212,6 +2664,18 @@
             </a>
         </div>
     </aside>
+    <!-- ==================== MODULAR SCRIPTS & REACTIVE STATE ARCHITECTURE ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/js/components/ToastNotification.js"></script>
+    <script src="/static/js/components/MatchScoreGauge.js"></script>
+    <script src="/static/js/components/SkeletonLoader.js"></script>
+    <script src="/static/js/components/ScholarshipCard.js"></script>
+    <script src="/static/js/components/ComparisonTable.js"></script>
+    <script src="/static/js/components/FilterSidebar.js"></script>
+    <script src="/static/js/components/DocumentEditorModal.js"></script>
+    <script src="/static/js/components/BottomNav.js"></script>
+    <script src="/static/js/store.js"></script>
+    <script src="/static/js/dashboard-app.js"></script>
     <script src="/static/js/notifications.js"></script>
 </body>
 </html>

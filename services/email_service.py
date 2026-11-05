@@ -15,9 +15,12 @@ Includes:
 """
 
 import os
+import json
 import base64
 import logging
+import asyncio
 import smtplib
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from typing import Optional, List, Dict, Any, Tuple
 import httpx
@@ -27,6 +30,63 @@ from services.security_utils import sanitize_email_header
 logger = logging.getLogger("scholarpilot.email")
 
 RESEND_API_URL = "https://api.resend.com/emails"
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+DAILY_QUOTA_FILE = os.path.join(DATA_DIR, "daily_email_quota.json")
+MAX_DAILY_EMAILS = 85  # Strict safety cap below Resend's 100/day hard limit
+
+
+class DailyEmailTracker:
+    """
+    Enforces a strict daily email cap (safety cap at 85 emails/day against Resend's 100/day limit).
+    Tracks UTC date to prevent quota exhaustion and circuit-breaker tripping.
+    """
+    @staticmethod
+    def _get_today_utc() -> str:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    @classmethod
+    def get_quota_status(cls) -> Dict[str, Any]:
+        today = cls._get_today_utc()
+        data = {"date": today, "sent_count": 0, "daily_cap": MAX_DAILY_EMAILS, "remaining": MAX_DAILY_EMAILS}
+        if os.path.exists(DAILY_QUOTA_FILE):
+            try:
+                with open(DAILY_QUOTA_FILE, "r", encoding="utf-8") as f:
+                    stored = json.load(f)
+                    if stored.get("date") == today:
+                        count = stored.get("sent_count", 0)
+                        data["sent_count"] = count
+                        data["remaining"] = max(0, MAX_DAILY_EMAILS - count)
+            except Exception as e:
+                logger.warning(f"Error reading daily quota file: {e}")
+        return data
+
+    @classmethod
+    def can_send_email(cls) -> bool:
+        status = cls.get_quota_status()
+        return status["sent_count"] < MAX_DAILY_EMAILS
+
+    @classmethod
+    def record_email_sent(cls) -> int:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        today = cls._get_today_utc()
+        status = cls.get_quota_status()
+        new_count = status["sent_count"] + 1
+        record = {
+            "date": today,
+            "sent_count": new_count,
+            "daily_cap": MAX_DAILY_EMAILS,
+            "remaining": max(0, MAX_DAILY_EMAILS - new_count),
+            "last_sent_at": datetime.now(timezone.utc).isoformat()
+        }
+        try:
+            tmp = f"{DAILY_QUOTA_FILE}.tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(record, f, indent=2)
+            os.replace(tmp, DAILY_QUOTA_FILE)
+        except Exception as e:
+            logger.error(f"Error writing daily email quota: {e}")
+        return new_count
 
 _last_dispatch_meta: Dict[str, Any] = {
     "success": False,
@@ -44,18 +104,18 @@ def get_last_dispatch_meta() -> Dict[str, Any]:
 
 
 # =====================================================================
-# HTML EMAIL TEMPLATES & PLAIN TEXT GENERATION
+# HTML EMAIL TEMPLATES & PLAIN TEXT GENERATION ("ACADEMIC HORIZON" SYSTEM)
 # =====================================================================
 
 def _email_wrapper(title: str, preheader: str, body_html: str, cta_url: str = "", cta_text: str = "") -> str:
-    """Wraps template body in a resilient, responsive email design compatible with Gmail & Outlook."""
+    """Wraps template body in a resilient, responsive email design in the official EduAtlas 3-color brand identity."""
     cta_block = ""
     if cta_url and cta_text:
         cta_block = f"""
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 28px 0;">
           <tr>
             <td align="center">
-              <a href="{cta_url}" target="_blank" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+              <a href="{cta_url}" target="_blank" style="background: linear-gradient(135deg, #16324F, #0D1F31); color: #F4F1EA; text-decoration: none; padding: 14px 30px; border-radius: 8px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(22,50,79,0.35); border: 1px solid #B99050;">
                 {cta_text} &larr;
               </a>
             </td>
@@ -71,45 +131,180 @@ def _email_wrapper(title: str, preheader: str, body_html: str, cta_url: str = ""
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{title}</title>
   <style>
-    body, table, td, p, a {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }}
-    body {{ margin: 0; padding: 0; background-color: #0b1120; color: #e2e8f0; }}
-    .container {{ max-width: 600px; margin: 0 auto; background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; }}
-    .header {{ background: linear-gradient(135deg, #0f172a, #1e293b); padding: 28px 24px; text-align: center; border-bottom: 1px solid #374151; }}
-    .content {{ padding: 28px 24px; direction: rtl; text-align: right; line-height: 1.7; font-size: 15px; }}
-    .badge {{ display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold; background: #1e3a8a; color: #93c5fd; }}
-    .card {{ background-color: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 18px; margin: 18px 0; }}
-    .footer {{ background-color: #0b1120; padding: 20px 24px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #1f2937; }}
-    .footer a {{ color: #3b82f6; text-decoration: none; }}
+    body, table, td, p, a {{ font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }}
+    body {{ margin: 0; padding: 0; background-color: #0B1724; color: #F4F1EA; }}
+    .container {{ max-width: 600px; margin: 0 auto; background-color: #111E2E; border: 1px solid rgba(185,144,80,0.3); border-radius: 12px; overflow: hidden; }}
+    .header {{ background: linear-gradient(135deg, #16324F 0%, #0D1F31 100%); padding: 24px 20px; text-align: center; border-bottom: 1px solid rgba(185,144,80,0.3); }}
+    .content {{ padding: 28px 24px; direction: rtl; text-align: right; line-height: 1.7; font-size: 15px; color: #F4F1EA; }}
+    .badge {{ display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold; }}
+    .badge-gold {{ background: rgba(185,144,80,0.2); border: 1px solid #B99050; color: #F4F1EA; }}
+    .badge-terracotta {{ background: rgba(200,100,70,0.2); border: 1px solid #C86446; color: #F4F1EA; }}
+    .card {{ background-color: #162638; border: 1px solid rgba(185,144,80,0.25); border-radius: 10px; padding: 18px; margin: 18px 0; }}
+    .footer {{ background-color: #0B1724; padding: 20px 24px; text-align: center; font-size: 12px; color: #94A3B8; border-top: 1px solid rgba(185,144,80,0.2); }}
+    .footer a {{ color: #B99050; text-decoration: none; font-weight: 600; }}
+    .bidi-ltr {{ display: inline-block; direction: ltr !important; unicode-bidi: isolate; font-family: monospace; }}
   </style>
 </head>
-<body style="margin: 0; padding: 20px 0; background-color: #0b1120;">
-  <span style="display:none;font-size:1px;color:#0b1120;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
+<body style="margin: 0; padding: 20px 0; background-color: #0B1724;">
+  <span style="display:none;font-size:1px;color:#0B1724;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
     {preheader}
   </span>
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
       <td align="center">
-        <div class="container" style="max-width: 600px; background-color: #111827; border: 1px solid #1f2937; border-radius: 12px;">
-          <div class="header" style="background-color: #0f172a; padding: 0; text-align: center; border-bottom: 1px solid #1f2937; overflow: hidden; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-            <img src="https://scholarpilot-ai-mkac.onrender.com/static/img/scholarpilot_email_banner.jpg" alt="ScholarPilot AI" style="width: 100%; max-width: 600px; height: auto; display: block; border-top-left-radius: 12px; border-top-right-radius: 12px;" />
+        <div class="container" style="max-width: 600px; background-color: #111E2E; border: 1px solid rgba(185,144,80,0.3); border-radius: 12px;">
+          <!-- Unified Header Banner: EduAtlas Cartographic Compass -->
+          <div class="header" style="background: linear-gradient(135deg, #16324F 0%, #0D1F31 100%); padding: 24px 20px; text-align: center; border-bottom: 1px solid rgba(185,144,80,0.3); border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <td align="center">
+                  <div style="display: inline-block; margin-bottom: 6px;">
+                    <span style="font-size: 22px; font-weight: 900; color: #FFFFFF; letter-spacing: -0.5px;">
+                      Edu<span style="color: #C86446;">Atlas</span>
+                    </span>
+                    <span style="font-size: 11px; background: rgba(185,144,80,0.25); color: #F4F1EA; border: 1px solid #B99050; padding: 2px 8px; border-radius: 999px; font-weight: bold; margin-right: 6px;">
+                      رادار المنح الذكي
+                    </span>
+                  </div>
+                  <div style="font-size: 11px; color: #B99050; font-weight: 500;">
+                    نظام الملاحة والرادار الأكاديمي للقبول والمنح العالمية
+                  </div>
+                </td>
+              </tr>
+            </table>
           </div>
-          <div class="content" style="padding: 28px 24px; color: #e2e8f0; direction: rtl; text-align: right;">
+          <div class="content" style="padding: 28px 24px; color: #F4F1EA; direction: rtl; text-align: right;">
             {body_html}
             {cta_block}
           </div>
-          <div class="footer" style="padding: 20px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #1f2937;">
-            <p style="margin: 0 0 8px 0;">تصلك هذه الرسالة بناءً على اشتراكك في تنبيهات المنح الأكاديمية عبر ScholarPilot AI.</p>
-            <p style="margin: 0;">
-              <a href="https://scholarpilot-ai-mkac.onrender.com/dashboard" style="color: #3b82f6;">إدارة تفضيلات التنبيهات</a> &bull;
-              <a href="https://scholarpilot-ai-mkac.onrender.com/assistant" style="color: #3b82f6;">المستشار الذكي</a>
+          <!-- Unified Footer Links -->
+          <div class="footer" style="padding: 20px 24px; font-size: 12px; color: #94A3B8; text-align: center; border-top: 1px solid rgba(185,144,80,0.2);">
+            <p style="margin: 0 0 10px 0; line-height: 1.6;">تصلك هذه الرسالة بناءً على اشتراكك المعتمد في رادار EduAtlas للمنح الدراسية الدولية.</p>
+            <p style="margin: 0; line-height: 1.8;">
+              <a href="https://eduatlas-irxv.onrender.com/dashboard" style="color: #B99050;">لوحة تحكم المنح</a> &bull;
+              <a href="https://eduatlas-irxv.onrender.com/assistant" style="color: #C86446;">المستشار الذكي واستوديو الوثائق</a> &bull;
+              <a href="https://eduatlas-irxv.onrender.com/#radarSection" style="color: #F4F1EA;">دليل المنح المفتوحة</a>
             </p>
           </div>
         </div>
       </td>
     </tr>
   </table>
-</body>
+ </body>
 </html>"""
+
+
+def render_smart_radar_digest_template(
+    student_name: str,
+    matches: List[Dict[str, Any]],
+    student_profile: Optional[Dict[str, Any]] = None
+) -> Tuple[str, str]:
+    """
+    Renders the consolidated 'Smart Radar Digest Email' aggregating multiple newly discovered matches
+    into a single email per scan in the official EduAtlas brand identity.
+    """
+    count = len(matches)
+    card_html_blocks = []
+    plain_text_blocks = []
+
+    for idx, item in enumerate(matches, start=1):
+        sch = item.get("scholarship") or item
+        title = sch.get("name") or sch.get("title", f"منحة دراسية #{idx}")
+        score = int(item.get("match_score") or sch.get("match_score") or 88)
+        country = sch.get("country", "")
+        univ = sch.get("university", "")
+        degree = sch.get("degree", "جميع المراحل")
+        deadline = sch.get("deadline_display") or sch.get("deadline", "قريباً")
+        coverage = sch.get("coverage", "تمويل كامل")
+        link = sch.get("link") or sch.get("official_link", "https://eduatlas-irxv.onrender.com")
+        reasons = item.get("reasons") or item.get("strengths") or sch.get("reasons") or [
+            f"متوافقة مع تخصصك ومرحلتك الدراسية ({degree})",
+            f"مفتوحة للتقديم مع كوتا داعمة للطلبة الفلسطينيين في {country}"
+        ]
+        reasons_items = "".join([f"<li style='margin-bottom:4px; color:#E2E8F0;'>{r}</li>" for r in reasons[:2]])
+
+        card_html_blocks.append(f"""
+        <div style="background:#162638; border:1px solid rgba(185,144,80,0.3); border-top:3px solid #B99050; border-radius:10px; padding:18px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
+            <tr>
+              <td align="right">
+                <span style="background:#16324F; color:#F4F1EA; font-weight:bold; font-size:12px; padding:4px 10px; border-radius:6px; display:inline-block; border:1px solid #B99050;">
+                  🎯 نسبة التطابق: {score}%
+                </span>
+              </td>
+              <td align="left">
+                <span style="color:#C86446; font-size:12px; font-weight:bold;">
+                  ⏰ الموعد: {deadline}
+                </span>
+              </td>
+            </tr>
+          </table>
+          <h3 style="color:#FFFFFF; margin:8px 0 6px 0; font-size:16px; font-weight:bold;">{title}</h3>
+          <p style="color:#B99050; font-size:13px; margin:0 0 10px 0;">
+            📍 {country} {f'— {univ}' if univ else ''} &bull; 🎓 {degree} &bull; 💰 {coverage}
+          </p>
+          <ul style="padding-right:18px; margin:0 0 14px 0; font-size:13px; line-height:1.6; color:#E2E8F0;">
+            {reasons_items}
+          </ul>
+          <div style="text-align:left;">
+            <a href="{link}" target="_blank" style="background:linear-gradient(135deg, #16324F, #0D1F31); color:#F4F1EA; text-decoration:none; padding:8px 18px; border-radius:6px; font-size:13px; font-weight:bold; display:inline-block; border:1px solid #B99050;">
+              عرض التفاصيل والتقديم &larr;
+            </a>
+          </div>
+        </div>
+        """)
+
+        plain_text_blocks.append(
+            f"{idx}. {title} ({score}% تطابق)\n"
+            f"   الدولة: {country} | المرحلة: {degree} | الموعد: {deadline}\n"
+            f"   الرابط: {link}\n"
+        )
+
+    all_cards_html = "\n".join(card_html_blocks)
+    name = student_name or (student_profile.get("full_name") if student_profile else None) or "عزيزي الطالب"
+
+    body_html = f"""
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="display:inline-block; background:#16324F; color:#B99050; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:bold; margin-bottom:12px; border:1px solid rgba(185,144,80,0.4);">
+        ⚡ تقرير رادار EduAtlas الموحد
+      </div>
+      <h2 style="color:#FFFFFF; margin:0 0 8px 0; font-size:22px; font-weight:800;">
+        مرحباً {name}، رصدنا لك {count} فرص دراسية جديدة!
+      </h2>
+      <p style="color:#CBD5E1; font-size:14px; margin:0; line-height:1.6;">
+        تم العثور على هذه الفرص الجديدة ومطابقتها آلياً مع سجلك الأكاديمي وتخصصك. جمعناها لك في تقرير ذكي واحد لحفظ وقتك:
+      </p>
+    </div>
+
+    {all_cards_html}
+
+    <div style="background:#0D1F31; border:1px solid rgba(185,144,80,0.3); border-radius:8px; padding:14px; text-align:center; margin-top:20px;">
+      <p style="color:#F4F1EA; font-size:13px; margin:0; font-weight:bold;">
+        💡 نصيحة EduAtlas: جهّز مسودة خطاب الدافع (SOP) واستخرج كشوف الدرجات مبكراً لتفادي ضغط المواعيد النهائية.
+      </p>
+    </div>
+    """
+
+    subject = f"🎯 رادار EduAtlas الذكي: تم رصد {count} فرص دراسية جديدة متطابقة مع ملفك" if count > 1 else f"🎯 رادار EduAtlas: تم رصد فرصة دراسية جديدة متطابقة ({matches[0].get('name', matches[0].get('title', ''))})"
+    preheader = f"اكتشف رادار EduAtlas {count} منح دراسية جديدة متوافقة مع ملفك الأكاديمي."
+
+    html = _email_wrapper(
+        title=subject,
+        preheader=preheader,
+        body_html=body_html,
+        cta_url="https://eduatlas-irxv.onrender.com/dashboard",
+        cta_text="فتح لوحة التحكم ومتابعة المنح"
+    )
+
+    plain_text = (
+        f"{subject}\n\n"
+        f"مرحباً {name}،\n"
+        f"قام رادار EduAtlas برصد {count} فرص دراسية جديدة تطابق ملفك الأكاديمي:\n\n"
+        + "\n".join(plain_text_blocks)
+        + "\nتفضل بزيارة لوحة التحكم: https://eduatlas-irxv.onrender.com/dashboard\n"
+    )
+
+    return html, plain_text
 
 
 def render_new_match_template(
@@ -118,7 +313,7 @@ def render_new_match_template(
     match_score: int = 90,
     reasons: Optional[List[str]] = None
 ) -> Tuple[str, str]:
-    """1. New Scholarship Match Alert Template (HTML + Plain text)."""
+    """1. New Scholarship Match Alert Template (HTML + Plain text) with Mixed-Direction Text Protection."""
     title = scholarship.get("name") or scholarship.get("title", "منحة دراسية جديدة")
     country = scholarship.get("country", "")
     university = scholarship.get("university", "")
@@ -127,46 +322,52 @@ def render_new_match_template(
     coverage = scholarship.get("coverage", "تمويل كامل")
     link = scholarship.get("link", "https://scholarpilot-ai-mkac.onrender.com")
 
+    # Match Score color scheme based on prompt
+    badge_class = "badge-emerald" if match_score >= 85 else ("badge-violet" if match_score >= 70 else "badge-amber")
+    score_color = "#10B981" if match_score >= 85 else ("#8B5CF6" if match_score >= 70 else "#F59E0B")
+
     reasons_list = reasons or [
         f"المستوى الدراسي المطلوب: {degree}",
         f"الدولة المستهدفة: {country}",
         f"نسبة القبول التقديرية بناءً على سجلك الأكاديمي: {match_score}%"
     ]
-    reasons_html = "".join([f"<li style='margin-bottom:6px; color:#cbd5e1;'>{r}</li>" for r in reasons_list])
+    reasons_html = "".join([f"<li style='margin-bottom:6px; color:#CBD5E1;'>{r}</li>" for r in reasons_list])
 
     body_html = f"""
-    <div style="text-align: center; margin-bottom: 20px;">
-      <span class="badge" style="background:#1e3a8a; color:#93c5fd; padding:4px 12px; border-radius:999px; font-size:12px;">
-        🎯 تطابق جديد بنسبة {match_score}%
+    <div style="text-align: center; margin-bottom: 22px;">
+      <span class="badge {badge_class}" style="padding: 5px 14px; font-size: 13px;">
+        🎯 رصد تطابق أكاديمي بنسبة <span class="bidi-ltr" style="font-weight: 800; color:{score_color};">{match_score}%</span>
       </span>
-      <h2 style="color: #ffffff; margin: 12px 0 6px 0; font-size: 20px;">مرحباً {student_name or 'عزيزي الطالب'}، وجدنا لك فرصة مميزة!</h2>
-      <p style="color: #94a3b8; font-size: 14px; margin: 0;">قام رادار المنح باكتشاف منحة دراسية تطابق ملفك الأكاديمي ومعاييرك المسجلة.</p>
+      <h2 style="color: #FFFFFF; margin: 14px 0 6px 0; font-size: 21px; font-weight: 800;">مرحباً {student_name or 'عزيزي الطالب'}، وجدنا لك فرصة مميزة!</h2>
+      <p style="color: #94A3B8; font-size: 14px; margin: 0;">قام رادار المنح باكتشاف فرصة دراسية تطابق ملفك الأكاديمي ومعاييرك المسجلة بدقة عالية.</p>
     </div>
 
-    <div class="card" style="background:#1f2937; border:1px solid #374151; border-radius:8px; padding:18px; margin:18px 0;">
-      <h3 style="color:#60a5fa; margin:0 0 12px 0; font-size:17px;">{title}</h3>
-      <table border="0" cellpadding="4" cellspacing="0" width="100%" style="font-size:14px; color:#cbd5e1;">
+    <div class="card" style="background:#1E293B; border:1px solid #334155; border-radius:10px; padding:18px; margin:18px 0;">
+      <h3 style="color:#60A5FA; margin:0 0 14px 0; font-size:18px; font-weight:800;">
+        <span class="bidi-ltr">{title}</span>
+      </h3>
+      <table border="0" cellpadding="5" cellspacing="0" width="100%" style="font-size:14px; color:#CBD5E1;">
         <tr>
-          <td width="30%" style="color:#94a3b8;">🌍 الدولة / الجامعة:</td>
-          <td><strong>{country}</strong> {f'({university})' if university else ''}</td>
+          <td width="32%" style="color:#94A3B8;">🌍 الدولة / الجامعة:</td>
+          <td><strong>{country}</strong> {f'&bull; <span class="bidi-ltr">(' + university + ')</span>' if university else ''}</td>
         </tr>
         <tr>
-          <td style="color:#94a3b8;">📜 المرحلة الدراسية:</td>
-          <td>{degree}</td>
+          <td style="color:#94A3B8;">📜 المرحلة الدراسية:</td>
+          <td><strong>{degree}</strong></td>
         </tr>
         <tr>
-          <td style="color:#94a3b8;">💰 التغطية المالية:</td>
-          <td>{coverage}</td>
+          <td style="color:#94A3B8;">💰 التغطية المالية:</td>
+          <td><span style="color:#34D399; font-weight:bold;">{coverage}</span></td>
         </tr>
         <tr>
-          <td style="color:#94a3b8;">⏰ الموعد النهائي:</td>
-          <td><span style="color:#f59e0b; font-weight:bold;">{deadline}</span></td>
+          <td style="color:#94A3B8;">⏰ الموعد النهائي:</td>
+          <td><span class="bidi-ltr" style="color:#F59E0B; font-weight:bold;">{deadline}</span></td>
         </tr>
       </table>
     </div>
 
     <div style="margin: 20px 0;">
-      <h4 style="color:#ffffff; margin:0 0 10px 0; font-size:15px;">لماذا تم ترشيح هذه المنحة لملفك؟</h4>
+      <h4 style="color:#FFFFFF; margin:0 0 10px 0; font-size:15px; font-weight:700;">لماذا تم ترشيح هذه المنحة لملفك الأكاديمي؟</h4>
       <ul style="padding-right: 20px; margin: 0;">
         {reasons_html}
       </ul>
@@ -193,6 +394,9 @@ def render_new_match_template(
 للتقديم الرسمي عبر بوابة المنحة:
 {link}
 
+لوحة التحكم والمستشار الذكي:
+https://scholarpilot-ai-mkac.onrender.com/dashboard
+
 ScholarPilot AI - مستشارك الأكاديمي
 """
     return html, plain_text
@@ -205,11 +409,19 @@ def render_deadline_reminder_template(
     milestone: str = "تجهيز الوثائق النهائية",
     community_highlight: Optional[Dict[str, Any]] = None
 ) -> Tuple[str, str]:
-    """2. Scholarship Deadline Reminder Template enriched with verified Community Acceptance Tips."""
+    """2. Scholarship Deadline Reminder Template enriched with countdown alerts and mixed-direction wrap."""
     title = scholarship.get("name") or scholarship.get("title", "المنحة المحفوظة")
     country = scholarship.get("country", "")
     deadline = scholarship.get("deadline_display") or scholarship.get("deadline", "قريباً")
     link = scholarship.get("link", "https://scholarpilot-ai-mkac.onrender.com")
+
+    # Rose Danger if < 7 days, Amber Warning if < 30 days
+    if days_left < 7:
+        badge_html = f'<span class="badge badge-rose" style="padding:5px 14px; font-size:13px;">🚨 تنبيه حرج: متبقي <span class="bidi-ltr">{days_left}</span> أيام فقط على الإغلاق</span>'
+        deadline_color = "#EF4444"
+    else:
+        badge_html = f'<span class="badge badge-amber" style="padding:5px 14px; font-size:13px;">⚠️ تذكير بالموعد النهائي: متبقي <span class="bidi-ltr">{days_left}</span> يوماً</span>'
+        deadline_color = "#F59E0B"
 
     # If no community highlight was explicitly passed, attempt to fetch from community service
     if community_highlight is None:
@@ -230,15 +442,15 @@ def render_deadline_reminder_template(
         author_info = f"{author} ({uni} - {year})" if uni else author
 
         community_html = f"""
-        <div class="card" style="background:#0f172a; border-right:4px solid #38bdf8; border-radius:8px; padding:16px; margin:18px 0; border:1px solid #1e293b;">
-          <div style="color:#38bdf8; font-weight:bold; font-size:14px; margin-bottom:6px;">
-            💡 نصيحة ذهبية من مجتمع المقبولين في {title}:
+        <div class="card" style="background:#0F172A; border-right:4px solid #38BDF8; border-radius:8px; padding:16px; margin:18px 0; border:1px solid #1E293B;">
+          <div style="color:#38BDF8; font-weight:bold; font-size:14px; margin-bottom:6px;">
+            💡 نصيحة ذهبية من مجتمع المقبولين في <span class="bidi-ltr">{title}</span>:
           </div>
-          <p style="margin:0; color:#e2e8f0; font-size:13px; line-height:1.6;">
+          <p style="margin:0; color:#E2E8F0; font-size:13px; line-height:1.6;">
             &ldquo;{tip}&rdquo;
           </p>
-          <div style="color:#94a3b8; font-size:12px; margin-top:8px;">
-            &mdash; {author_info}
+          <div style="color:#94A3B8; font-size:12px; margin-top:8px;">
+            &mdash; <span class="bidi-ltr">{author_info}</span>
           </div>
         </div>
         """
@@ -249,21 +461,19 @@ def render_deadline_reminder_template(
 
     body_html = f"""
     <div style="text-align: center; margin-bottom: 20px;">
-      <span class="badge" style="background:#7c2d12; color:#fdba74; padding:4px 12px; border-radius:999px; font-size:12px;">
-        ⚠️ تذكير بالموعد النهائي: متبقي {days_left} {'أيام' if days_left > 2 else 'يوم'}
-      </span>
-      <h2 style="color: #ffffff; margin: 12px 0 6px 0; font-size: 20px;">تنبيه اقتراب إغلاق باب التقديم</h2>
-      <p style="color: #94a3b8; font-size: 14px; margin: 0;">منحة {title} تقترب من الموعد النهائي المحدد ({deadline}).</p>
+      {badge_html}
+      <h2 style="color: #FFFFFF; margin: 12px 0 6px 0; font-size: 20px; font-weight:800;">تنبيه اقتراب إغلاق باب التقديم الرسمي</h2>
+      <p style="color: #94A3B8; font-size: 14px; margin: 0;">منحة <span class="bidi-ltr font-latin">{title}</span> تقترب من الموعد النهائي المحدد (<span class="bidi-ltr" style="color:{deadline_color}; font-weight:bold;">{deadline}</span>).</p>
     </div>
 
-    <div class="card" style="background:#1f2937; border:1px solid #374151; border-radius:8px; padding:18px; margin:18px 0;">
-      <h3 style="color:#f59e0b; margin:0 0 10px 0; font-size:16px;">خطوة التجهيز الموصى بها حالياً: {milestone}</h3>
-      <p style="margin:0 0 12px 0; color:#cbd5e1; font-size:14px;">
+    <div class="card" style="background:#1E293B; border:1px solid #334155; border-radius:8px; padding:18px; margin:18px 0;">
+      <h3 style="color:#F59E0B; margin:0 0 10px 0; font-size:16px; font-weight:700;">خطوة التجهيز الموصى بها حالياً: {milestone}</h3>
+      <p style="margin:0 0 12px 0; color:#CBD5E1; font-size:14px;">
         لضمان قبول طلبك وتفادي الضغط التقني في الساعات الأخيرة، ننصحك برفع الوثائق التالية عبر بوابة التقديم:
       </p>
-      <ul style="padding-right: 20px; margin: 0; color:#cbd5e1; font-size:14px;">
+      <ul style="padding-right: 20px; margin: 0; color:#CBD5E1; font-size:14px;">
         <li>كشف العلامات المترجم والمصدق رسميّاً.</li>
-        <li>خطاب الدوافع (Statement of Purpose) بعد مراجعته بالذكاء الاصطناعي.</li>
+        <li>خطاب الدوافع (<span class="bidi-ltr">Statement of Purpose</span>) بعد مراجعته في استوديو الوثائق بالذكاء الاصطناعي.</li>
         <li>رسالتا التوصية الأكاديميتان وتأكيد معلومات الأساتذة.</li>
       </ul>
     </div>
@@ -308,29 +518,29 @@ def render_welcome_template(
 
     body_html = f"""
     <div style="text-align: center; margin-bottom: 20px;">
-      <span class="badge" style="background:#065f46; color:#a7f3d0; padding:4px 12px; border-radius:999px; font-size:12px;">
-        🎉 مرحباً بك في ScholarPilot AI
+      <span class="badge badge-emerald" style="padding: 5px 14px; font-size: 13px;">
+        🎉 أهلاً بك في ScholarPilot AI
       </span>
-      <h2 style="color: #ffffff; margin: 12px 0 6px 0; font-size: 20px;">تم تفعيل نظام رادار واقتناص المنح بنجاح!</h2>
-      <p style="color: #94a3b8; font-size: 14px; margin: 0;">أهلاً بك يا {student_name or 'عزيزي الطالب'}. تم حفظ معاييرك الأكاديمية بنجاح.</p>
+      <h2 style="color: #FFFFFF; margin: 12px 0 6px 0; font-size: 21px; font-weight:800;">تم تفعيل نظام رادار واقتناص المنح بنجاح!</h2>
+      <p style="color: #94A3B8; font-size: 14px; margin: 0;">أهلاً بك يا {student_name or 'عزيزي الطالب'}. تم حفظ معاييرك الأكاديمية بنجاح.</p>
     </div>
 
-    <div class="card" style="background:#1f2937; border:1px solid #374151; border-radius:8px; padding:18px; margin:18px 0;">
-      <h3 style="color:#38bdf8; margin:0 0 10px 0; font-size:15px;">ملفك الأكاديمي المسجل:</h3>
-      <table border="0" cellpadding="4" cellspacing="0" width="100%" style="font-size:14px; color:#cbd5e1;">
-        <tr><td width="35%" style="color:#94a3b8;">المرحلة:</td><td>{degree}</td></tr>
-        <tr><td style="color:#94a3b8;">المعدل:</td><td>{gpa}</td></tr>
-        <tr><td style="color:#94a3b8;">التخصصات المستهدفة:</td><td>{majors}</td></tr>
-        <tr><td style="color:#94a3b8;">الدولة الحالية:</td><td>{country}</td></tr>
+    <div class="card" style="background:#1E293B; border:1px solid #334155; border-radius:10px; padding:18px; margin:18px 0;">
+      <h3 style="color:#60A5FA; margin:0 0 12px 0; font-size:16px; font-weight:700;">ملفك الأكاديمي المسجل:</h3>
+      <table border="0" cellpadding="5" cellspacing="0" width="100%" style="font-size:14px; color:#CBD5E1;">
+        <tr><td width="35%" style="color:#94A3B8;">المرحلة:</td><td><strong>{degree}</strong></td></tr>
+        <tr><td style="color:#94A3B8;">المعدل:</td><td><span class="bidi-ltr" style="font-weight:bold; color:#34D399;">{gpa}</span></td></tr>
+        <tr><td style="color:#94A3B8;">التخصصات المستهدفة:</td><td><span class="bidi-ltr">{majors}</span></td></tr>
+        <tr><td style="color:#94A3B8;">الدولة الحالية:</td><td>{country}</td></tr>
       </table>
     </div>
 
-    <div style="margin: 20px 0; color:#cbd5e1; font-size:14px;">
-      <p><strong>ما الذي سيحدث الآن؟</strong></p>
+    <div style="margin: 20px 0; color:#CBD5E1; font-size:14px;">
+      <p><strong style="color:#FFFFFF;">ما الذي سيحدث الآن؟</strong></p>
       <ul style="padding-right: 20px;">
         <li>سيقوم رادار الذكاء الاصطناعي بمطابقة كل منحة جديدة فور فتحها مع ملفك.</li>
-        <li>ستصلك تقارير أسبوعية بأفضل الفرص المتاحة ومواعيد التقديم.</li>
-        <li>يمكنك في أي وقت محادثة المستشار الأكاديمي الذكي لحساب فرص قبولك ومراجعة سيرتك الذاتية.</li>
+        <li>ستصلك تقارير أسبوعية بأفضل الفرص المتاحة وتنبيهات المواعيد الحرجة.</li>
+        <li>يمكنك في أي وقت استخدام استوديو الوثائق الذكي لكتابة وتصدير خطابات الدافع ورسائل التوصية.</li>
       </ul>
     </div>
     """
@@ -375,22 +585,22 @@ def render_weekly_digest_template(
         score = item.get("matchScore") or item.get("match_score", 90)
         link = item.get("link", "https://scholarpilot-ai-mkac.onrender.com")
         matches_html += f"""
-        <div style="background:#111827; border:1px solid #374151; border-radius:6px; padding:12px; margin-bottom:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#ffffff; font-size:15px;">{name}</strong>
-            <span style="color:#38bdf8; font-size:12px; font-weight:bold;">{score}% تطابق</span>
+        <div style="background:#1E293B; border:1px solid #334155; border-radius:8px; padding:14px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#FFFFFF; font-size:15px;"><span class="bidi-ltr">{name}</span></strong>
+            <span class="badge badge-emerald" style="padding:2px 8px; font-size:11px;"><span class="bidi-ltr">{score}% تطابق</span></span>
           </div>
-          <div style="color:#94a3b8; font-size:13px; margin:4px 0;">🌍 {country} &bull; ⏰ الموعد: {deadline}</div>
-          <a href="{link}" target="_blank" style="color:#60a5fa; font-size:13px; text-decoration:none; font-weight:bold;">رابط البوابة الرسمية &larr;</a>
+          <div style="color:#94A3B8; font-size:13px; margin:4px 0;">🌍 {country} &bull; ⏰ الموعد: <span class="bidi-ltr" style="color:#F59E0B; font-weight:bold;">{deadline}</span></div>
+          <a href="{link}" target="_blank" style="color:#60A5FA; font-size:13px; text-decoration:none; font-weight:bold;">رابط البوابة الرسمية للمنحة &larr;</a>
         </div>
         """
 
     closing_html = ""
     if closing_soon:
-        closing_items = "".join([f"<li><strong>{c.get('name')}</strong> ({c.get('country')}) - ينتهي {c.get('deadline_display')}</li>" for c in closing_soon[:3]])
+        closing_items = "".join([f"<li style='margin-bottom:4px;'><strong><span class='bidi-ltr'>{c.get('name')}</span></strong> ({c.get('country')}) - ينتهي <span class='bidi-ltr'>{c.get('deadline_display')}</span></li>" for c in closing_soon[:3]])
         closing_html = f"""
-        <div style="background:#451a03; border:1px solid #78350f; border-radius:8px; padding:14px; margin:18px 0; color:#fef3c7; font-size:14px;">
-          <strong>⏳ منح توشك على الإغلاق هذا الأسبوع:</strong>
+        <div style="background:#451A03; border:1px solid #78350F; border-radius:8px; padding:14px; margin:18px 0; color:#FEF3C7; font-size:14px;">
+          <strong style="color:#FBBF24;">⏳ منح توشك على الإغلاق هذا الأسبوع:</strong>
           <ul style="padding-right:20px; margin:8px 0 0 0;">
             {closing_items}
           </ul>
@@ -400,23 +610,23 @@ def render_weekly_digest_template(
     advice_block = ""
     if advice:
         advice_block = f"""
-        <div class="card" style="background:#1e293b; border-left:4px solid #3b82f6; padding:14px; margin:18px 0;">
-          <strong style="color:#93c5fd; font-size:14px;">💡 نصيحة المستشار الذكي للأسبوع:</strong>
-          <p style="margin:6px 0 0 0; color:#cbd5e1; font-size:13px;">{advice}</p>
+        <div class="card" style="background:#1E293B; border-right:4px solid #2563EB; padding:14px; margin:18px 0;">
+          <strong style="color:#93C5FD; font-size:14px;">💡 نصيحة المستشار الذكي للأسبوع:</strong>
+          <p style="margin:6px 0 0 0; color:#CBD5E1; font-size:13px;">{advice}</p>
         </div>
         """
 
     body_html = f"""
     <div style="text-align: center; margin-bottom: 20px;">
-      <span class="badge" style="background:#1e3a8a; color:#93c5fd; padding:4px 12px; border-radius:999px; font-size:12px;">
-        📬 النشرة الأسبوعية
+      <span class="badge badge-blue" style="padding: 5px 14px; font-size: 13px;">
+        📬 النشرة الأسبوعية الموجهة
       </span>
-      <h2 style="color: #ffffff; margin: 12px 0 6px 0; font-size: 20px;">حصاد المنح الدراسية المفتوحة هذا الأسبوع</h2>
-      <p style="color: #94a3b8; font-size: 14px; margin: 0;">إليك قائمة الفرص الأكثر تطابقاً مع تخصصك واهتماماتك الدراسية.</p>
+      <h2 style="color: #FFFFFF; margin: 12px 0 6px 0; font-size: 21px; font-weight:800;">حصاد المنح الدراسية المفتوحة هذا الأسبوع</h2>
+      <p style="color: #94A3B8; font-size: 14px; margin: 0;">إليك قائمة الفرص الأكثر تطابقاً مع تخصصك واهتماماتك الدراسية المسجلة.</p>
     </div>
 
     <div style="margin: 18px 0;">
-      <h3 style="color:#ffffff; font-size:16px; margin:0 0 12px 0;">أعلى الفرص تطابقاً مع ملفك:</h3>
+      <h3 style="color:#FFFFFF; font-size:16px; margin:0 0 12px 0; font-weight:700;">أعلى الفرص تطابقاً مع ملفك:</h3>
       {matches_html}
     </div>
 
@@ -441,6 +651,93 @@ def render_weekly_digest_template(
 https://scholarpilot-ai-mkac.onrender.com
 
 ScholarPilot AI
+"""
+    return html, plain_text
+
+
+def render_document_package_template(
+    student_name: str,
+    scholarship_name: str,
+    document_type: str,
+    document_content: str,
+    checklist_status: Optional[List[str]] = None
+) -> Tuple[str, str]:
+    """5. AI Document Studio Package Email Template."""
+    doc_type_clean = document_type or "خطاب الدافع (Motivation Letter)"
+    sch_clean = scholarship_name or "المنحة الأكاديمية المستهدفة"
+
+    checklist_items = checklist_status or [
+        "المقدمة وبيان الشغف بالتخصص (Hook & Purpose)",
+        "التميز الأكاديمي والمشاريع الملموسة (Academic Highlights)",
+        "أسباب اختيار الجامعة والبرنامج (Institution Alignment)",
+        "الرؤية المستقبلية والأثر بعد التخرج (Future Vision & Impact)"
+    ]
+    checklist_html = "".join([f"<li style='margin-bottom:6px; color:#34D399;'>&#10003; {item}</li>" for item in checklist_items])
+
+    # Convert linebreaks in document content for readable email presentation
+    formatted_content = document_content.replace("\n", "<br>")
+
+    body_html = f"""
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span class="badge badge-violet" style="padding: 5px 14px; font-size: 13px;">
+        ✨ استوديو الوثائق بالذكاء الاصطناعي &bull; حزمة المستندات الرسمية
+      </span>
+      <h2 style="color: #FFFFFF; margin: 12px 0 6px 0; font-size: 21px; font-weight:800;">حزمة وثائق التقديم: {doc_type_clean}</h2>
+      <p style="color: #94A3B8; font-size: 14px; margin: 0;">مرحباً {student_name or 'عزيزي الطالب'}، تم تجهيز مسودتك الأكاديمية المخصصة لمنحة <span class="bidi-ltr font-latin">{sch_clean}</span>.</p>
+    </div>
+
+    <!-- Quality Checklist Card -->
+    <div class="card" style="background:#1E293B; border:1px solid #334155; border-radius:10px; padding:16px; margin:16px 0;">
+      <h4 style="color:#C4B5FD; margin:0 0 10px 0; font-size:14px; font-weight:bold;">معايير الجودة والتدقيق المستوفاة:</h4>
+      <ul style="padding-right: 20px; margin: 0; font-size: 13px;">
+        {checklist_html}
+      </ul>
+    </div>
+
+    <!-- Official Document Box (dir=ltr for English SOP text) -->
+    <div style="background: #0B1120; border: 1px solid #334155; border-radius: 10px; padding: 22px; margin: 20px 0; direction: ltr; text-align: left; font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.8; color: #F8FAFC;">
+      <div style="border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <strong style="color: #60A5FA; font-size: 15px;">{doc_type_clean}</strong>
+        <span style="color: #94A3B8; font-size: 12px;">Candidate: {student_name or 'Applicant'}</span>
+      </div>
+      <div>
+        {formatted_content}
+      </div>
+    </div>
+
+    <div style="margin: 20px 0; color:#CBD5E1; font-size:13px; line-height: 1.6;">
+      <p><strong style="color:#FFFFFF;">نصائح التقديم النهائي:</strong></p>
+      <ul style="padding-right: 20px; margin: 0;">
+        <li>قم بمراجعة الفقرات وإضافة تجاربك الشخصية وأسماء أساتذتك المشرفين.</li>
+        <li>يمكنك تصدير الملف كـ PDF أو DOCX مباشرة من استوديو الوثائق بالمنصة.</li>
+        <li>تأكد من إرسال الطلب قبل الموعد النهائي المحدد للمنحة بـ 48 ساعة على الأقل.</li>
+      </ul>
+    </div>
+    """
+
+    html = _email_wrapper(
+        title=f"📄 حزمة وثائق التقديم: {doc_type_clean} - {sch_clean}",
+        preheader=f"مسودة {doc_type_clean} جاهزة ومخصصة لمنحة {sch_clean}",
+        body_html=body_html,
+        cta_url="https://scholarpilot-ai-mkac.onrender.com/assistant",
+        cta_text="فتح استوديو الوثائق وتعديل المسودة مباشرة"
+    )
+
+    plain_text = f"""مرحباً {student_name or 'عزيزي الطالب'}،
+
+إليك حزمة وثائق التقديم الأكاديمية الخاصة بك:
+الوثيقة: {doc_type_clean}
+المنحة المستهدفة: {sch_clean}
+
+نص الوثيقة:
+----------------------------------------
+{document_content}
+----------------------------------------
+
+يمكنك متابعة التعديل والتصدير إلى PDF و DOCX عبر استوديو الوثائق:
+https://scholarpilot-ai-mkac.onrender.com/assistant
+
+ScholarPilot AI - مستشارك الأكاديمي
 """
     return html, plain_text
 
@@ -543,6 +840,50 @@ class EmailService:
             text_content=text
         )
 
+    async def send_smart_radar_digest(
+        self,
+        student_email: str,
+        student_name: str,
+        matches: List[Dict[str, Any]],
+        student_profile: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        """Sends a single consolidated Smart Radar Digest email aggregating newly discovered matches."""
+        html, text = render_smart_radar_digest_template(student_name, matches, student_profile)
+        count = len(matches)
+        sch_name = matches[0].get("name", matches[0].get("title", "")) if count == 1 else ""
+        subject = f"🎯 رادار EduAtlas الذكي: تم رصد {count} فرص دراسية جديدة متطابقة مع ملفك" if count > 1 else f"🎯 رادار EduAtlas: تم رصد فرصة دراسية جديدة متطابقة ({sch_name})"
+        return await self.dispatch_email(
+            to_email=student_email,
+            subject=subject,
+            html_content=html,
+            text_content=text
+        )
+
+    async def send_document_package(
+        self,
+        student_email: str,
+        student_name: str,
+        scholarship_name: str,
+        document_type: str,
+        document_content: str,
+        checklist_status: Optional[List[str]] = None
+    ) -> bool:
+        """Sends official drafted application documents directly to student's inbox."""
+        html, text = render_document_package_template(
+            student_name=student_name,
+            scholarship_name=scholarship_name,
+            document_type=document_type,
+            document_content=document_content,
+            checklist_status=checklist_status
+        )
+        doc_type_clean = document_type or "خطاب الدافع"
+        return await self.dispatch_email(
+            to_email=student_email,
+            subject=f"📄 استوديو الوثائق: مسودة {doc_type_clean} لمنحة {scholarship_name}",
+            html_content=html,
+            text_content=text
+        )
+
 
 # Global singleton instance
 email_service = EmailService()
@@ -562,16 +903,21 @@ async def dispatch_email(
 ) -> bool:
     """
     Dispatches an email through Resend (primary cloud provider) or Gmail SMTP (fallback).
-    Optimized for deliverability with SPF/DKIM compliance headers and List-Unsubscribe.
+    Optimized for deliverability with SPF/DKIM compliance headers, List-Unsubscribe,
+    strict daily quota cap enforcement (85 emails/day), and rate limiting (max 2 req/sec).
     attachments format: [{"filename": "report.csv", "content_bytes": b"..."}]
     """
     global _last_dispatch_meta
+
+    # Strict rate-limiting for Resend API compliance (max 2 requests/sec)
+    await asyncio.sleep(0.55)
+
     resend_api_key = os.getenv("RESEND_API_KEY")
     resend_from_env = os.getenv("RESEND_FROM_EMAIL", "").strip()
     if resend_from_env and "@gmail.com" not in resend_from_env.lower():
         sender_name_email = resend_from_env
     else:
-        sender_name_email = "ScholarPilot AI <onboarding@resend.dev>"
+        sender_name_email = "EduAtlas <onboarding@resend.dev>"
 
     clean_to = sanitize_email_header(to_email)
     clean_sub = sanitize_email_header(subject)
@@ -587,70 +933,79 @@ async def dispatch_email(
 
     # Standard deliverability headers (SPF/DKIM friendly, CAN-SPAM compliant)
     deliverability_headers = {
-        "List-Unsubscribe": "<https://scholarpilot-ai-mkac.onrender.com/dashboard>, <mailto:unsubscribe@scholarpilot.ai>",
+        "List-Unsubscribe": "<https://eduatlas-irxv.onrender.com/dashboard>, <mailto:unsubscribe@eduatlas.ai>",
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         "Precedence": "bulk",
         "X-Auto-Response-Suppress": "OOF, AutoReply",
-        "X-Entity-Ref-ID": f"sp_{int(os.times().system * 1000)}"
+        "X-Entity-Ref-ID": f"ea_{int(os.times().system * 1000)}"
     }
     if custom_headers:
         deliverability_headers.update(custom_headers)
 
     # 1. Primary Cloud Provider: Resend HTTP REST API (Port 443)
     if resend_api_key and len(resend_api_key.strip()) > 5:
-        logger.info(f"Dispatching email to {clean_to} via Resend API...")
-        headers = {
-            "Authorization": f"Bearer {resend_api_key.strip()}",
-            "Content-Type": "application/json"
-        }
+        if not DailyEmailTracker.can_send_email():
+            logger.warning(
+                f"⚠️ Resend daily email safety cap ({MAX_DAILY_EMAILS} emails/day) reached. "
+                "Skipping Resend dispatch to protect quota and prevent exhaustion."
+            )
+            _last_dispatch_meta["hint"] = "resend_daily_quota_exhausted"
+            _last_dispatch_meta["error_detail"] = "تم الوصول إلى الحد اليومي الآمن لإرسال البريد (85 بريد/يوم)."
+        else:
+            logger.info(f"Dispatching email to {clean_to} via Resend API (Quota: {DailyEmailTracker.get_quota_status()['sent_count']}/{MAX_DAILY_EMAILS})...")
+            headers = {
+                "Authorization": f"Bearer {resend_api_key.strip()}",
+                "Content-Type": "application/json"
+            }
 
-        resend_attachments = []
-        if attachments:
-            for att in attachments:
-                raw_bytes = att.get("content_bytes", b"")
-                if isinstance(raw_bytes, str):
-                    raw_bytes = raw_bytes.encode("utf-8")
-                b64_content = base64.b64encode(raw_bytes).decode("utf-8")
-                resend_attachments.append({
-                    "filename": att.get("filename", "attachment.txt"),
-                    "content": b64_content
-                })
+            resend_attachments = []
+            if attachments:
+                for att in attachments:
+                    raw_bytes = att.get("content_bytes", b"")
+                    if isinstance(raw_bytes, str):
+                        raw_bytes = raw_bytes.encode("utf-8")
+                    b64_content = base64.b64encode(raw_bytes).decode("utf-8")
+                    resend_attachments.append({
+                        "filename": att.get("filename", "attachment.txt"),
+                        "content": b64_content
+                    })
 
-        payload: Dict[str, Any] = {
-            "from": sender_name_email,
-            "to": [clean_to],
-            "subject": clean_sub,
-            "html": html_content,
-            "headers": deliverability_headers
-        }
-        if text_content:
-            payload["text"] = text_content
-        if resend_attachments:
-            payload["attachments"] = resend_attachments
+            payload: Dict[str, Any] = {
+                "from": sender_name_email,
+                "to": [clean_to],
+                "subject": clean_sub,
+                "html": html_content,
+                "headers": deliverability_headers
+            }
+            if text_content:
+                payload["text"] = text_content
+            if resend_attachments:
+                payload["attachments"] = resend_attachments
 
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(RESEND_API_URL, headers=headers, json=payload)
-                if res.status_code in [200, 201]:
-                    logger.info(f"✅ Delivered successfully to {clean_to} via Resend API (ID: {res.json().get('id')})")
-                    _last_dispatch_meta["success"] = True
-                    _last_dispatch_meta["provider"] = "Resend API"
-                    return True
-                else:
-                    err_text = res.text
-                    logger.warning(f"Resend API returned HTTP {res.status_code}: {err_text}")
-                    _last_dispatch_meta["raw_resend_error"] = err_text
-                    if "only send testing emails to your own email" in err_text:
-                        _last_dispatch_meta["error_detail"] = (
-                            "حساب Resend المجاني التجريبي مخصص للإرسال لبريد المالك فقط. "
-                            "للإرسال لأي طالب في العالم عبر Render، يرجى تفعيل مفتاح Brevo API أو توثيق دومين في Resend."
-                        )
-                        _last_dispatch_meta["hint"] = "resend_sandbox_restriction"
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    res = await client.post(RESEND_API_URL, headers=headers, json=payload)
+                    if res.status_code in [200, 201]:
+                        sent_num = DailyEmailTracker.record_email_sent()
+                        logger.info(f"✅ Delivered successfully to {clean_to} via Resend API (ID: {res.json().get('id')}) [Day Total: {sent_num}/{MAX_DAILY_EMAILS}]")
+                        _last_dispatch_meta["success"] = True
+                        _last_dispatch_meta["provider"] = "Resend API"
+                        return True
                     else:
-                        _last_dispatch_meta["error_detail"] = f"Resend API ({res.status_code}): {err_text[:160]}"
-        except Exception as e:
-            logger.warning(f"Resend API dispatch error: {e}")
-            _last_dispatch_meta["error_detail"] = f"فشل اتصال Resend: {str(e)[:160]}"
+                        err_text = res.text
+                        logger.warning(f"Resend API returned HTTP {res.status_code}: {err_text}")
+                        _last_dispatch_meta["raw_resend_error"] = err_text
+                        if "only send testing emails to your own email" in err_text:
+                            _last_dispatch_meta["error_detail"] = (
+                                "حساب Resend المجاني التجريبي مخصص للإرسال لبريد المالك فقط. "
+                                "للإرسال لأي طالب في العالم عبر Render، يرجى تفعيل مفتاح Brevo API أو توثيق دومين في Resend."
+                            )
+                            _last_dispatch_meta["hint"] = "resend_sandbox_restriction"
+                        else:
+                            _last_dispatch_meta["error_detail"] = f"Resend API ({res.status_code}): {err_text[:160]}"
+            except Exception as e:
+                logger.warning(f"Resend API dispatch error: {e}")
+                _last_dispatch_meta["error_detail"] = f"فشل اتصال Resend: {str(e)[:160]}"
 
     # 2. Secondary Cloud Provider: Brevo HTTP REST API (Port 443 - Unrestricted on Render)
     brevo_api_key = os.getenv("BREVO_API_KEY")

@@ -80,7 +80,14 @@ def atomic_json_write(filepath: str, data: Any):
                 os.fsync(f.fileno())
             except Exception:
                 pass
-        os.replace(tmp_path, filepath)
+        for attempt in range(5):
+            try:
+                os.replace(tmp_path, filepath)
+                break
+            except PermissionError:
+                if attempt == 4:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
 
 
 # ==============================================================================
@@ -652,6 +659,8 @@ class SecurityRateLimiter:
         self.LIMITS = {
             "auth": (10, 60),
             "advisor": (25, 60),
+            "radar_scan": (15, 60),
+            "document_generation": (10, 60),
             "subscribe": (6, 60),
             "upload": (10, 60),
             "community": (20, 60),
@@ -659,6 +668,8 @@ class SecurityRateLimiter:
         }
         self._daily_advisor_quotas: Dict[str, int] = {}
         self.DAILY_ADVISOR_LIMIT: int = 10
+        self._hourly_generations: Dict[str, List[float]] = {}
+        self.HOURLY_GENERATION_LIMIT: int = 10
 
     def _prune_expired_entries(self, now: float):
         """Sweeps stale buckets to prevent memory accumulation / Slowloris memory leaks."""
@@ -794,6 +805,86 @@ class SecurityRateLimiter:
             remaining = max(0, self.DAILY_ADVISOR_LIMIT - used)
             return used, remaining
 
+    def check_hourly_generation_limit(self, identifier: str, max_limit: Optional[int] = None, window: int = 3600) -> Tuple[bool, int, int, int]:
+        """
+        Enforces maximum 10 AI generations / document generations per hour per user / IP.
+        Protects Gemini API credits and Resend email quotas against abuse.
+        Returns: (allowed: bool, retry_after: int, limit: int, remaining: int)
+        """
+        limit = max_limit or self.HOURLY_GENERATION_LIMIT
+        clean_id = (identifier or "anonymous").strip().lower()
+        now = time.time()
+        with self._lock:
+            history = self._hourly_generations.get(clean_id, [])
+            valid_from = now - window
+            history = [ts for ts in history if ts > valid_from]
+            self._hourly_generations[clean_id] = history
+
+            remaining = max(0, limit - len(history))
+            allowed = len(history) < limit
+            retry_after = 0
+            if not allowed and history:
+                retry_after = max(1, int(window - (now - history[0])))
+            return allowed, retry_after, limit, remaining
+
+    def record_hourly_generation(self, identifier: str):
+        """Records an expensive AI or document generation operation timestamp."""
+        clean_id = (identifier or "anonymous").strip().lower()
+        now = time.time()
+        with self._lock:
+            history = self._hourly_generations.get(clean_id, [])
+            history.append(now)
+            self._hourly_generations[clean_id] = history
+
+
+def verify_cron_secret(provided_secret: Optional[str]) -> bool:
+    """
+    Verifies that the provided secret matches CRON_SECRET using constant-time comparison.
+    Defends against timing side-channel attacks on webhook and cron endpoints.
+    """
+    if not provided_secret:
+        return False
+    expected_secret = os.getenv("CRON_SECRET")
+    if not expected_secret or len(expected_secret.strip()) < 8:
+        expected_secret = APP_SECRET_KEY
+    return secrets.compare_digest(provided_secret.strip(), expected_secret.strip())
+
+
+def validate_environment_at_startup() -> Dict[str, Any]:
+    """
+    Validates required environment variables and production security posture at startup.
+    Ensures zero secrets or sensitive keys are exposed or logged.
+    """
+    results = {
+        "is_production": os.getenv("ENVIRONMENT", "development").lower() in ("production", "prod"),
+        "secret_key_status": "present",
+        "gemini_api_key_status": "present" if os.getenv("GEMINI_API_KEY") else "missing",
+        "email_provider_configured": bool(os.getenv("RESEND_API_KEY") or os.getenv("SENDER_EMAIL")),
+        "database_configured": bool(os.getenv("DATABASE_URL")),
+        "cron_secret_status": "configured" if os.getenv("CRON_SECRET") else "fallback_app_secret",
+        "issues": []
+    }
+
+    # 1. SECRET_KEY validation
+    raw_secret = os.getenv("SECRET_KEY")
+    if not raw_secret:
+        results["secret_key_status"] = "auto_generated"
+    elif len(raw_secret.strip()) < 32:
+        results["issues"].append("SECRET_KEY is shorter than 32 characters; recommend 64-char hex string.")
+
+    # 2. GEMINI_API_KEY validation
+    raw_gemini = os.getenv("GEMINI_API_KEY", "").strip()
+    if not raw_gemini:
+        results["issues"].append("GEMINI_API_KEY is not set; Gemini LLM features will fall back to local responses.")
+    elif len(raw_gemini) < 15:
+        results["issues"].append("GEMINI_API_KEY appears malformed or too short.")
+
+    # 3. CRON_SECRET validation
+    if not os.getenv("CRON_SECRET"):
+        results["issues"].append("CRON_SECRET not explicitly defined; falling back to internal application secret.")
+
+    return results
+
 
 def verify_recaptcha(token: Optional[str], client_ip: Optional[str] = None) -> Tuple[bool, str]:
     """
@@ -915,20 +1006,40 @@ def validate_uploaded_file(filename: str, content_bytes: bytes, max_size_mb: int
     return safe_name
 
 
-def sanitize_uploaded_text(text: str, max_chars: int = 15000) -> str:
-    """Sanitizes extracted document text, removing Bidi overrides and injection markers."""
+XML_ESCAPE_TAGS = re.compile(
+    r"</?(?:student_profile|cv_content|motivation_letter|student_query|student_bio|student_message|system_instruction|system|prompt)[^>]*>",
+    re.IGNORECASE
+)
+
+def sanitize_prompt_input(text: Optional[str], max_chars: int = 15000) -> str:
+    """
+    Sanitizes user-provided CV text, bio, query, and chat messages before passing into LLM prompts.
+    Defuses prompt injection attacks, strips delimiter-breakout tags, bidi overrides, and script tags.
+    """
     if not text:
         return ""
-
-    clean = BIDI_AND_INVISIBLE_CHARS.sub("", text)
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(text))
     clean = "".join(ch for ch in clean if ch.isprintable() or ch in "\n\r\t")
+    clean = XML_ESCAPE_TAGS.sub("[tag-filtered]", clean)
     clean = SCRIPT_TAG_PATTERN.sub("", clean)
-    clean = COMPILED_INJECTION_REGEX.sub("[filtered]", clean)
-
+    clean = COMPILED_INJECTION_REGEX.sub("[sanitized-instruction]", clean)
     if len(clean) > max_chars:
         clean = clean[:max_chars]
-
     return clean.strip()
+
+
+def wrap_xml_tag(tag_name: str, content: Optional[str], max_chars: int = 15000) -> str:
+    """
+    Safely encapsulates user-provided inputs within strict XML delimiters.
+    Prevents prompt injection by isolating untrusted data from system instructions.
+    """
+    sanitized = sanitize_prompt_input(content, max_chars=max_chars)
+    return f"<{tag_name}>\n{sanitized}\n</{tag_name}>"
+
+
+def sanitize_uploaded_text(text: str, max_chars: int = 15000) -> str:
+    """Sanitizes extracted document text, removing Bidi overrides and injection markers."""
+    return sanitize_prompt_input(text, max_chars=max_chars)
 
 
 def sanitize_llm_output(output_text: str) -> str:
@@ -939,6 +1050,8 @@ def sanitize_llm_output(output_text: str) -> str:
     sanitized = output_text
     sanitized = re.sub(r"AIza[0-9A-Za-z-_]{35}", "[REDACTED_API_KEY]", sanitized)
     sanitized = re.sub(r"sk-[0-9A-Za-z-_]{32,}", "[REDACTED_SECRET]", sanitized)
+    sanitized = re.sub(r"re_[0-9A-Za-z-_]{20,}", "[REDACTED_RESEND_KEY]", sanitized)
+    sanitized = re.sub(r"postgres(?:ql)?://[^\s]+", "[REDACTED_DATABASE_URL]", sanitized)
 
     leak_markers = [
         "SYSTEM_INSTRUCTION", "HIDDEN_SYSTEM_PROMPT", "INTERNAL_ADVISOR_RULE",
