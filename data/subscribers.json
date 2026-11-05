@@ -64,9 +64,9 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:14:49.971829",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:36:22.431738",
     "status": "active",
-    "updated_at": "2026-10-31T14:34:05.158802"
+    "updated_at": "2026-11-05T20:36:34.791237"
   },
   {
     "email": "test.student.1793448910@gmail.com",
@@ -131,7 +131,7 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:34:04.690751",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:36:09.119846",
     "status": "active"
   },
   {
@@ -153,6 +153,28 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-11-05T20:35:14.948666",
+    "last_sent_at": null,
+    "status": "active"
+  },
+  {
+    "email": "test.student.1793903793@gmail.com",
+    "full_name": "أحمد محمود",
+    "degree": "Master&#x27;s Degree",
+    "majors": [
+      "Cybersecurity"
+    ],
+    "gpa": "88%",
+    "english_level": "Intermediate",
+    "target_destinations": [
+      "Europe",
+      "Canada",
+      "Turkey",
+      "Any"
+    ],
+    "country": "Palestine",
+    "talents_experience": "",
+    "saved_scholarships": [],
+    "created_at": "2026-11-05T20:36:34.170525",
     "last_sent_at": null,
     "status": "active"
   }

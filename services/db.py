@@ -1805,10 +1805,8 @@ def save_or_update_user(user_data: Dict[str, Any]) -> bool:
         else:
             users.append(user_data)
 
-        temp_file = USERS_JSON + ".tmp"
-        with open(temp_file, "w", encoding="utf-8") as f:
-            json.dump(users, f, ensure_ascii=False, indent=2)
-        os.replace(temp_file, USERS_JSON)
+        from services.security_utils import atomic_json_write
+        atomic_json_write(USERS_JSON, users)
         return True
     except Exception as je:
         logger.error(f"Error writing users.json: {je}")
@@ -1840,10 +1838,8 @@ def delete_user_by_email(email: str) -> bool:
                 with open(path, "r", encoding="utf-8") as f:
                     items = json.load(f)
                 filtered = [x for x in items if x.get("email", "").lower() != clean_rec]
-                temp_file = path + ".tmp"
-                with open(temp_file, "w", encoding="utf-8") as f:
-                    json.dump(filtered, f, ensure_ascii=False, indent=2)
-                os.replace(temp_file, path)
+                from services.security_utils import atomic_json_write
+                atomic_json_write(path, filtered)
             except Exception as je:
                 logger.error(f"Error deleting user from {path}: {je}")
 

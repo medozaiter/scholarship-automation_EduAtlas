@@ -80,13 +80,20 @@ def atomic_json_write(filepath: str, data: Any):
                 os.fsync(f.fileno())
             except Exception:
                 pass
-        for attempt in range(5):
+        for attempt in range(8):
             try:
                 os.replace(tmp_path, filepath)
                 break
-            except PermissionError:
-                if attempt == 4:
-                    raise
+            except (PermissionError, OSError):
+                if attempt == 7:
+                    try:
+                        import shutil
+                        shutil.copyfile(tmp_path, filepath)
+                        if os.path.exists(tmp_path):
+                            os.remove(tmp_path)
+                        break
+                    except Exception:
+                        raise
                 time.sleep(0.05 * (attempt + 1))
 
 

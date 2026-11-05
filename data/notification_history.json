@@ -1,5 +1,29 @@
 [
   {
+    "recipient": "valid.subscriber@gmail.com",
+    "notification_type": "weekly_digest",
+    "target_id": "weekly_digest_2026_w45_valid.subscriber@gmail.com",
+    "subject": "دليل المنح الأسبوعي المخصص (أسبوع 45)",
+    "sent_at": "2026-11-05T20:36:22.448225",
+    "status": "sent",
+    "details": {
+      "week": 45,
+      "year": 2026
+    }
+  },
+  {
+    "recipient": "test.student.1793450044@gmail.com",
+    "notification_type": "weekly_digest",
+    "target_id": "weekly_digest_2026_w45_test.student.1793450044@gmail.com",
+    "subject": "دليل المنح الأسبوعي المخصص (أسبوع 45)",
+    "sent_at": "2026-11-05T20:36:09.125714",
+    "status": "sent",
+    "details": {
+      "week": 45,
+      "year": 2026
+    }
+  },
+  {
     "recipient": "test.student.1793449932@gmail.com",
     "notification_type": "weekly_digest",
     "target_id": "weekly_digest_2026_w45_test.student.1793449932@gmail.com",
