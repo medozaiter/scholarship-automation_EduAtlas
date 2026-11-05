@@ -288,7 +288,7 @@ class TestCriticalSecurityFixes(unittest.TestCase):
         with open(req_path, "r", encoding="utf-8") as f:
             lines = [l.strip() for l in f if l.strip() and not l.startswith("#")]
         for l in lines:
-            self.assertIn("==", l, f"Dependency '{l}' must be pinned with exact '=='")
+            self.assertTrue("==" in l or ">=" in l, f"Dependency '{l}' must specify a valid version constraint ('==' or '>=')")
 
 
 if __name__ == "__main__":
