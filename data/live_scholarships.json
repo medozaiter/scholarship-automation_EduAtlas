@@ -15,7 +15,8 @@
     "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين",
     "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح من المدرسة، إثبات القيادة المجتمعية",
     "link": "https://future.utoronto.ca/pearson/about/#apply",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://future.utoronto.ca/pearson/about/#apply"
   },
   {
     "id": "hungaricum",
@@ -33,7 +34,8 @@
     "coverage": "إعفاء دراسي 100% + راتب شهري + سكن جامعي مجاني + تأمين صحي شامل",
     "requirements": "معدل 80%+ للبكالوريوس، شهادة إتمام مرحلة سابقة، خطاب دافع وفحص طبي رسمي",
     "link": "https://apply.stipendiumhungaricum.hu/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://apply.stipendiumhungaricum.hu/"
   },
   {
     "id": "turkiye",
@@ -51,7 +53,8 @@
     "coverage": "رسوم مجانية 100% + راتب شهري + سكن جامعي + سنة تحضيرية للغة وتذاكر طيران",
     "requirements": "حد أدنى 70% للبكالوريوس (90% للطب البشري)، رسائل توصية، وخطاب نوايا قوي",
     "link": "https://tbbs.turkiyeburslari.gov.tr/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://tbbs.turkiyeburslari.gov.tr/"
   },
   {
     "id": "chevening",
@@ -69,7 +72,8 @@
     "coverage": "تمويل كامل بنسبة 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة",
     "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية، 4 مقالات قيادية",
     "link": "https://www.chevening.org/apply/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.chevening.org/apply/"
   },
   {
     "id": "gks",
@@ -87,7 +91,8 @@
     "coverage": "رسوم دراسية كاملة + راتب شهري 1,000,000 وون + سنة لغة كورية وتذاكر طيران",
     "requirements": "معدل تراكمي أعلى من 80%، فحص طبي، خطة دراسية وبيان شخصي باللغة الإنجليزية",
     "link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do"
   },
   {
     "id": "daad",
@@ -105,7 +110,8 @@
     "coverage": "راتب شهري 934 يورو + تأمين صحي شامل + بدل سفر وتكاليف الأبحاث والمراجع",
     "requirements": "درجة بكالوريوس لا يتجاوز عمرها 6 سنوات، سنتان خبرة عمل، وخطاب دافع أكاديمي",
     "link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/"
   },
   {
     "id": "erasmus",
@@ -123,6 +129,493 @@
     "coverage": "إعفاء دراسي كامل 100% + راتب شهري 1,400 يورو لمدة عامين + تذاكر سفر وبدل إقامة",
     "requirements": "شهادة البكالوريوس، سيرة ذاتية Europass، رسالتا توصية، ومقال دافع لكل تخصص",
     "link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en",
+    "is_active": true,
+    "official_link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en"
+  },
+  {
+    "id": "auto_899330",
+    "name": "Lester B. Pearson International Scholarship Program",
+    "university": "Canada, University of Toronto",
+    "country": "Toronto",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-09-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-06",
+    "deadline_display": "2026-11-06",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, books, incidental fees, and full residence support for 4 years",
+    "requirements": "Academic excellence, leadership potential, creative and original thinking, community involvement.",
+    "link": "https://future.utoronto.ca/pearson/",
+    "official_link": "https://future.utoronto.ca/pearson/",
+    "is_active": true
+  },
+  {
+    "id": "auto_190830",
+    "name": "UBC International Scholars Program",
+    "university": "Canada, University of British Columbia",
+    "country": "Columbia",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-09-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-15",
+    "deadline_display": "2026-11-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition and living costs",
+    "requirements": "Academic excellence, demonstrated leadership, community service, financial need.",
+    "link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
+    "official_link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
+    "is_active": true
+  },
+  {
+    "id": "auto_928138",
+    "name": "U.S.-MEPI Tomorrow's Leaders Undergraduate Program",
+    "university": "Lebanon/Egypt, AUB, AUC, or LAU",
+    "country": "LAU",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-09-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-18",
+    "deadline_display": "2026-11-18",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, housing, monthly stipend, health insurance, laptop, textbooks, and US exchange semester",
+    "requirements": "Academic excellence, leadership potential, community service, financial need.",
+    "link": "https://www.tomorrowsleadersprogram.org/",
+    "official_link": "https://www.tomorrowsleadersprogram.org/",
+    "is_active": true
+  },
+  {
+    "id": "auto_652935",
+    "name": "Global Korea Scholarship (GKS-U)",
+    "university": "South Korea, Various Universities",
+    "country": "Universities",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-09-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-30",
+    "deadline_display": "2026-11-30",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, 1-year language training, roundtrip airfare, monthly stipend, settlement allowance",
+    "requirements": "High GPA, age under 25, good health.",
+    "link": "https://www.studyinkorea.go.kr",
+    "official_link": "https://www.studyinkorea.go.kr",
+    "is_active": true
+  },
+  {
+    "id": "auto_792082",
+    "name": "Russian Government Scholarships",
+    "university": "Russia, Various Universities",
+    "country": "Universities",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-09-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, 1-year preparatory language course, monthly stipend, subsidized dormitories",
+    "requirements": "Academic transcripts, medical certificate, passport.",
+    "link": "https://education-in-russia.com/",
+    "official_link": "https://education-in-russia.com/",
+    "is_active": true
+  },
+  {
+    "id": "auto_967753",
+    "name": "Reach Oxford Scholarship",
+    "university": "United Kingdom, University of Oxford",
+    "country": "Oxford",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2026-12-01]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-26",
+    "deadline_display": "2027-01-26",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, living costs grant, and return airfare",
+    "requirements": "Academic excellence, financial need, social commitment.",
+    "link": "https://www.ox.ac.uk/admissions/undergraduate/fees-and-funding/oxford-support/reach-oxford-scholarship",
+    "official_link": "https://www.ox.ac.uk/admissions/undergraduate/fees-and-funding/oxford-support/reach-oxford-scholarship",
+    "is_active": true
+  },
+  {
+    "id": "auto_845117",
+    "name": "Türkiye Bursları",
+    "university": "Turkey, Various Universities",
+    "country": "Universities",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2027-01-10]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-20",
+    "deadline_display": "2027-02-20",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, monthly stipend, dormitory, health insurance, 1-year language course, flight ticket",
+    "requirements": "Academic excellence, age requirements, no citizenship in Turkey.",
+    "link": "https://www.turkiyeburslari.gov.tr/",
+    "official_link": "https://www.turkiyeburslari.gov.tr/",
+    "is_active": true
+  },
+  {
+    "id": "auto_964637",
+    "name": "Qaddumi Foundation UK Master's Scholarship",
+    "university": "United Kingdom (Partner Universities)",
+    "country": "Universities",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Open Now",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026/2027 Academic Year",
+    "deadline_display": "2026/2027 Academic Year",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Fully funded scholarship covering tuition and related academic expenses",
+    "requirements": "Palestinian nationality, acceptance into a UK Master's program in Engineering, Architecture, Business Administration, or Computer Science and Technology. Strong academic background and essays.",
+    "link": "https://qaddumi.org/en/applications-now-open-for-the-uk-masters-scholarship-2026-2027/",
+    "official_link": "https://qaddumi.org/en/applications-now-open-for-the-uk-masters-scholarship-2026-2027/",
+    "is_active": true
+  },
+  {
+    "id": "auto_642578",
+    "name": "Stipendium Hungaricum Scholarship (Master's)",
+    "university": "Hungary (Participating Hungarian Universities e.g., ELTE, BME, University of Debrecen)",
+    "country": "Debrecen",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [January 15, 2027]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Fully funded: full tuition waiver, monthly living allowance, free dormitory accommodation or housing contribution, and health insurance",
+    "requirements": "Bachelor's degree, strong academic record, motivation letter, medical certificate, and English proficiency proof.",
+    "link": "https://stipendiumhungaricum.hu/",
+    "official_link": "https://stipendiumhungaricum.hu/",
+    "is_active": true
+  },
+  {
+    "id": "auto_432269",
+    "name": "Russian Government Scholarships - Master's Quota",
+    "university": "Russia (Russian State Universities)",
+    "country": "Universities",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [January 15, 2027]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Fully funded: tuition fees covered for the entire duration, 1-year Russian language preparatory course, monthly academic stipend, and subsidized dormitory accommodation",
+    "requirements": "Bachelor's degree certificate, transcripts, passport copy, medical certificate, and motivation letter.",
+    "link": "https://education-in-russia.com/",
+    "official_link": "https://education-in-russia.com/",
+    "is_active": true
+  },
+  {
+    "id": "auto_986085",
+    "name": "Türkiye Bursları Scholarship (Master's)",
+    "university": "Türkiye (Various Turkish Universities)",
+    "country": "Universities",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [January 10, 2027]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-20",
+    "deadline_display": "2027-02-20",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Fully funded: 100% tuition waiver, monthly stipend, university placement, 1-year Turkish language course, accommodation, health insurance, and round-trip flight tickets",
+    "requirements": "Minimum GPA criteria (usually 75% for masters), under 30 years of age for Master's, transcripts, diploma, statement of purpose, and recommendation letters.",
+    "link": "https://www.turkiyeburslari.gov.tr/",
+    "official_link": "https://www.turkiyeburslari.gov.tr/",
+    "is_active": true
+  },
+  {
+    "id": "auto_44766",
+    "name": "Stipendium Hungaricum Scholarship - Hungarian Government",
+    "university": "Hungary (ELTE, BME, University of Debrecen)",
+    "country": "Debrecen",
+    "degree": "PhD / Doctorate",
+    "target_degrees": [
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [November 2026]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, monthly living allowance, free dormitory or accommodation subsidy, health insurance",
+    "requirements": "Academic transcripts, research proposal for PhD, medical certificate, passport copy",
+    "link": "https://stipendiumhungaricum.hu/",
+    "official_link": "https://stipendiumhungaricum.hu/",
+    "is_active": true
+  },
+  {
+    "id": "auto_375429",
+    "name": "Russian Government Scholarships - Rossotrudnichestvo",
+    "university": "Russia (Various State Universities)",
+    "country": "Universities",
+    "degree": "PhD / Doctorate",
+    "target_degrees": [
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [November 2026]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, 1-year preparatory language training, monthly academic stipend, subsidized dormitories",
+    "requirements": "Academic transcripts, medical certificate, passport, research proposal for PhD",
+    "link": "https://education-in-russia.com/",
+    "official_link": "https://education-in-russia.com/",
+    "is_active": true
+  },
+  {
+    "id": "auto_606358",
+    "name": "Türkiye Bursları - Presidency for Turks Abroad (YTB)",
+    "university": "Turkey (Various Public Universities)",
+    "country": "Universities",
+    "degree": "PhD / Doctorate",
+    "target_degrees": [
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Opening Soon [2027-01-10]",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-20",
+    "deadline_display": "2027-02-20",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "100% tuition waiver, monthly stipend, dormitory accommodation, health insurance, 1-year language course, flight ticket",
+    "requirements": "Academic transcripts, research proposal for PhD, reference letters, passport",
+    "link": "https://www.turkiyeburslari.gov.tr/",
+    "official_link": "https://www.turkiyeburslari.gov.tr/",
+    "is_active": true
+  },
+  {
+    "id": "auto_885113",
+    "name": "Lester B. Pearson International Scholarship Program - University of Toronto",
+    "university": "Canada, University of Toronto",
+    "country": "Toronto",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Open Now",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-06",
+    "deadline_display": "2026-11-06",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, books, incidental fees, and full residence support for 4 years",
+    "requirements": "Academic excellence, leadership, creativity, and community involvement. Proof of English proficiency required.",
+    "link": "https://future.utoronto.ca/pearson/",
+    "official_link": "https://future.utoronto.ca/pearson/",
+    "is_active": true
+  },
+  {
+    "id": "auto_995616",
+    "name": "UBC International Scholars Program - University of British Columbia",
+    "university": "Canada, University of British Columbia",
+    "country": "Columbia",
+    "degree": "Undergraduate (Bachelor's)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Open Now",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-15",
+    "deadline_display": "2026-11-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition and living costs",
+    "requirements": "Academic excellence, leadership, and financial need. English proficiency test scores required.",
+    "link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
+    "official_link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
+    "is_active": true
+  },
+  {
+    "id": "auto_938397",
+    "name": "Russian Government Scholarships - Education in Russia (Rossotrudnichestvo)",
+    "university": "Russia (Russian State Universities)",
+    "country": "Universities",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Open Now",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Fully funded: tuition fees, 1-year preparatory faculty for Russian language, monthly academic stipend, and subsidized student dormitories",
+    "requirements": "Completed previous degree, academic transcripts, medical health certificate, passport copy, motivation letter",
+    "link": "https://education-in-russia.com/",
+    "official_link": "https://education-in-russia.com/",
+    "is_active": true
+  },
+  {
+    "id": "auto_577374",
+    "name": "Russian Government Scholarships - Education in Russia",
+    "university": "Russia (Various State Universities)",
+    "country": "Universities",
+    "degree": "PhD / Doctorate",
+    "target_degrees": [
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Engineering"
+    ],
+    "matchScore": "92%",
+    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
+    "status": "Open Now",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-15",
+    "deadline_display": "2027-01-15",
+    "deadlineDays": "تحقق من الرابط",
+    "coverage": "Full tuition, 1-year preparatory language training, monthly academic stipend, subsidized dormitories",
+    "requirements": "Academic transcripts, research proposal for PhD, medical certificate, passport",
+    "link": "https://education-in-russia.com/",
+    "official_link": "https://education-in-russia.com/",
     "is_active": true
   }
 ]

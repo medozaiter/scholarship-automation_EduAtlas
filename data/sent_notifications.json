@@ -5,5 +5,82 @@
     "notification_type": "match_alert",
     "sent_at": "2026-11-05T19:46:36.649755",
     "scholarship_name": "Test Scholarship"
+  },
+  {
+    "user_id": "test_user_1793902976612@eduatlas.com",
+    "scholarship_hash": "hash_uniq_1793902976612",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:22:56.613581",
+    "scholarship_name": "Test Scholarship"
+  },
+  {
+    "user_id": "test_user_1793903145460@eduatlas.com",
+    "scholarship_hash": "hash_uniq_1793903145460",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:25:45.460939",
+    "scholarship_name": "Test Scholarship"
+  },
+  {
+    "user_id": "medo.msz.2006@gmail.com",
+    "scholarship_hash": "8600f1b9a0fa79bd2bb3485db5e3187d02630d3e02487b5c219fab50e50b9aee",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:11.347697",
+    "scholarship_name": "Lester B. Pearson International Scholarship Program - University of Toronto"
+  },
+  {
+    "user_id": "medo.msz.2006@gmail.com",
+    "scholarship_hash": "98d95d64b7c1f45ca15ed07c6b6461b8800d47f4a6f6de0f3071a86dabd23e79",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:11.353075",
+    "scholarship_name": "UBC International Scholars Program - University of British Columbia"
+  },
+  {
+    "user_id": "medo.msz.2006@gmail.com",
+    "scholarship_hash": "f3edbe7ae5aae0c2e90996d83d72797a924b70cfb35c1fadb17e03a9c6258ea8",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:11.375998",
+    "scholarship_name": "Russian Government Scholarships - Education in Russia (Rossotrudnichestvo)"
+  },
+  {
+    "user_id": "mentioned_peer@scholarpilot.com",
+    "scholarship_hash": "8600f1b9a0fa79bd2bb3485db5e3187d02630d3e02487b5c219fab50e50b9aee",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:19.500038",
+    "scholarship_name": "Lester B. Pearson International Scholarship Program - University of Toronto"
+  },
+  {
+    "user_id": "mentioned_peer@scholarpilot.com",
+    "scholarship_hash": "98d95d64b7c1f45ca15ed07c6b6461b8800d47f4a6f6de0f3071a86dabd23e79",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:19.505073",
+    "scholarship_name": "UBC International Scholars Program - University of British Columbia"
+  },
+  {
+    "user_id": "mentioned_peer@scholarpilot.com",
+    "scholarship_hash": "f3edbe7ae5aae0c2e90996d83d72797a924b70cfb35c1fadb17e03a9c6258ea8",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:19.524549",
+    "scholarship_name": "Russian Government Scholarships - Education in Russia (Rossotrudnichestvo)"
+  },
+  {
+    "user_id": "valid.subscriber@gmail.com",
+    "scholarship_hash": "8600f1b9a0fa79bd2bb3485db5e3187d02630d3e02487b5c219fab50e50b9aee",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:24.908012",
+    "scholarship_name": "Lester B. Pearson International Scholarship Program - University of Toronto"
+  },
+  {
+    "user_id": "valid.subscriber@gmail.com",
+    "scholarship_hash": "98d95d64b7c1f45ca15ed07c6b6461b8800d47f4a6f6de0f3071a86dabd23e79",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:24.912300",
+    "scholarship_name": "UBC International Scholars Program - University of British Columbia"
+  },
+  {
+    "user_id": "valid.subscriber@gmail.com",
+    "scholarship_hash": "f3edbe7ae5aae0c2e90996d83d72797a924b70cfb35c1fadb17e03a9c6258ea8",
+    "notification_type": "match_alert",
+    "sent_at": "2026-11-05T20:33:24.931440",
+    "scholarship_name": "Russian Government Scholarships - Education in Russia (Rossotrudnichestvo)"
   }
 ]

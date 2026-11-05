@@ -22,7 +22,7 @@
       "Stipendium Hungaricum"
     ],
     "created_at": "2026-10-28T10:00:00",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:33:48.118365",
     "status": "active"
   },
   {
@@ -44,7 +44,7 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:14:49.681510",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:35:24.165119",
     "status": "active"
   },
   {
@@ -87,7 +87,7 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:15:10.774072",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:35:38.294320",
     "status": "active"
   },
   {
@@ -109,7 +109,7 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:32:13.425842",
-    "last_sent_at": null,
+    "last_sent_at": "2026-11-05T20:35:52.873616",
     "status": "active"
   },
   {
@@ -131,6 +131,28 @@
     "talents_experience": "",
     "saved_scholarships": [],
     "created_at": "2026-10-31T14:34:04.690751",
+    "last_sent_at": null,
+    "status": "active"
+  },
+  {
+    "email": "test.student.1793903714@gmail.com",
+    "full_name": "أحمد محمود",
+    "degree": "Master&#x27;s Degree",
+    "majors": [
+      "Cybersecurity"
+    ],
+    "gpa": "88%",
+    "english_level": "Intermediate",
+    "target_destinations": [
+      "Europe",
+      "Canada",
+      "Turkey",
+      "Any"
+    ],
+    "country": "Palestine",
+    "talents_experience": "",
+    "saved_scholarships": [],
+    "created_at": "2026-11-05T20:35:14.948666",
     "last_sent_at": null,
     "status": "active"
   }

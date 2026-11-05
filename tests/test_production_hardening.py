@@ -25,6 +25,7 @@ def test_fast_healthz():
     from web.app import app
 
     client = TestClient(app)
+    client.get("/healthz")  # Warm-up middleware & ASGI lifecycle
     t0 = time.time()
     res = client.get("/healthz")
     elapsed_ms = (time.time() - t0) * 1000
@@ -103,8 +104,8 @@ def test_sent_notifications_idempotency():
     print(">>> Testing Sent Notifications Idempotency...")
     from services.db import record_sent_notification, is_scholarship_already_sent
 
-    user_email = "test_hardening_user@eduatlas.com"
-    sch_hash = "hash_abc_123_test_unique"
+    user_email = f"test_user_{int(time.time()*1000)}@eduatlas.com"
+    sch_hash = f"hash_uniq_{int(time.time()*1000)}"
 
     # Initially not sent
     assert not is_scholarship_already_sent(user_email, sch_hash)

@@ -176,7 +176,10 @@
                         const parsed = window.marked && typeof window.marked.parse === 'function'
                             ? window.marked.parse(this.editorContent)
                             : this.editorContent.replace(/\n/g, '<br>');
-                        previewContent.innerHTML = parsed;
+                        const safeHtml = window.DOMPurify && typeof window.DOMPurify.sanitize === 'function'
+                            ? window.DOMPurify.sanitize(parsed)
+                            : parsed;
+                        previewContent.innerHTML = safeHtml;
                     }
                 }
             }

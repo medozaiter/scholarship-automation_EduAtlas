@@ -1,5 +1,408 @@
 [
   {
+    "id": 1793903715192,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:35:15.192713",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903715081,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:35:15.081828",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903696252,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:34:56.252429",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903696124,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:34:56.124040",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903599784,
+    "recipient": "valid.subscriber@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_aa838489c5af",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:19.784960",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903599724,
+    "recipient": "valid.subscriber@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_505bd81aa9e8",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:19.724319",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903599663,
+    "recipient": "valid.subscriber@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_f94a90beda85",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:19.663272",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903599603,
+    "recipient": "valid.subscriber@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_8e9af83b4d72",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:19.603733",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903591642,
+    "recipient": "mentioned_peer@scholarpilot.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_46fb4980668b",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:11.642568",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903591577,
+    "recipient": "mentioned_peer@scholarpilot.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_f8d15f6697d4",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:11.577843",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903591516,
+    "recipient": "mentioned_peer@scholarpilot.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_218a01528d65",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:11.516209",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903591455,
+    "recipient": "mentioned_peer@scholarpilot.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_aeb8e5e5c9d3",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:11.455282",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903582729,
+    "recipient": "medo.msz.2006@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_ff0e80d27ea3",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:02.729603",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903582670,
+    "recipient": "medo.msz.2006@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_48664a4b9955",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:02.670699",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903582613,
+    "recipient": "medo.msz.2006@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_44d77a59966f",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:02.613060",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903582560,
+    "recipient": "medo.msz.2006@gmail.com",
+    "notification_type": "scholarship_match",
+    "channel": "in_app",
+    "target_id": "ntf_c004d0d9920e",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:33:02.560021",
+    "meta": {
+      "category": "scholarship",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903577530,
+    "recipient": "medo.msz.2006@gmail.com",
+    "notification_type": "approaching_deadline",
+    "channel": "in_app",
+    "target_id": "ntf_e454e131ba99",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:32:57.530733",
+    "meta": {
+      "category": "scholarship",
+      "priority": "urgent"
+    }
+  },
+  {
+    "id": 1793903507906,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:31:47.906116",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903507765,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:31:47.765327",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903466821,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:31:06.821977",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903466685,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:31:06.685451",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903405745,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:30:05.745480",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903405640,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:30:05.640534",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903382891,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:29:42.891619",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903382772,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:29:42.772393",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903180270,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:26:20.270315",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903180149,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:26:20.149709",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903124190,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:25:24.190332",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903124072,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:25:24.072645",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903063794,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:24:23.794617",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
+    "id": 1793903063689,
+    "recipient": "security_guardian_test@example.com",
+    "notification_type": "account_verified",
+    "channel": "in_app",
+    "target_id": "ntf_adeff0dfcc1a",
+    "status": "delivered",
+    "timestamp": "2026-11-05T20:24:23.689052",
+    "meta": {
+      "category": "system",
+      "priority": "high"
+    }
+  },
+  {
     "id": 1793449999682,
     "recipient": "@testchannel",
     "notification_type": "telegram_channel_post",

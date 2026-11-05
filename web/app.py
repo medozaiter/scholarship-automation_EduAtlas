@@ -93,7 +93,12 @@ def get_authenticated_user(request: Request) -> Optional[Dict[str, Any]]:
 
 def require_cron_auth(request: Request):
     """Protects webhook and cron automation endpoints with X-Cron-Secret verification."""
-    cron_header = request.headers.get("X-Cron-Secret") or request.headers.get("x-cron-secret")
+    cron_header = (
+        request.headers.get("X-Cron-Secret")
+        or request.headers.get("x-cron-secret")
+        or request.query_params.get("secret")
+        or request.query_params.get("cron_secret")
+    )
     if cron_header and verify_cron_secret(cron_header):
         return True
 
@@ -103,7 +108,7 @@ def require_cron_auth(request: Request):
         return True
 
     raise HTTPException(
-        status_code=401,
+        status_code=403,
         detail="المسار محمي ومخصص لمهام الأتمتة والجدولة (Cron). يرجى إرسال الترويسة السرية X-Cron-Secret أو تسجيل الدخول كمسؤول."
     )
 
@@ -418,6 +423,7 @@ async def health_diagnostics():
 
 @app.api_route("/api/cron/trigger-scan", methods=["GET", "POST"], status_code=202)
 async def trigger_cron_radar_scan(
+    request: Request,
     background_tasks: BackgroundTasks,
     x_cron_secret: Optional[str] = Header(None, alias="X-Cron-Secret"),
     secret: Optional[str] = Query(None)
@@ -427,13 +433,7 @@ async def trigger_cron_radar_scan(
     - Protected by CRON_SECRET token via X-Cron-Secret header or ?secret= query param.
     - Decoupled: Immediately returns 202 Accepted in <20ms and runs scan asynchronously.
     """
-    configured_secret = os.getenv("CRON_SECRET", "scholarpilot_cron_secret").strip()
-    provided_secret = (x_cron_secret or secret or "").strip()
-
-    if not provided_secret or provided_secret != configured_secret:
-        logger.warning("Unauthorized attempt to trigger cron radar scan without valid secret.")
-        raise HTTPException(status_code=401, detail="Unauthorized: Invalid or missing cron secret")
-
+    require_cron_auth(request)
     background_tasks.add_task(run_radar_scan_job)
     return {
         "status": "accepted",
@@ -1265,6 +1265,8 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
             secure=is_secure
         )
         return {"success": True, "user": user, "token": token, "message": "تم إنشاء حسابك وتفعيل هويتك الأكاديمية بنجاح!"}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1309,6 +1311,8 @@ async def login_account(req: LoginRequest, request: Request, response: Response)
             secure=is_secure
         )
         return {"success": True, "user": user, "token": token}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
 
@@ -1327,6 +1331,8 @@ async def forgot_password_endpoint(req: ForgotPasswordRequest):
     try:
         res = auth_service.forgot_password(req.email)
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1340,6 +1346,8 @@ async def reset_password_endpoint(req: ResetPasswordRequest):
     try:
         success = auth_service.reset_password(req.email, req.token, req.new_password)
         return {"success": success, "message": "تم تحديث كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول."}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1353,6 +1361,8 @@ async def send_verification_endpoint(req: SendVerificationRequest):
     try:
         res = auth_service.send_verification_email(req.email)
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1366,6 +1376,8 @@ async def verify_email_endpoint(req: VerificationCodeRequest):
     try:
         success = auth_service.verify_email(email=req.email, code=req.code, token=req.token)
         return {"success": success, "message": "تم توثيق وتفعيل بريدك الأكاديمي بنجاح!"}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1401,6 +1413,8 @@ async def verify_email_get_endpoint(token: str):
             </html>
             """
         )
+    except HTTPException:
+        raise
     except ValueError as ve:
         return HTMLResponse(
             f"""
@@ -1470,6 +1484,8 @@ async def upload_user_avatar_endpoint(request: Request, file: UploadFile = File(
             "avatar_url": relative_url,
             "profile": updated
         }
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1504,6 +1520,8 @@ async def upload_user_cover_endpoint(request: Request, file: UploadFile = File(.
             "cover_url": relative_url,
             "profile": updated
         }
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1560,6 +1578,8 @@ async def delete_account_endpoint(req: DeleteAccountRequest, request: Request, r
         response.delete_cookie("minha_token")
         response.delete_cookie("session_token")
         return {"success": success, "message": "تم حذف الحساب نهائياً بنجاح."}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1629,6 +1649,8 @@ async def subscribe_student(req: SubscriptionRequest, background_tasks: Backgrou
                 }
             }
         )
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -1706,10 +1728,11 @@ async def send_student_report_direct(req: SubscriptionRequest):
 
 
 @app.post("/api/email/test")
-async def test_email_dispatch(payload: Dict[str, str]):
+async def test_email_dispatch(payload: Dict[str, str], request: Request):
     """
     Diagnostic tool to verify email delivery to any test recipient.
     """
+    require_cron_auth(request)
     to_email = payload.get("email", "").strip()
     if not to_email or "@" not in to_email:
         raise HTTPException(status_code=400, detail="البريد الإلكتروني غير صالح.")
@@ -1793,7 +1816,8 @@ async def get_notifications_history_endpoint(limit: int = 50):
 
 
 @app.post("/api/automation/trigger-cycle")
-async def trigger_full_automation_cycle(background_tasks: BackgroundTasks):
+async def trigger_full_automation_cycle(background_tasks: BackgroundTasks, request: Request):
+    require_cron_auth(request)
     """Manually triggers an immediate autonomous cycle: Discovery, Matching, Deadlines & Digests."""
     async def _run_cycle():
         try:
@@ -1813,8 +1837,9 @@ async def trigger_full_automation_cycle(background_tasks: BackgroundTasks):
 
 
 @app.post("/api/automation/telegram/publish/{scholarship_id}")
-async def publish_single_scholarship_telegram(scholarship_id: str):
+async def publish_single_scholarship_telegram(scholarship_id: str, request: Request):
     """Publishes a single scholarship to the official Telegram channel with duplicate prevention."""
+    require_cron_auth(request)
     from services.telegram_service import telegram_service
     items = automation_service.get_live_scholarships()
     target = next((s for s in items if str(s.get("id")) == str(scholarship_id)), None)
@@ -2138,6 +2163,8 @@ async def consult_advisor(req: AdvisorChatRequest, request: Request):
         return res
     except HTTPException:
         raise
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -2213,6 +2240,8 @@ async def upload_and_review_cv(
             student_profile=profile,
             target_scholarship=target_scholarship
         )
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except HTTPException:
@@ -2260,6 +2289,8 @@ async def upload_and_review_letter(
             student_profile=profile,
             target_scholarship=target_scholarship
         )
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except HTTPException:
@@ -2288,6 +2319,10 @@ async def generate_roadmap_route(req: RoadmapRequest, request: Request):
 @app.post("/api/advisor/send-document-package")
 async def send_document_package_route(req: SendDocumentPackageRequest, request: Request):
     """Sends drafted Motivation or Recommendation Letter package directly to student's email."""
+    user = get_authenticated_user(request)
+    if user and user.get("email"):
+        if req.email and req.email.strip().lower() != user["email"].strip().lower() and user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="غير مصرح بإرسال الوثائق نيابة عن بريد طالب آخر (IDOR Protection).")
     try:
         clean_email = validate_email(req.email)
         clean_name = sanitize_text(req.student_name, max_length=100) if req.student_name else "طالب أكاديمي"
@@ -2368,6 +2403,8 @@ async def calculate_match(req: MatchCalculationRequest):
             student_talents=req.talents_experience or ""
         )
         return {"success": True, "match": res}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -2377,18 +2414,20 @@ async def calculate_match(req: MatchCalculationRequest):
 
 @app.post("/api/scholarships/save")
 async def save_scholarship(req: SaveScholarshipRequest, request: Request):
-    """Saves scholarship to student's watchlist for deadline countdown reminders with optional session token verification."""
-    try:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header.split(" ")[1].strip()
-            token_user = auth_service.authenticate_token(token)
-            if token_user and token_user.get("email"):
-                # Enforce authenticated session email to prevent IDOR
-                req.email = token_user["email"]
+    """Saves scholarship to student's watchlist with strict ownership authentication."""
+    user = get_authenticated_user(request)
+    if not user or not user.get("email"):
+        raise HTTPException(status_code=401, detail="يرجى تسجيل الدخول لحفظ المنح الدراسية في قائمتك الخاصة.")
 
-        result = sub_service.toggle_saved_scholarship(req.email, req.scholarship_name)
+    auth_email = user["email"].strip().lower()
+    if req.email and req.email.strip().lower() != auth_email and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="غير مصرح بتعديل قائمة منح حساب طالب آخر (IDOR Protection).")
+
+    try:
+        result = sub_service.toggle_saved_scholarship(auth_email, req.scholarship_name)
         return {"success": True, **result}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -2481,6 +2520,8 @@ async def create_community_post_endpoint(req: CreateCommunityPostRequest, reques
     try:
         post = community_service.create_post(user, req.model_dump())
         return {"success": True, "message": "تم نشر مساهمتك الأكاديمية بنجاح.", "post": post}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -2527,6 +2568,8 @@ async def toggle_like_post_endpoint(post_id: str, request: Request):
     try:
         res = community_service.toggle_like_post(post_id, user["email"])
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
@@ -2543,6 +2586,8 @@ async def toggle_save_post_endpoint(post_id: str, request: Request):
     try:
         res = community_service.toggle_save_post(post_id, user["email"])
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
@@ -2556,6 +2601,8 @@ async def share_post_endpoint(post_id: str):
     try:
         res = community_service.record_share_post(post_id)
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
 
@@ -2583,6 +2630,8 @@ async def add_post_comment_endpoint(post_id: str, req: AddCommunityCommentReques
             parent_id=req.parent_id
         )
         return {"success": True, "message": "تم إضافة تعليقك الأكاديمي بنجاح.", "comment": comment}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -2628,6 +2677,8 @@ async def toggle_follow_user_endpoint(username: str, request: Request):
     try:
         res = community_service.toggle_follow(user["email"], username)
         return res
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
 
@@ -2655,6 +2706,8 @@ async def report_community_item_endpoint(req: ReportContentRequest, request: Req
             details=req.details or ""
         )
         return {"success": True, "message": "تم استلام البلاغ وسيتم مراجعته من قبل المشرفين الأكاديميين.", "report_id": report.get("id")}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
 
@@ -2864,6 +2917,8 @@ async def add_news_comment_endpoint(article_id: str, req: NewsCommentCreateReque
             parent_id=req.parent_id
         )
         return {"success": True, "comment": comment}
+    except HTTPException:
+        raise
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
 
@@ -2904,14 +2959,16 @@ async def share_news_article_endpoint(article_id: str):
 
 
 @app.post("/api/news/sync")
-async def sync_news_aggregation_endpoint():
+async def sync_news_aggregation_endpoint(request: Request):
+    require_cron_auth(request)
     """Triggers automated news aggregation and discovery engine."""
     res = news_service.discover_and_aggregate_news()
     return {"success": True, "result": res}
 
 
 @app.post("/api/news/{article_id}/publish-telegram")
-async def publish_news_telegram_endpoint(article_id: str):
+async def publish_news_telegram_endpoint(article_id: str, request: Request):
+    require_cron_auth(request)
     """Publishes a verified news article to the official Telegram channel @ScholarPilot."""
     msg_id = await news_service.broadcast_news_to_telegram_async(article_id)
     return {"success": bool(msg_id), "telegram_message_id": msg_id}
