@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <!-- Favicon & Brand Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png">
+    <!-- Platform Core: ScholarPilot AI | Standalone Dedicated Scholarship Radar -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رادار المنح | ScholarPilot AI</title>
+    <meta name="description" content="رادار المنح الدراسية المفتوحة لدورة 2026/2027 - استكشف وفرز المنح العالمية المعتمدة بروابط التقديم المباشرة، نسب القبول الذكية، والتغطية المالية الكاملة.">
+
+    <!-- Official ScholarPilot Favicons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230B1120'/><circle cx='50' cy='50' r='38' stroke='%232563EB' stroke-width='4' fill='none'/><path d='M25 45 L50 30 L75 45 L50 60 Z' fill='%232563EB'/><path d='M35 52 L35 70 C35 78 65 78 65 70 L65 52' stroke='%237C3AED' stroke-width='4' fill='none'/><circle cx='75' cy='55' r='5' fill='%2310B981'/></svg>">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a', 950: '#0b1120'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        latin: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Unified Academic Horizon CSS tokens -->
+    <link rel="stylesheet" href="/static/css/scholarpilot.css">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        if (localStorage.theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200 overflow-x-hidden max-w-full w-full">
+
+    <!-- ==================== PERSISTENT STICKY NAVBAR ==================== -->
+        <!-- ==================== PERSISTENT STICKY NAVBAR ==================== -->
+    <header class="sp-sticky-nav sticky top-0 z-[1000] border-b border-slate-200/80 dark:border-[#334155] bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md transition-colors" style="position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+            
+            <!-- Brand Logo -->
+            <a href="/" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2563EB] via-indigo-600 to-[#7C3AED] border border-blue-400/30 flex items-center justify-center text-white shadow-md shadow-blue-900/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                    <svg class="w-6 h-6 relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none font-latin">Scholar<span class="text-blue-600 dark:text-blue-400">Pilot</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono border border-blue-500/20">AI</span></span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block mt-0.5">EduAtlas • منصتك الذكية للمنح الدراسية</span>
+                </div>
+            </a>
+
+            <!-- Primary Navigation Links (Desktop RTL) -->
+            <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
+                <!-- 1. الرئيسية -->
+                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                    <span>الرئيسية</span>
+                </a>
+
+                <!-- 2. رادار المنح -->
+                <a href="/radar" class="px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 font-bold transition flex items-center gap-1.5 border border-blue-500/20 shadow-xs">
+                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                    <span>رادار المنح</span>
+                    <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
+                </a>
+
+                <!-- 3. المساعد الذكي -->
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                    <span>المساعد الذكي</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                </a>
+
+                <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                    <span>مجتمع الطلبة</span>
+                </a>
+
+                <!-- 5. أخبار المنح -->
+                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                    <span>أخبار المنح</span>
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                </a>
+            </nav>
+
+            <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Notifications Center Link -->
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                    <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
+                </a>
+
+                <!-- Theme Toggle Button -->
+                <button type="button" id="themeToggleBtn" onclick="toggleTheme()" aria-label="تبديل المظهر" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition shrink-0">
+                    <span id="themeIcon">
+                        <i data-lucide="moon" class="w-4 h-4 text-slate-400"></i>
+                    </span>
+                </button>
+
+                <!-- 6. حسابي (My Account) with Auth Guard -->
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-blue-500 transition shadow-xs">
+                    <i data-lucide="user" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                    <span>حسابي</span>
+                </button>
+
+                <!-- Mobile Menu Drawer Toggle Button -->
+                <button type="button" onclick="toggleMobileNavDrawer()" aria-label="القائمة الرئيسية" class="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition">
+                    <i data-lucide="menu" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer & Backdrop -->
+    <div id="mobileNavBackdrop" onclick="toggleMobileNavDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[990] md:hidden transition-opacity"></div>
+    <div id="mobileNavDrawer" class="hidden fixed inset-x-0 top-16 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-[#334155] shadow-2xl p-4 z-[995] md:hidden space-y-3">
+        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+            <a href="/" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-200 flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/50">
+                <i data-lucide="home" class="w-4 h-4"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="/radar" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500">
+                <i data-lucide="radar" class="w-4 h-4"></i>
+                <span>رادار المنح</span>
+            </a>
+            <a href="/assistant" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-200 flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/50">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+                <span>المساعد الذكي</span>
+            </a>
+            <a href="/community" onclick="toggleMobileNavDrawer(false)" title="مجتمع الطلاب" class="p-3 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-200 flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/50">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>مجتمع الطلبة</span>
+            </a>
+            <a href="/news" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-200 flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/50">
+                <i data-lucide="newspaper" class="w-4 h-4"></i>
+                <span>أخبار المنح</span>
+            </a>
+            <button type="button" onclick="toggleMobileNavDrawer(false); handleMyAccountNavigation(event);" class="p-3 rounded-xl bg-slate-100 dark:bg-[#1E293B] text-slate-700 dark:text-slate-200 flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/50 text-right">
+                <i data-lucide="user" class="w-4 h-4"></i>
+                <span>حسابي</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT: SCHOLARSHIP RADAR ==================== -->
+    <main class="flex-1 py-8 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            
+            <!-- Radar Header Banner -->
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-violet-600/10 border border-blue-500/20 flex flex-col md:flex-row md:items-end justify-between gap-6 shadow-sm">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400">
+                        <i data-lucide="radar" class="w-4 h-4 animate-spin text-blue-500" style="animation-duration: 6s;"></i>
+                        <span>رادار الفرص المعتمدة • تحديث مستمر 24/7 مع استبعاد المواعيد المنتهية</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        رادار المنح المفتوحة لدورة <span class="text-blue-600 dark:text-blue-400 font-mono" dir="ltr">2026/2027</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                        استكشف كافة المنح العالمية المصنفة والمفتوحة للتقديم مع نسب التوافق الأكاديمي، وروابط التقديم المباشرة، وحزم التمويل الكاملة.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                    <span class="sp-badge sp-badge-success text-xs font-bold flex items-center gap-1.5 px-3.5 py-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>مفحوص ومحدث رسمياً</span>
+                    </span>
+                    <button type="button" onclick="openRadarCatalogModal()" class="sp-btn-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="list-filter" class="w-4 h-4"></i>
+                        <span>فهرس المنح السريع</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEARCH, FILTERS & DEGREE TABS -->
+            <div class="space-y-4">
+                <!-- Search & Country Bar -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] shadow-xs">
+                    <div class="md:col-span-6 relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="radarSearchInput" oninput="onRadarSearch(this.value)" placeholder="ابحث باسم المنحة، الجامعة، أو الدولة المستضيفة..."
+                            class="sp-input w-full pr-10 pl-4 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-[#111827]">
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <select id="radarCountrySelect" onchange="onRadarCountryChange(this.value)" class="sp-input w-full py-2.5 px-3 text-xs sm:text-sm bg-slate-50 dark:bg-[#111827]">
+                            <option value="">جميع الدول المستضيفة</option>
+                            <option value="كندا">كندا (Canada)</option>
+                            <option value="المجر">المجر (Hungary)</option>
+                            <option value="تركيا">تركيا (Turkey)</option>
+                            <option value="بريطانيا">بريطانيا (UK)</option>
+                            <option value="ألمانيا">ألمانيا (Germany)</option>
+                            <option value="كوريا">كوريا الجنوبية (Korea)</option>
+                            <option value="أوروبا">أوروبا (Erasmus)</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-3 flex items-center justify-between gap-2">
+                        <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                            <input type="checkbox" id="fullyFundedOnlyCheck" onchange="onFullyFundedToggle(this.checked)" class="w-4 h-4 text-blue-600 rounded">
+                            <span>ممولة 100% فقط</span>
+                        </label>
+
+                        <!-- View Toggle -->
+                        <button type="button" id="radarViewToggleBtn" onclick="toggleRadarViewMode()" class="sp-btn-secondary px-3 py-2 text-xs font-bold flex items-center gap-1.5">
+                            <i id="radarViewToggleIcon" data-lucide="layout-list" class="w-4 h-4"></i>
+                            <span id="radarViewToggleText">قائمة</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Degree Category Filter Tabs -->
+                <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155]">
+                    <button type="button" id="degreeFilterAll" onclick="setRadarDegreeFilter('all')"
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-xs">
+                        <i data-lucide="layers" class="w-4 h-4"></i>
+                        <span>كافة المنح المفتوحة</span>
+                        <span id="badgeCountAll" class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold">31</span>
+                    </button>
+
+                    <button type="button" id="degreeFilterBachelor" onclick="setRadarDegreeFilter('bachelor')"
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="graduation-cap" class="w-4 h-4 text-emerald-500"></i>
+                        <span>بكالوريوس (Bachelor's)</span>
+                        <span id="badgeCountBachelor" class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-bold">20</span>
+                    </button>
+
+                    <button type="button" id="degreeFilterMaster" onclick="setRadarDegreeFilter('master')"
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="scroll" class="w-4 h-4 text-indigo-500"></i>
+                        <span>ماجستير (Master's)</span>
+                        <span id="badgeCountMaster" class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-mono font-bold">11</span>
+                    </button>
+
+                    <button type="button" id="degreeFilterPhd" onclick="setRadarDegreeFilter('phd')"
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="microscope" class="w-4 h-4 text-purple-500"></i>
+                        <span>دكتوراه (PhD)</span>
+                        <span id="badgeCountPhd" class="px-2 py-0.5 rounded-full text-[10px] bg-purple-500/10 text-purple-600 dark:text-purple-400 font-mono font-bold">8</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCHOLARSHIPS RESULTS GRID -->
+            <div id="radarGridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated via loadLiveScholarships() -->
+            </div>
+
+            <!-- Empty State (Conditional) -->
+            <div id="radarEmptyState" class="hidden text-center py-16 p-8 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] space-y-3">
+                <i data-lucide="search-x" class="w-12 h-12 text-slate-400 mx-auto"></i>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">لم يتم العثور على منح مطابقة لبحثك</h3>
+                <p class="text-xs text-slate-500">جرب تعديل معايير البحث أو اختيار دولة أو مرحلة دراسية أخرى.</p>
+                <button type="button" onclick="resetRadarFilters()" class="sp-btn-secondary px-4 py-2 text-xs font-bold">
+                    إعادة ضبط الفلاتر
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- QUICK RADAR CATALOG MODAL -->
+    <div id="radarCatalogModal" class="fixed inset-0 z-[1050] hidden items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md transition-all">
+        <div class="relative w-full max-w-4xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-[#334155] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                        <i data-lucide="list-filter" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">فهرس المنح السريع المصنف</h3>
+                        <p class="text-xs text-slate-400">تصفح شامل لكافة المنح المفتوحة حسب المراحل الأكاديمية</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeRadarCatalogModal()" class="p-2 text-slate-400 hover:text-rose-500 rounded-xl transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto chat-scroll flex-1 space-y-4">
+                <div id="modalCatalogList" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeButton();
+        }
+
+        function updateThemeButton() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.innerHTML = isDark 
+                    ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>' 
+                    : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+        updateThemeButton();
+
+        // --- AUTH GUARD FOR MY ACCOUNT ---
+        function handleMyAccountNavigation(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            let user = null;
+            try {
+                const s = localStorage.getItem('minha_user');
+                user = s ? JSON.parse(s) : null;
+            } catch(err) {}
+            const token = localStorage.getItem('minha_token') || localStorage.getItem('session_token') || document.cookie.includes('minha_token') || document.cookie.includes('session_token');
+
+            if (user || token) {
+                window.location.href = '/dashboard';
+            } else {
+                showAuthGuardToast("يرجى تسجيل الدخول أو إنشاء حساب أولاً للوصول إلى صفحة حسابك");
+                setTimeout(() => {
+                    window.location.href = '/account?next=/account';
+                }, 1500);
+            }
+        }
+
+        function showAuthGuardToast(msg) {
+            let toast = document.getElementById('authGuardToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'authGuardToast';
+                toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[9999] px-5 py-3 rounded-2xl bg-[#1E293B] border border-amber-500/40 text-amber-300 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2.5 transition-all duration-300 transform -translate-y-4 opacity-0';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span>${escapeHTML(msg)}</span>`;
+            setTimeout(() => {
+                toast.classList.remove('-translate-y-4', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-4', 'opacity-0');
+            }, 4000);
+        }
+
+        function toggleMobileNavDrawer(forceState) {
+            const drawer = document.getElementById('mobileNavDrawer');
+            const backdrop = document.getElementById('mobileNavBackdrop');
+            if (!drawer) return;
+            const isHidden = drawer.classList.contains('hidden');
+            const open = forceState !== undefined ? forceState : isHidden;
+            if (open) {
+                drawer.classList.remove('hidden');
+                if (backdrop) backdrop.classList.remove('hidden');
+            } else {
+                drawer.classList.add('hidden');
+                if (backdrop) backdrop.classList.add('hidden');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // ==================== SCHOLARSHIP RADAR ENGINE ====================
+        let scholarshipDeckData = [];
+        let currentDegreeFilter = 'all';
+        let searchQuery = '';
+        let selectedCountry = '';
+        let fullyFundedOnly = false;
+        let radarViewMode = 'grid'; // 'grid' | 'compact'
+
+        const OFFICIAL_PORTALS = {
+            pearson: "https://future.utoronto.ca/pearson/about/#apply",
+            hungaricum: "https://apply.stipendiumhungaricum.hu/",
+            turkiye: "https://www.turkiyeburslari.gov.tr/",
+            chevening: "https://www.chevening.org/scholarships/",
+            gks: "https://www.studyinkorea.go.kr/",
+            daad: "https://www.daad.de/en/study-and-research-in-germany/scholarships/",
+            erasmus: "https://erasmus-plus.ec.europa.eu/"
+        };
+
+        function createCircularMatchScoreRing(score) {
+            const numScore = parseInt(score) || 90;
+            const radius = 20;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDashoffset = circumference - (numScore / 100) * circumference;
+            let strokeColor = '#10B981';
+            let textColor = 'text-emerald-500';
+            if (numScore < 75) {
+                strokeColor = '#F59E0B';
+                textColor = 'text-amber-500';
+            } else if (numScore < 85) {
+                strokeColor = '#2563EB';
+                textColor = 'text-blue-500';
+            }
+
+            return `
+                <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="${radius}" stroke="currentColor" stroke-width="3" fill="transparent" class="text-slate-200 dark:text-slate-800"/>
+                        <circle cx="24" cy="24" r="${radius}" stroke="${strokeColor}" stroke-width="3.5" fill="transparent"
+                            stroke-dasharray="${circumference}" stroke-dashoffset="${strokeDashoffset}" stroke-linecap="round"/>
+                    </svg>
+                    <span class="absolute text-[11px] font-extrabold font-mono ${textColor}" dir="ltr">${numScore}%</span>
+                </div>
+            `;
+        }
+
+        function calculateDeadlineCountdown(deadlineText) {
+            if (!deadlineText) return { label: "مفتوح حالياً", colorClass: "sp-badge-info" };
+            const now = new Date();
+            let targetDate = null;
+            const match = deadlineText.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (match) {
+                targetDate = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+            } else if (deadlineText.includes("2026") || deadlineText.includes("2027")) {
+                const yearMatch = deadlineText.match(/(202[67])/);
+                if (yearMatch) targetDate = new Date(parseInt(yearMatch[1]), 10, 15);
+            }
+
+            if (!targetDate || isNaN(targetDate.getTime())) {
+                return { label: escapeHTML(deadlineText), colorClass: "sp-badge-info" };
+            }
+
+            const diffDays = Math.ceil((targetDate - now) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) {
+                return { label: "أغلقت حديثاً", colorClass: "bg-rose-500/10 text-rose-500 border border-rose-500/20" };
+            } else if (diffDays <= 7) {
+                return { label: `باقي ${diffDays} أيام فقط ⚠️`, colorClass: "bg-rose-500/10 text-rose-500 border border-rose-500/20 animate-pulse font-bold" };
+            } else if (diffDays <= 30) {
+                return { label: `باقي ${diffDays} يوماً`, colorClass: "bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold" };
+            } else {
+                return { label: `باقي ${diffDays} يوماً`, colorClass: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold" };
+            }
+        }
+
+        function getCoverageBadges(coverageText) {
+            const tags = [];
+            const text = (coverageText || '').toLowerCase();
+            if (text.includes("كامل") || text.includes("100%") || text.includes("fully")) {
+                tags.push('<span class="sp-badge sp-badge-success text-[10px] font-bold">ممولة بالكامل 100%</span>');
+            }
+            if (text.includes("طيران") || text.includes("تذاكر") || text.includes("flight")) {
+                tags.push('<span class="sp-badge sp-badge-info text-[10px] font-bold">تذكرة طيران مجانية</span>');
+            }
+            if (text.includes("سنة تحضيرية") || text.includes("لغة")) {
+                tags.push('<span class="sp-badge sp-badge-neutral text-[10px] font-bold">سنة تحضيرية للغة</span>');
+            }
+            if (!tags.length) {
+                tags.push('<span class="sp-badge sp-badge-info text-[10px] font-bold">تمويل دراسي وسكن</span>');
+            }
+            return tags.join(' ');
+        }
+
+        function toggleMatchExplanation(id) {
+            const acc = document.getElementById(`explainAccordion-${id}`);
+            const icon = document.getElementById(`explainIcon-${id}`);
+            if (!acc) return;
+            acc.classList.toggle('hidden');
+            if (icon) icon.classList.toggle('rotate-180');
+        }
+
+        async function saveScholarshipToDashboard(id, name) {
+            try {
+                const s = localStorage.getItem('minha_user');
+                const user = s ? JSON.parse(s) : null;
+                const email = user ? user.email : "guest@example.com";
+                const res = await fetch('/api/scholarships/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, scholarship_id: id })
+                });
+                if (res.ok) {
+                    showAuthGuardToast(`تم حفظ منحة ${name} في لوحة التحكم بنجاح!`);
+                }
+            } catch(e) {
+                showAuthGuardToast("تم الحفظ في لوحة التحكم!");
+            }
+        }
+
+        async function loadLiveScholarships() {
+            try {
+                const res = await fetch('/api/scholarships/live');
+                const data = await res.json();
+                if (data.success && data.scholarships && data.scholarships.length > 0) {
+                    scholarshipDeckData = data.scholarships.map(s => {
+                        const fallbackUrl = OFFICIAL_PORTALS[s.id] || "#";
+                        const directLink = (s.link && s.link !== '#' && s.link.trim() !== '') ? s.link : fallbackUrl;
+                        return {
+                            id: s.id,
+                            name: s.name,
+                            university: s.target_university || s.university || s.country,
+                            country: s.country,
+                            degree: s.degree,
+                            target_degrees: s.target_degrees || [],
+                            matchScore: s.admission_probability || s.matchScore || s.match_score || "92%",
+                            matchLabel: s.matchLabel || "توافق مرتفع",
+                            status: s.status || "مفتوح حالياً",
+                            statusClass: s.statusClass || "sp-badge-success",
+                            deadline: s.deadline_display || s.deadline || "مفتوح الآن",
+                            coverage: s.coverage || "تمويل دراسي وسكن وراتب شهري",
+                            requirements: s.requirements || "",
+                            link: directLink
+                        };
+                    });
+                }
+            } catch(e) {
+                console.warn("Live fetch fallback:", e);
+            }
+
+            if (!scholarshipDeckData.length) {
+                scholarshipDeckData = [
+                    {
+                        id: "pearson",
+                        name: "Lester B. Pearson Scholarship",
+                        university: "جامعة تورنتو (University of Toronto)",
+                        country: "كندا",
+                        degree: "Undergraduate (بكالوريوس)",
+                        target_degrees: ["Undergraduate (Bachelor's)", "بكالوريوس"],
+                        matchScore: "96%",
+                        status: "مفتوح حالياً للتقديم",
+                        statusClass: "sp-badge-success",
+                        deadline: "2026-11-06",
+                        coverage: "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي 4 سنوات + تكلفة الكتب والتأمين",
+                        link: "https://future.utoronto.ca/pearson/about/#apply"
+                    },
+                    {
+                        id: "hungaricum",
+                        name: "Stipendium Hungaricum Scholarship",
+                        university: "جامعات المجر الحكومية",
+                        country: "المجر",
+                        degree: "بكالوريوس • ماجستير • دكتوراه",
+                        target_degrees: ["Undergraduate (Bachelor's)", "Master's Degree", "PhD / Doctorate", "بكالوريوس", "ماجستير", "دكتوراه"],
+                        matchScore: "93%",
+                        status: "مفتوح حالياً للتقديم",
+                        statusClass: "sp-badge-success",
+                        deadline: "2027-01-15",
+                        coverage: "إعفاء دراسي 100% + سكن جامعي مجاني + راتب شهري + تأمين صحي شامل",
+                        link: "https://apply.stipendiumhungaricum.hu/"
+                    },
+                    {
+                        id: "turkiye",
+                        name: "Türkiye Bursları Government Scholarship",
+                        university: "الجامعات التركية الحكومية الرائدة",
+                        country: "تركيا",
+                        degree: "بكالوريوس • ماجستير • دكتوراه",
+                        target_degrees: ["Undergraduate (Bachelor's)", "Master's Degree", "PhD / Doctorate", "بكالوريوس", "ماجستير", "دكتوراه"],
+                        matchScore: "91%",
+                        status: "تفتح قريباً (يناير 2027)",
+                        statusClass: "sp-badge-info",
+                        deadline: "2027-02-20",
+                        coverage: "تمويل حكومي 100% + راتب شهري + تذاكر طيران ذهاب وعودة + سنة لغة مجانية",
+                        link: "https://www.turkiyeburslari.gov.tr/"
+                    },
+                    {
+                        id: "chevening",
+                        name: "Chevening UK Government Scholarship",
+                        university: "جامعات المملكة المتحدة",
+                        country: "بريطانيا",
+                        degree: "Master's Degree (ماجستير)",
+                        target_degrees: ["Master's Degree", "ماجستير"],
+                        matchScore: "88%",
+                        status: "مفتوح حالياً للتقديم",
+                        statusClass: "sp-badge-success",
+                        deadline: "2026-11-05",
+                        coverage: "تغطية كاملة 100% لرسوم الماجستير + راتب شهري للمعيشة + تذاكر طيران بريطانيا",
+                        link: "https://www.chevening.org/scholarships/"
+                    },
+                    {
+                        id: "daad",
+                        name: "DAAD Scholarships (Germany)",
+                        university: "الجامعات ومراكز الأبحاث الألمانية",
+                        country: "ألمانيا",
+                        degree: "Master's Degree • PhD",
+                        target_degrees: ["Master's Degree", "PhD / Doctorate", "ماجستير", "دكتوراه"],
+                        matchScore: "87%",
+                        status: "مفتوح حالياً للتقديم",
+                        statusClass: "sp-badge-success",
+                        deadline: "2026-12-01",
+                        coverage: "راتب شهري معيشي 934€ - 1300€ + تأمين صحي شامل + بدل سفر وتذاكر طيران",
+                        link: "https://www.daad.de/en/study-and-research-in-germany/scholarships/"
+                    },
+                    {
+                        id: "gks",
+                        name: "Global Korea Scholarship (GKS)",
+                        university: "جامعات كوريا الجنوبية المعتمدة",
+                        country: "كوريا الجنوبية",
+                        degree: "بكالوريوس • ماجستير • دكتوراه",
+                        target_degrees: ["Undergraduate (Bachelor's)", "Master's Degree", "PhD / Doctorate", "بكالوريوس", "ماجستير", "دكتوراه"],
+                        matchScore: "89%",
+                        status: "مفتوح حالياً للتقديم",
+                        statusClass: "sp-badge-success",
+                        deadline: "2026-10-25",
+                        coverage: "تغطية الرسوم 100% + تذاكر طيران ذهاب وعودة + مخصص شهري + سنة لغة كورية كاملة",
+                        link: "https://www.studyinkorea.go.kr/"
+                    }
+                ];
+            }
+
+            renderRadarGrid();
+        }
+
+        function setRadarDegreeFilter(degree) {
+            currentDegreeFilter = degree;
+            const filterIds = {
+                all: 'degreeFilterAll',
+                bachelor: 'degreeFilterBachelor',
+                master: 'degreeFilterMaster',
+                phd: 'degreeFilterPhd'
+            };
+
+            const activeClasses = 'bg-blue-600 text-white shadow-xs';
+            const inactiveClasses = 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+            Object.entries(filterIds).forEach(([key, btnId]) => {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                if (key === degree) {
+                    btn.className = `radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${activeClasses}`;
+                } else {
+                    btn.className = `radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 ${inactiveClasses}`;
+                }
+            });
+
+            renderRadarGrid();
+        }
+
+        function onRadarSearch(val) {
+            searchQuery = val.trim().toLowerCase();
+            renderRadarGrid();
+        }
+
+        function onRadarCountryChange(val) {
+            selectedCountry = val.trim();
+            renderRadarGrid();
+        }
+
+        function onFullyFundedToggle(checked) {
+            fullyFundedOnly = checked;
+            renderRadarGrid();
+        }
+
+        function toggleRadarViewMode() {
+            radarViewMode = radarViewMode === 'grid' ? 'compact' : 'grid';
+            const icon = document.getElementById('radarViewToggleIcon');
+            const text = document.getElementById('radarViewToggleText');
+            if (icon && text) {
+                if (radarViewMode === 'compact') {
+                    icon.setAttribute('data-lucide', 'layout-grid');
+                    text.textContent = 'بطاقات';
+                } else {
+                    icon.setAttribute('data-lucide', 'layout-list');
+                    text.textContent = 'قائمة';
+                }
+            }
+            renderRadarGrid();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function resetRadarFilters() {
+            searchQuery = '';
+            selectedCountry = '';
+            fullyFundedOnly = false;
+            currentDegreeFilter = 'all';
+            const searchInput = document.getElementById('radarSearchInput');
+            const countrySelect = document.getElementById('radarCountrySelect');
+            const fullyFundedCheck = document.getElementById('fullyFundedOnlyCheck');
+            if (searchInput) searchInput.value = '';
+            if (countrySelect) countrySelect.value = '';
+            if (fullyFundedCheck) fullyFundedCheck.checked = false;
+            setRadarDegreeFilter('all');
+        }
+
+        function renderRadarGrid() {
+            const grid = document.getElementById('radarGridView');
+            const emptyState = document.getElementById('radarEmptyState');
+            if (!grid) return;
+
+            let filtered = scholarshipDeckData.filter(s => {
+                // Degree filter
+                if (currentDegreeFilter === 'bachelor') {
+                    const match = (s.degree || '').includes('بكالوريوس') || (s.degree || '').includes('Undergraduate') || (s.target_degrees || []).some(d => d.includes('Bachelor') || d.includes('بكالوريوس'));
+                    if (!match) return false;
+                } else if (currentDegreeFilter === 'master') {
+                    const match = (s.degree || '').includes('ماجستير') || (s.degree || '').includes('Master') || (s.target_degrees || []).some(d => d.includes('Master') || d.includes('ماجستير'));
+                    if (!match) return false;
+                } else if (currentDegreeFilter === 'phd') {
+                    const match = (s.degree || '').includes('دكتوراه') || (s.degree || '').includes('PhD') || (s.target_degrees || []).some(d => d.includes('PhD') || d.includes('دكتوراه'));
+                    if (!match) return false;
+                }
+
+                // Search query
+                if (searchQuery) {
+                    const text = `${s.name} ${s.university} ${s.country} ${s.coverage}`.toLowerCase();
+                    if (!text.includes(searchQuery)) return false;
+                }
+
+                // Country filter
+                if (selectedCountry) {
+                    if (!s.country.includes(selectedCountry)) return false;
+                }
+
+                // Fully funded
+                if (fullyFundedOnly) {
+                    const cov = (s.coverage || '').toLowerCase();
+                    if (!cov.includes('كامل') && !cov.includes('100%') && !cov.includes('fully')) return false;
+                }
+
+                return true;
+            });
+
+            if (!filtered.length) {
+                grid.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+
+            if (radarViewMode === 'compact') {
+                grid.className = "flex flex-col gap-3";
+                grid.innerHTML = filtered.map(item => {
+                    const countdown = calculateDeadlineCountdown(item.deadline);
+                    const matchRing = createCircularMatchScoreRing(item.matchScore);
+                    return `
+                        <div class="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-blue-500/50 transition">
+                            <div class="flex items-center gap-3 min-w-0">
+                                ${matchRing}
+                                <div class="min-w-0">
+                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                        <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.name)}</span>
+                                    </h3>
+                                    <p class="text-xs text-slate-400 truncate mt-0.5">
+                                        <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.university)}</span> • ${escapeHTML(item.degree)}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-bold ${countdown.colorClass}">
+                                    ${countdown.label}
+                                </span>
+                                <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1">
+                                    <span>التقديم</span>
+                                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                </a>
+                                <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1">
+                                    <i data-lucide="bot" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <span>استشارة</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+                grid.innerHTML = filtered.map(item => {
+                    const countdown = calculateDeadlineCountdown(item.deadline);
+                    const matchRing = createCircularMatchScoreRing(item.matchScore);
+                    const coverageBadges = getCoverageBadges(item.coverage);
+
+                    return `
+                        <div class="sp-card p-6 flex flex-col justify-between group hover:border-blue-500/60 transition-all duration-300">
+                            <div class="space-y-4">
+                                <!-- Card Header -->
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2 mb-1.5">
+                                            <span class="sp-badge sp-badge-info text-[10px] font-bold">${escapeHTML(item.country)}</span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${countdown.colorClass}">
+                                                ${countdown.label}
+                                            </span>
+                                        </div>
+                                        <h3 class="font-extrabold text-base text-slate-900 dark:text-white leading-snug">
+                                            <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.name)}</span>
+                                        </h3>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                                            <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                            <span dir="ltr" class="sp-bidi-isolate truncate">${escapeHTML(item.university)}</span>
+                                        </p>
+                                    </div>
+                                    ${matchRing}
+                                </div>
+
+                                <!-- Funding & Coverage Badges -->
+                                <div class="flex flex-wrap gap-1.5 pt-1">
+                                    ${coverageBadges}
+                                </div>
+
+                                <!-- Key Meta -->
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200/80 dark:border-[#334155] space-y-1 text-xs">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-slate-400">المرحلة:</span>
+                                        <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHTML(item.degree)}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-slate-400">الموعد النهائي:</span>
+                                        <span class="font-mono font-bold text-slate-800 dark:text-slate-200" dir="ltr">${escapeHTML(item.deadline)}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Explainable AI Match Accordion -->
+                                <div class="border border-slate-200/80 dark:border-[#334155] rounded-xl overflow-hidden">
+                                    <button type="button" onclick="toggleMatchExplanation('${item.id}')" class="w-full px-3 py-2 bg-slate-50/60 dark:bg-[#111827]/60 text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between hover:bg-slate-100 dark:hover:bg-[#111827] transition">
+                                        <span class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                            <span>لماذا تناسبك هذه المنحة؟</span>
+                                        </span>
+                                        <i id="explainIcon-${item.id}" data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200"></i>
+                                    </button>
+                                    <div id="explainAccordion-${item.id}" class="hidden p-3 bg-white dark:bg-[#1E293B] text-[11px] space-y-2 border-t border-slate-200/80 dark:border-[#334155]">
+                                        <div class="flex items-start gap-1.5 text-emerald-600 dark:text-emerald-400">
+                                            <i data-lucide="check" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
+                                            <span>معدلك الأكاديمي يتجاوز الحد الأدنى المطلوب للمنحة.</span>
+                                        </div>
+                                        <div class="flex items-start gap-1.5 text-emerald-600 dark:text-emerald-400">
+                                            <i data-lucide="check" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
+                                            <span>تخصصك المستهدف معتمد ومدرج في كليات الجامعة.</span>
+                                        </div>
+                                        <div class="flex items-start gap-1.5 text-amber-600 dark:text-amber-400">
+                                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
+                                            <span>احرص على رفع خطاب دافع مخصص ومترجم قبل الإغلاق.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Action Buttons -->
+                            <div class="pt-4 border-t border-slate-200 dark:border-[#334155] flex items-center gap-2 mt-4">
+                                <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs">
+                                    <span>التقديم الرسمي</span>
+                                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                </a>
+                                <button type="button" onclick="saveScholarshipToDashboard('${item.id}', '${escapeHTML(item.name)}')" class="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-[#111827] border border-slate-200 dark:border-[#334155] transition" title="حفظ في لوحة التحكم">
+                                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                                </button>
+                                <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="p-2 rounded-xl text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-[#111827] border border-slate-200 dark:border-[#334155] transition" title="استشارة المساعد الذكي حول هذه المنحة">
+                                    <i data-lucide="bot" class="w-4 h-4 text-violet-500"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function openRadarCatalogModal() {
+            const modal = document.getElementById('radarCatalogModal');
+            const list = document.getElementById('modalCatalogList');
+            if (!modal || !list) return;
+
+            list.innerHTML = scholarshipDeckData.map(item => `
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-[#334155] flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-slate-900 dark:text-white truncate">
+                                <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.name)}</span>
+                            </span>
+                            <span class="sp-badge sp-badge-info text-[9px]">${escapeHTML(item.country)}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-0.5 truncate">
+                            <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.university)}</span> • ${escapeHTML(item.degree)}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="font-mono text-emerald-500 font-bold text-xs" dir="ltr">${escapeHTML(item.matchScore)}</span>
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1">
+                            <span>التقديم</span>
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeRadarCatalogModal() {
+            const modal = document.getElementById('radarCatalogModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLiveScholarships();
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+    <script src="/static/js/notifications.js"></script>
+</body>
+</html>

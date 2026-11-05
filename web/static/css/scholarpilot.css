@@ -168,6 +168,15 @@ html.dark {
 /* ===================================================================
  * BASE RESET & BILINGUAL TYPOGRAPHY
  * =================================================================== */
+/* Persistent Sticky Navbar */
+.sp-sticky-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';

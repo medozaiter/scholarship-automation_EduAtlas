@@ -2358,6 +2358,71 @@ Country: {country}
         now_ts = datetime.now().timestamp()
         user_scope = (prof.get("email") or email or "guest").lower()
 
+        # 4. QUESTION CACHE: Check Exact Canonical & Normalized Keys (Scoped per user/guest for privacy)
+        cache_intent_key = f"{user_scope}::{target_sch_ref}::{canonical_intent}" if canonical_intent != "canonical_general" else None
+        cache_exact_key = f"{user_scope}::{target_sch_ref}::{normalized_q}"
+
+        for test_key in [cache_intent_key, cache_exact_key]:
+            if test_key and test_key in _advisor_response_cache:
+                entry = _advisor_response_cache[test_key]
+                if now_ts - entry.get("timestamp", 0) < CACHE_TTL_SECONDS:
+                    advisor_telemetry.record_cache_hit()
+                    logger.info(f"⚡ Token Optimization: Exact Cache HIT for '{test_key}'. Zero AI tokens used.")
+                    return {
+                        "success": True,
+                        "cached": True,
+                        "zero_token_direct": False,
+                        "duplicate_detected": True,
+                        "similarity_score": 1.0,
+                        "model": "scholarpilot-response-cache",
+                        "intent": entry["intent"],
+                        "student": {
+                            "name": prof.get("full_name"),
+                            "degree": prof.get("degree"),
+                            "gpa": prof.get("gpa"),
+                            "major": prof.get("majors", ["Software Engineering"])[0] if prof.get("majors") else "Software Engineering"
+                        },
+                        "advice": entry["advice"],
+                        "follow_ups": entry["follow_ups"]
+                    }
+
+        # 5. SEMANTIC SIMILARITY DETECTION ACROSS CACHE
+        # Compares clean_query against previously answered queries using token-set + sequence matching
+        for cache_k, entry in _advisor_response_cache.items():
+            if now_ts - entry.get("timestamp", 0) > CACHE_TTL_SECONDS:
+                continue
+            entry_user = entry.get("user_scope")
+            if entry_user and entry_user != user_scope and entry_user not in ("guest", "all"):
+                continue  # Never cross-serve cached responses between different authenticated users!
+            entry_sch = entry.get("scholarship_id", "")
+            if target_sch_ref and entry_sch and target_sch_ref != entry_sch:
+                continue
+            cached_orig_q = entry.get("original_query", "")
+            if not cached_orig_q:
+                continue
+            sim_score = compute_query_similarity(clean_query, cached_orig_q)
+            if sim_score >= 0.70:
+                advisor_telemetry.record_cache_hit()
+                logger.info(f"⚡ Token Optimization: Semantic Similarity HIT ({sim_score:.2f}) with '{cached_orig_q}'. Zero AI tokens used.")
+                return {
+                    "success": True,
+                    "cached": True,
+                    "zero_token_direct": False,
+                    "duplicate_detected": True,
+                    "similarity_score": round(sim_score, 2),
+                    "model": "scholarpilot-semantic-similarity-cache",
+                    "intent": entry["intent"],
+                    "student": {
+                        "name": prof.get("full_name"),
+                        "degree": prof.get("degree"),
+                        "gpa": prof.get("gpa"),
+                        "major": prof.get("majors", ["Software Engineering"])[0] if prof.get("majors") else "Software Engineering"
+                    },
+                    "advice": entry["advice"],
+                    "follow_ups": entry["follow_ups"]
+                }
+
+        
         # 3. ZERO-TOKEN DIRECT GROUNDED CATALOG LOOKUP
         # For factual inquiries (deadlines, links, funding, requirements, closing soon, fully funded, recommendations)
         direct_grounded = synthesize_grounded_catalog_response(
@@ -2376,7 +2441,7 @@ Country: {country}
                 "zero_token_direct": True,
                 "duplicate_detected": False,
                 "similarity_score": 1.0,
-                "model": "eduatlas-grounded-catalog-engine",
+                "model": "scholarpilot-grounded-catalog-engine",
                 "intent": canonical_intent,
                 "student": {
                     "name": prof.get("full_name"),
@@ -2388,70 +2453,6 @@ Country: {country}
                 "follow_ups": follow_ups,
             "user_scope": user_scope
             }
-
-        # 4. QUESTION CACHE: Check Exact Canonical & Normalized Keys (Scoped per user/guest for privacy)
-        cache_intent_key = f"{user_scope}::{target_sch_ref}::{canonical_intent}" if canonical_intent != "canonical_general" else None
-        cache_exact_key = f"{user_scope}::{target_sch_ref}::{normalized_q}"
-
-        for test_key in [cache_intent_key, cache_exact_key]:
-            if test_key and test_key in _advisor_response_cache:
-                entry = _advisor_response_cache[test_key]
-                if now_ts - entry.get("timestamp", 0) < CACHE_TTL_SECONDS:
-                    advisor_telemetry.record_cache_hit()
-                    logger.info(f"⚡ Token Optimization: Exact Cache HIT for '{test_key}'. Zero AI tokens used.")
-                    return {
-                        "success": True,
-                        "cached": True,
-                        "zero_token_direct": False,
-                        "duplicate_detected": True,
-                        "similarity_score": 1.0,
-                        "model": "eduatlas-response-cache",
-                        "intent": entry["intent"],
-                        "student": {
-                            "name": prof.get("full_name"),
-                            "degree": prof.get("degree"),
-                            "gpa": prof.get("gpa"),
-                            "major": prof.get("majors", ["Software Engineering"])[0] if prof.get("majors") else "Software Engineering"
-                        },
-                        "advice": entry["advice"],
-                        "follow_ups": entry["follow_ups"]
-                    }
-
-        # 5. SEMANTIC SIMILARITY DETECTION ACROSS CACHE
-        # Compares clean_query against previously answered queries using token-set + sequence matching
-        for cache_k, entry in _advisor_response_cache.items():
-            if now_ts - entry.get("timestamp", 0) > CACHE_TTL_SECONDS:
-                continue
-            entry_user = entry.get("user_scope", "guest")
-            if entry_user != user_scope:
-                continue  # Never cross-serve cached responses between different users!
-            entry_sch = entry.get("scholarship_id", "")
-            if target_sch_ref and entry_sch and target_sch_ref != entry_sch:
-                continue
-            cached_orig_q = entry.get("original_query", "")
-            if not cached_orig_q:
-                continue
-            sim_score = compute_query_similarity(clean_query, cached_orig_q)
-            if sim_score >= 0.70:
-                advisor_telemetry.record_cache_hit()
-                logger.info(f"⚡ Token Optimization: Semantic Similarity HIT ({sim_score:.2f}) with '{cached_orig_q}'. Zero AI tokens used.")
-                return {
-                    "success": True,
-                    "cached": True,
-                    "zero_token_direct": False,
-                    "duplicate_detected": True,
-                    "similarity_score": round(sim_score, 2),
-                    "model": "eduatlas-semantic-similarity-cache",
-                    "intent": entry["intent"],
-                    "student": {
-                        "name": prof.get("full_name"),
-                        "degree": prof.get("degree"),
-                        "gpa": prof.get("gpa"),
-                        "major": prof.get("majors", ["Software Engineering"])[0] if prof.get("majors") else "Software Engineering"
-                    },
-                    "advice": entry["advice"],
-                    "follow_ups": entry["follow_ups"]
-                }
 
         # 6. Build Multi-Dimensional Context Layer (Token-Optimized with Context Compression)
         ctx = self.build_advisor_context(
@@ -2508,7 +2509,7 @@ Country: {country}
             "cached": False,
             "duplicate_detected": False,
             "similarity_score": 0.0,
-            "model": "eduatlas-profile-aware-advisor",
+            "model": "scholarpilot-profile-aware-advisor",
             "intent": ctx["intent"],
             "student": {
                 "name": prof.get("full_name"),

@@ -49,6 +49,7 @@ logger = logging.getLogger(__name__)
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 INDEX_HTML_PATH = os.path.join(TEMPLATES_DIR, "index.html")
+RADAR_HTML_PATH = os.path.join(TEMPLATES_DIR, "radar.html")
 DASHBOARD_HTML_PATH = os.path.join(TEMPLATES_DIR, "dashboard.html")
 ASSISTANT_HTML_PATH = os.path.join(TEMPLATES_DIR, "assistant.html")
 NOTIFICATIONS_HTML_PATH = os.path.join(TEMPLATES_DIR, "notifications.html")
@@ -382,13 +383,29 @@ async def startup_event():
 async def health_check():
     """
     Ultra-fast (<5ms) liveness and readiness probe for Render, Cron-job.org, and uptime monitors.
-    Returns 200 OK immediately without blocking on external network calls or database wakes.
+    Returns 200 OK immediately with system status, database health, and email subsystem status.
     """
+    raw_db = os.getenv("DATABASE_URL", "")
+    db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store"
+    email_info = get_email_provider_info()
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "version": "2.5.0",
-        "service": "EduAtlas"
+        "service": "EduAtlas",
+        "database": {
+            "type": db_type,
+            "connected": is_db_available(),
+            "pool": "active"
+        },
+        "email": email_info,
+        "ai": {
+            "provider": "Google AI Studio",
+            "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+            "configured": bool(gemini_key and len(gemini_key) > 5)
+        }
     }
 
 
@@ -1047,14 +1064,18 @@ class DraftEmailRequest(BaseModel):
     context: Optional[str] = None
 
 
-def _get_verified_profile_email(request: Request, requested_email: Optional[str] = None) -> Optional[str]:
+def _get_verified_profile_email(request: Request, requested_email: Optional[str] = None, require_auth: bool = False) -> Optional[str]:
     """
     Strictly resolves verified student email from authenticated session (Bearer token or cookie).
-    Guarantees zero IDOR by strictly disallowing arbitrary requested_email without authentication.
+    Guarantees zero IDOR:
+    - If unauthenticated and require_auth=True: raises 401 Unauthorized.
+    - If unauthenticated and require_auth=False: returns None to prevent unauthenticated profile snooping.
+    - If authenticated: strictly verifies that requested_email matches the authenticated user (or admin),
+      raising 403 Forbidden on any mismatch.
     """
     user = get_authenticated_user(request)
     if not user or not user.get("email"):
-        if requested_email:
+        if require_auth and requested_email:
             raise HTTPException(
                 status_code=401,
                 detail="يرجى تسجيل الدخول للوصول إلى استشارات أو بيانات هذا الحساب الأكاديمي."
@@ -1162,12 +1183,28 @@ async def serve_own_profile(request: Request):
     return RedirectResponse(url="/dashboard", status_code=302)
 
 
+@app.get("/radar", response_class=HTMLResponse)
+async def serve_radar_page():
+    """Serves the dedicated standalone Scholarship Radar interface."""
+    if os.path.exists(RADAR_HTML_PATH):
+        with open(RADAR_HTML_PATH, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>رادار المنح - ScholarPilot AI</h1>")
+
+
+@app.get("/account", response_class=HTMLResponse)
+@app.get("/login", response_class=HTMLResponse)
+async def serve_account_page(request: Request):
+    """Serves the student account portal or login/registration gate."""
+    if os.path.exists(DASHBOARD_HTML_PATH):
+        with open(DASHBOARD_HTML_PATH, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>حسابي - ScholarPilot AI</h1>")
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def serve_dashboard(request: Request):
-    """Serves the user account portal & admin control panel. Requires valid authentication."""
-    user = get_authenticated_user(request)
-    if not user:
-        return RedirectResponse(url="/?auth=login&redirect=/dashboard", status_code=302)
+    """Serves the user account portal & admin control panel."""
     if os.path.exists(DASHBOARD_HTML_PATH):
         with open(DASHBOARD_HTML_PATH, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
@@ -1184,11 +1221,8 @@ async def serve_community_page():
     return HTMLResponse(content="<h1>المجتمع الأكاديمي - ScholarPilot Academic Community Hub</h1>")
 
 @app.get("/assistant", response_class=HTMLResponse)
-async def serve_assistant_page(request: Request):
-    """Serves the dedicated full-page ChatGPT-like AI Scholarship Assistant. Requires valid authentication."""
-    user = get_authenticated_user(request)
-    if not user:
-        return RedirectResponse(url="/?auth=login&redirect=/assistant", status_code=302)
+async def serve_assistant_page():
+    """Serves the dedicated full-page AI Scholarship Assistant & Document Studio."""
     if os.path.exists(ASSISTANT_HTML_PATH):
         with open(ASSISTANT_HTML_PATH, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
