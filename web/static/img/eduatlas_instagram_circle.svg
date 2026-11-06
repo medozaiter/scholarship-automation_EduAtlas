@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <radialGradient id="circGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10E599" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#10E599" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#0C0A17" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background Base Canvas (Dark Obsidian) -->
+  <rect width="1080" height="1080" fill="#0C0A17"/>
+
+  <!-- Main Circular Container (Radius=490, centered at 540, 540) -->
+  <circle cx="540" cy="540" r="490" fill="#0C0A17"/>
+  <circle cx="540" cy="540" r="420" fill="url(#circGlow)"/>
+  
+  <!-- Outer Glowing Circular Border (Matching the screenshot's green border, perfectly circular) -->
+  <circle cx="540" cy="540" r="488" fill="none" stroke="#10E599" stroke-opacity="0.3" stroke-width="14"/>
+  <circle cx="540" cy="540" r="488" fill="none" stroke="#10E599" stroke-opacity="0.8" stroke-width="6"/>
+
+  <!-- Inner Guide Circle -->
+  <circle cx="540" cy="540" r="460" fill="none" stroke="#10E599" stroke-opacity="0.2" stroke-width="2"/>
+
+  <!-- Radar Circles -->
+  <circle cx="540" cy="540" r="370" stroke="#10E599" stroke-width="4" stroke-opacity="0.25" fill="none"/>
+  <circle cx="540" cy="540" r="330" stroke="#10E599" stroke-width="12" stroke-dasharray="32 24" stroke-opacity="0.65" fill="none"/>
+
+  <!-- Cardinal Ticks -->
+  <line x1="540" y1="160" x2="540" y2="215" stroke="#10E599" stroke-width="18" stroke-linecap="round"/>
+  <line x1="540" y1="865" x2="540" y2="920" stroke="#10E599" stroke-width="15" stroke-opacity="0.6" stroke-linecap="round"/>
+  <line x1="160" y1="540" x2="215" y2="540" stroke="#10E599" stroke-width="15" stroke-opacity="0.6" stroke-linecap="round"/>
+  <line x1="865" y1="540" x2="920" y2="540" stroke="#10E599" stroke-width="15" stroke-opacity="0.6" stroke-linecap="round"/>
+
+  <!-- Diagonal Ticks -->
+  <line x1="295" y1="295" x2="330" y2="330" stroke="#10E599" stroke-width="11" stroke-opacity="0.5"/>
+  <line x1="785" y1="295" x2="750" y2="330" stroke="#10E599" stroke-width="11" stroke-opacity="0.5"/>
+  <line x1="295" y1="785" x2="330" y2="750" stroke="#10E599" stroke-width="11" stroke-opacity="0.5"/>
+  <line x1="785" y1="785" x2="750" y2="750" stroke="#10E599" stroke-width="11" stroke-opacity="0.5"/>
+
+  <!-- Modern Cartographer Latitude Ellipse -->
+  <ellipse cx="540" cy="540" rx="210" ry="300" stroke="#10E599" stroke-width="8" stroke-opacity="0.25" fill="none"/>
+  <line x1="215" y1="540" x2="865" y2="540" stroke="#10E599" stroke-width="6" stroke-opacity="0.2"/>
+
+  <!-- Horizontal Stabilizer Wings -->
+  <polygon points="540,540 680,540 540,515" fill="#10E599" fill-opacity="0.7"/>
+  <polygon points="540,540 680,540 540,565" fill="#059669" fill-opacity="0.7"/>
+  <polygon points="540,540 400,540 540,515" fill="#E2E8F0" fill-opacity="0.6"/>
+  <polygon points="540,540 400,540 540,565" fill="#94A3B8" fill-opacity="0.6"/>
+
+  <!-- South Needle (Facing Down - Platinum / Slate) -->
+  <polygon points="540,855 540,540 465,540" fill="#FFFFFF"/>
+  <polygon points="540,855 615,540 540,540" fill="#94A3B8"/>
+
+  <!-- North Needle (Facing Up - Neon Laser Mint) -->
+  <polygon points="540,225 540,540 465,540" fill="#34D399"/>
+  <polygon points="540,225 615,540 540,540" fill="#059669"/>
+
+  <!-- Central Hub -->
+  <circle cx="540" cy="540" r="62" fill="#0C0A17" stroke="#10E599" stroke-width="16"/>
+  <circle cx="540" cy="540" r="30" fill="#10E599"/>
+</svg>

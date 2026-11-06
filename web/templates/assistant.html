@@ -349,7 +349,7 @@
             <div id="chatMessages" class="flex-1 overflow-y-auto chat-scroll p-4 sm:p-6 space-y-4 max-w-4xl w-full mx-auto">
                 <!-- Welcome Message Bubble -->
                 <div class="flex items-start gap-3">
-                    <img src="/static/img/eduatlas_compass_logo.png" alt="EduAtlas AI" class="w-8 h-8 rounded-xl ring-1 ring-[#B99050]/40 object-cover shrink-0 shadow-sm">
+                    <img src="/static/img/exact_brand_avatar_squircle.svg" alt="EduAtlas AI" class="w-8 h-8 rounded-xl border border-[#10E599]/40 bg-[#0C0A17] object-contain shrink-0 shadow-sm">
                     <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-[90%] shadow-xs space-y-2">
                         <div class="flex items-center justify-between gap-2">
                             <h3 class="font-bold text-sm text-slate-900 dark:text-white">مرحباً بك! أنا مستشارك الذكي للتقديم والقبول</h3>
@@ -627,7 +627,7 @@
             const container = document.getElementById('chatMessages');
             container.innerHTML = `
                 <div class="flex items-start gap-3">
-                    <img src="/static/img/eduatlas_compass_logo.png" alt="EduAtlas AI" class="w-8 h-8 rounded-xl ring-1 ring-[#B99050]/40 object-cover shrink-0 shadow-sm">
+                    <img src="/static/img/exact_brand_avatar_squircle.svg" alt="EduAtlas AI" class="w-8 h-8 rounded-xl border border-[#10E599]/40 bg-[#0C0A17] object-contain shrink-0 shadow-sm">
                     <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-[90%] shadow-xs space-y-2.5">
                         <div class="flex items-center justify-between gap-2">
                             <h3 class="font-bold text-sm text-slate-900 dark:text-white">جلسة استشارية جديدة جاهزة 🚀</h3>
@@ -676,7 +676,7 @@
 
             const avatar = isUser
                 ? `<div class="w-8 h-8 rounded-xl bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0 font-latin shadow-sm"><i data-lucide="user" class="w-4 h-4"></i></div>`
-                : `<img src="/static/img/eduatlas_compass_logo.png" alt="EduAtlas AI" class="w-8 h-8 rounded-xl ring-1 ring-[#B99050]/40 object-cover shrink-0 shadow-sm">`;
+                : `<img src="/static/img/exact_brand_avatar_squircle.svg" alt="EduAtlas AI" class="w-8 h-8 rounded-xl border border-[#10E599]/40 bg-[#0C0A17] object-contain shrink-0 shadow-sm">`;
 
             let renderedContent = '';
             if (isUser) {
@@ -711,7 +711,7 @@
             typingEl.id = 'typingIndicatorBubble';
             typingEl.className = 'flex items-start gap-3';
             typingEl.innerHTML = `
-                <img src="/static/img/eduatlas_compass_logo.png" alt="EduAtlas AI" class="w-8 h-8 rounded-xl ring-1 ring-[#B99050]/40 object-cover shrink-0 shadow-sm">
+                <img src="/static/img/exact_brand_avatar_squircle.svg" alt="EduAtlas AI" class="w-8 h-8 rounded-xl border border-[#10E599]/40 bg-[#0C0A17] object-contain shrink-0 shadow-sm">
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-blue-500 animate-bounce"></span>
                     <span class="w-2 h-2 rounded-full bg-blue-500 animate-bounce [animation-delay:0.2s]"></span>

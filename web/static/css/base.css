@@ -174,6 +174,37 @@ html:not(.dark) h4, html:not(.dark) h5, html:not(.dark) h6,
 html:not(.dark) .sp-hero-title, html:not(.dark) .ea-hero-title {
   color: #0C0A17 !important;
 }
+/* Scoped Overrides for Dark Containers in Light Mode */
+html:not(.dark) .bg-slate-900 h1,
+html:not(.dark) .bg-slate-900 h2,
+html:not(.dark) .bg-slate-900 h3,
+html:not(.dark) .bg-slate-900 h4,
+html:not(.dark) .bg-slate-950 h1,
+html:not(.dark) .bg-slate-950 h2,
+html:not(.dark) .bg-slate-950 h3,
+html:not(.dark) .bg-slate-950 h4,
+html:not(.dark) .bg-blue-600 h1,
+html:not(.dark) .bg-blue-600 h2,
+html:not(.dark) .bg-emerald-600 h1,
+html:not(.dark) .bg-emerald-600 h2 {
+  color: #FFFFFF !important;
+}
+
+html.dark #heroTitle,
+html.dark #featuredHeroCard h1 {
+  color: #FFFFFF !important;
+}
+
+html:not(.dark) #heroTitle,
+html:not(.dark) #featuredHeroCard h1 {
+  color: #0C0A17 !important;
+}
+
+html:not(.dark) #featuredHeroCard p,
+html:not(.dark) #heroSummary {
+  color: #334155 !important;
+}
+
 
 html:not(.dark) p:not(.sp-btn-primary):not(.ea-btn-primary) {
   color: #1E293B;
