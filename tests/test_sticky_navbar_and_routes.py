@@ -14,14 +14,14 @@ class TestStickyNavbarAndRoutingModifications(unittest.TestCase):
     def test_01_browser_tab_titles_and_favicon(self):
         """[REQ 1] Verifies dynamic browser tab titles and favicons across all routes."""
         expected_titles = {
-            "/": "ScholarPilot AI | EduAtlas — منصتك الذكية للمنح الدراسية",
-            "/radar": "رادار المنح | ScholarPilot AI",
-            "/assistant": "المساعد الذكي | ScholarPilot AI",
-            "/community": "مجتمع الطلبة | ScholarPilot AI",
-            "/news": "أخبار المنح | ScholarPilot AI",
-            "/account": "حسابي | ScholarPilot AI",
-            "/dashboard": "حسابي | ScholarPilot AI",
-            "/notifications": "مركز التنبيهات | ScholarPilot AI",
+            "/": "EduAtlas",
+            "/radar": "رادار المنح | EduAtlas",
+            "/assistant": "المساعد الذكي | EduAtlas",
+            "/community": "مجتمع الطلبة | EduAtlas",
+            "/news": "أخبار المنح | EduAtlas",
+            "/account": "حسابي | EduAtlas",
+            "/dashboard": "حسابي | EduAtlas",
+            "/notifications": "مركز التنبيهات | EduAtlas",
         }
 
         for path, exp_title in expected_titles.items():

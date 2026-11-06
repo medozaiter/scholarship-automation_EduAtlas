@@ -149,3 +149,15 @@ p:last-child {
   background-color: var(--ea-clay-600);
   color: #FFFFFF;
 }
+
+/* Light Mode Dynamic Cartographic Gradient */
+html:not(.dark) body {
+  background: linear-gradient(180deg, #E6FAF0 0%, #EFF4FC 22%, #F7F9FD 55%, #FFFFFF 100%) fixed !important;
+  color: #0C0A17 !important;
+}
+
+/* Dark Mode Deep Obsidian Mesh */
+html.dark body {
+  background: radial-gradient(circle at 50% 0%, #18142C 0%, #0C0A17 75%) fixed !important;
+  color: #F8F9FD !important;
+}

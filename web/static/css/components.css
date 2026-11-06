@@ -96,12 +96,12 @@ html.dark .ea-nav-link.active {
  * 3. BUTTONS (MODERN CARTOGRAPHER)
  * =================================================================== */
 .ea-btn-primary, .sp-btn-primary {
-  background: linear-gradient(135deg, var(--ea-mint-500), #059669);
+  background: linear-gradient(135deg, #10E599 0%, #059669 100%) !important;
   color: #0C0A17 !important;
-  font-weight: 800;
+  font-weight: 800 !important;
   border-radius: var(--ea-radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 14px rgba(16, 229, 153, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(16, 229, 153, 0.35) !important;
   transition: all var(--ea-transition-base);
   display: inline-flex;
   align-items: center;
@@ -112,20 +112,12 @@ html.dark .ea-nav-link.active {
   text-decoration: none;
 }
 
-:root:not(.dark) .ea-btn-primary, :root:not(.dark) .sp-btn-primary {
-  background: linear-gradient(135deg, var(--ea-purple-600), var(--ea-purple-700));
-  color: #FFFFFF !important;
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.28);
-}
-
 .ea-btn-primary:hover, .sp-btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 6px 20px rgba(16, 229, 153, 0.45);
+  background: linear-gradient(135deg, #2BF5AC 0%, #047857 100%) !important;
+  color: #0C0A17 !important;
+  filter: brightness(1.05);
+  box-shadow: 0 6px 22px rgba(16, 229, 153, 0.50) !important;
   transform: translateY(-1.5px);
-}
-
-:root:not(.dark) .ea-btn-primary:hover, :root:not(.dark) .sp-btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.40);
 }
 
 .ea-btn-primary:active, .sp-btn-primary:active {
