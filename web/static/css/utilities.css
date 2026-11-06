@@ -8,20 +8,24 @@
  * 1. TOPOGRAPHIC CYBER CONTOURS & LASER GRID
  * =================================================================== */
 .ea-topographic-bg {
-  background-color: var(--ea-canvas);
+  background-color: #F8F9FD;
   background-image: 
-    radial-gradient(circle at 85% 12%, var(--ea-contour-glow) 0%, transparent 45%),
-    radial-gradient(circle at 10% 80%, var(--ea-contour-glow) 0%, transparent 40%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%237C3AED' stroke-width='1' stroke-opacity='0.05'/%3E%3C/svg%3E");
+    radial-gradient(circle at 85% 12%, rgba(16, 229, 153, 0.16) 0%, transparent 46%),
+    radial-gradient(circle at 12% 22%, rgba(124, 58, 237, 0.09) 0%, transparent 40%),
+    radial-gradient(circle at 78% 78%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%23059669' stroke-width='1.2' stroke-opacity='0.06'/%3E%3Cpath d='M40 0 Q 100 80, 40 160 T 40 320 M180 0 Q 240 100, 180 200 T 180 320' fill='none' stroke='%237C3AED' stroke-width='1' stroke-opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #E6FAF1 0%, #EEF4FD 24%, #F5F3FF 52%, #F8F9FD 100%);
   background-repeat: repeat;
   background-attachment: fixed;
 }
 
 html.dark .ea-topographic-bg {
+  background-color: #0C0A17;
   background-image: 
-    radial-gradient(circle at 85% 12%, rgba(16, 229, 153, 0.16) 0%, transparent 50%),
-    radial-gradient(circle at 10% 80%, rgba(124, 58, 237, 0.16) 0%, transparent 45%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%2310E599' stroke-width='1' stroke-opacity='0.08'/%3E%3C/svg%3E");
+    radial-gradient(circle at 85% 12%, rgba(16, 229, 153, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(124, 58, 237, 0.20) 0%, transparent 45%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cpath d='M0 80 Q 80 40, 160 100 T 320 80 M0 160 Q 120 110, 200 190 T 320 160 M0 240 Q 60 210, 180 270 T 320 240' fill='none' stroke='%2310E599' stroke-width='1.2' stroke-opacity='0.08'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 50% 0%, #18142C 0%, #0C0A17 75%);
 }
 
 /* Glassmorphism surface */

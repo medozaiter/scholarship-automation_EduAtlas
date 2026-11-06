@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1A1435"/>
+      <stop offset="45%" stop-color="#100C22"/>
+      <stop offset="85%" stop-color="#0C0A17"/>
+      <stop offset="100%" stop-color="#06050C"/>
+    </radialGradient>
+
+    <!-- Glowing mint accent gradient -->
+    <radialGradient id="mintGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10E599" stop-opacity="0.35"/>
+      <stop offset="40%" stop-color="#10E599" stop-opacity="0.12"/>
+      <stop offset="80%" stop-color="#7C3AED" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Violet AI Pulse glow -->
+    <radialGradient id="violetGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#6D28D9" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0C0A17" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Needle Gradients -->
+    <linearGradient id="needleNorthLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5EEAD4"/>
+      <stop offset="40%" stop-color="#10E599"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <linearGradient id="needleNorthDark" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10E599"/>
+      <stop offset="60%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#064E3B"/>
+    </linearGradient>
+
+    <linearGradient id="needleSouthLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <linearGradient id="needleSouthDark" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#64748B"/>
+    </linearGradient>
+
+    <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10E599" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#7C3AED" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#10E599" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Drop Shadows / Glows -->
+    <filter id="laserGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="intenseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="28" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="dropShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base (Square 1080x1080) -->
+  <rect width="1080" height="1080" fill="url(#bgGrad)"/>
+
+  <!-- Large Ambient Lighting -->
+  <circle cx="540" cy="540" r="480" fill="url(#violetGlow)"/>
+  <circle cx="540" cy="480" r="380" fill="url(#mintGlow)"/>
+
+  <!-- Instagram Circular Frame Ring (Safe crop border accent) -->
+  <circle cx="540" cy="540" r="515" fill="none" stroke="url(#goldRing)" stroke-width="2" stroke-opacity="0.3"/>
+  <circle cx="540" cy="540" r="495" fill="none" stroke="#10E599" stroke-width="1.5" stroke-dasharray="6 8" stroke-opacity="0.2"/>
+
+  <!-- Topographic Cyber Grid & Radar Range Rings -->
+  <!-- Outer Ring 1 -->
+  <circle cx="540" cy="540" r="430" fill="none" stroke="#10E599" stroke-width="2.5" stroke-opacity="0.3"/>
+  
+  <!-- Outer Dashed Radar Sweep Ring 2 -->
+  <circle cx="540" cy="540" r="390" fill="none" stroke="#10E599" stroke-width="2.5" stroke-dasharray="8 6" stroke-opacity="0.55"/>
+
+  <!-- Navigational Ellipse (Modern Cartographer latitude) -->
+  <ellipse cx="540" cy="540" rx="270" ry="385" fill="none" stroke="#7C3AED" stroke-width="1.8" stroke-opacity="0.35"/>
+  <ellipse cx="540" cy="540" rx="385" ry="270" fill="none" stroke="#10E599" stroke-width="1.2" stroke-opacity="0.25"/>
+
+  <!-- Inner Compass Dial Ring -->
+  <circle cx="540" cy="540" r="280" fill="#0C0A17" fill-opacity="0.6" stroke="#10E599" stroke-width="2" stroke-opacity="0.4"/>
+  <circle cx="540" cy="540" r="240" fill="none" stroke="#818CF8" stroke-width="1.5" stroke-dasharray="4 6" stroke-opacity="0.4"/>
+
+  <!-- Cardinal Tick Marks & Coordinates -->
+  <!-- Major Cardinal Notches (N, S, E, W) -->
+  <line x1="540" y1="115" x2="540" y2="165" stroke="#10E599" stroke-width="6" stroke-linecap="round" filter="url(#laserGlow)"/>
+  <line x1="540" y1="915" x2="540" y2="965" stroke="#7C3AED" stroke-width="5" stroke-linecap="round" stroke-opacity="0.8"/>
+  <line x1="115" y1="540" x2="165" y2="540" stroke="#10E599" stroke-width="5" stroke-linecap="round" stroke-opacity="0.8"/>
+  <line x1="915" y1="540" x2="965" y2="540" stroke="#10E599" stroke-width="5" stroke-linecap="round" stroke-opacity="0.8"/>
+
+  <!-- Sub-cardinal Diagonals (NE, NW, SE, SW) -->
+  <line x1="240" y1="240" x2="275" y2="275" stroke="#10E599" stroke-width="3" stroke-linecap="round" stroke-opacity="0.5"/>
+  <line x1="840" y1="240" x2="805" y2="275" stroke="#10E599" stroke-width="3" stroke-linecap="round" stroke-opacity="0.5"/>
+  <line x1="240" y1="840" x2="275" y2="805" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-opacity="0.5"/>
+  <line x1="840" y1="840" x2="805" y2="805" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-opacity="0.5"/>
+
+  <!-- Degree Tick Ring (12 Radar Ticks) -->
+  <g stroke="#10E599" stroke-width="2" stroke-opacity="0.3" stroke-linecap="round">
+    <line x1="540" y1="180" x2="540" y2="195" />
+    <line x1="540" y1="885" x2="540" y2="900" />
+    <line x1="180" y1="540" x2="195" y2="540" />
+    <line x1="885" y1="540" x2="900" y2="540" />
+    
+    <line x1="320" y1="320" x2="332" y2="332" />
+    <line x1="760" y1="320" x2="748" y2="332" />
+    <line x1="320" y1="760" x2="332" y2="748" />
+    <line x1="760" y1="760" x2="748" y2="748" />
+  </g>
+
+  <!-- Compass Crosshair lines -->
+  <line x1="200" y1="540" x2="880" y2="540" stroke="#10E599" stroke-width="1.2" stroke-opacity="0.25"/>
+  <line x1="540" y1="200" x2="540" y2="880" stroke="#10E599" stroke-width="1.2" stroke-opacity="0.25"/>
+
+  <!-- Center Glow for Needle Base -->
+  <circle cx="540" cy="540" r="140" fill="#10E599" fill-opacity="0.12" filter="url(#intenseGlow)"/>
+
+  <!-- ==================== THE CYBER COMPASS NEEDLE ==================== -->
+  <g filter="url(#dropShadow)">
+    
+    <!-- EAST-WEST HORIZONTAL NEEDLE WINGS (Lateral Stabilizers) -->
+    <!-- East Wing (Laser Mint Tinted) -->
+    <polygon points="540,540 680,540 540,518" fill="#10E599" fill-opacity="0.7"/>
+    <polygon points="540,540 680,540 540,562" fill="#059669" fill-opacity="0.75"/>
+    
+    <!-- West Wing (Silver/Platinum Tinted) -->
+    <polygon points="540,540 400,540 540,518" fill="#CBD5E1" fill-opacity="0.6"/>
+    <polygon points="540,540 400,540 540,562" fill="#94A3B8" fill-opacity="0.6"/>
+
+    <!-- SOUTH NEEDLE (Facing Down - Platinum / Silver Mirror) -->
+    <!-- South Left Facet (Light Platinum) -->
+    <polygon points="540,840 540,540 475,540" fill="url(#needleSouthLight)"/>
+    <!-- South Right Facet (Deep Slate) -->
+    <polygon points="540,840 605,540 540,540" fill="url(#needleSouthDark)"/>
+
+    <!-- NORTH NEEDLE (Facing Up - Neon Laser Mint / Future Direction) -->
+    <!-- North Left Facet (Vibrant Mint) -->
+    <polygon points="540,200 540,540 475,540" fill="url(#needleNorthLight)" filter="url(#laserGlow)"/>
+    <polygon points="540,200 540,540 475,540" fill="url(#needleNorthLight)"/>
+    <!-- North Right Facet (Deep Emerald) -->
+    <polygon points="540,200 605,540 540,540" fill="url(#needleNorthDark)"/>
+
+    <!-- Center Spine Highlight Line -->
+    <line x1="540" y1="210" x2="540" y2="830" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.6"/>
+
+    <!-- ==================== CENTRAL HUB (Core Bezel) ==================== -->
+    <!-- Outer Bezel Ring -->
+    <circle cx="540" cy="540" r="54" fill="#0C0A17" stroke="#10E599" stroke-width="8" filter="url(#laserGlow)"/>
+    <circle cx="540" cy="540" r="54" fill="#0C0A17" stroke="#10E599" stroke-width="6"/>
+
+    <!-- Secondary Bezel Accent Ring -->
+    <circle cx="540" cy="540" r="40" fill="#18142C" stroke="#7C3AED" stroke-width="3" stroke-opacity="0.8"/>
+
+    <!-- Inner Core Jewel -->
+    <circle cx="540" cy="540" r="24" fill="#10E599" filter="url(#intenseGlow)"/>
+    <circle cx="540" cy="540" r="22" fill="#10E599"/>
+    
+    <!-- Core Center Specular Glint -->
+    <circle cx="533" cy="533" r="7" fill="#FFFFFF" fill-opacity="0.9"/>
+  </g>
+
+  <!-- Brand Subtle Typography / Badge inside Instagram Safe Crop -->
+  <g transform="translate(540, 1000)" text-anchor="middle">
+    <!-- North Marker Symbol -->
+  </g>
+
+  <!-- Tiny stylish North Indicator 'N' in Cyber Font at top -->
+  <text x="540" y="105" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" fill="#10E599" letter-spacing="4" filter="url(#laserGlow)">N</text>
+  <text x="540" y="105" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" fill="#10E599" letter-spacing="4">N</text>
+
+</svg>

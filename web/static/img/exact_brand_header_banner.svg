@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="sqBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0C0A17"/>
+      <stop offset="100%" stop-color="#161224"/>
+    </linearGradient>
+    <radialGradient id="sqGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10E599" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#10E599" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#0C0A17" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background Base matching screenshot -->
+  <rect width="1200" height="320" fill="#0C0A17"/>
+
+  <!-- Right-aligned Squircle App Icon (Exact match to screenshot) -->
+  <g transform="translate(930, 40)">
+    <rect width="240" height="240" rx="64" fill="url(#sqBg)"/>
+    <circle cx="120" cy="120" r="110" fill="url(#sqGlow)"/>
+    <rect width="232" height="232" x="4" y="4" rx="60" fill="none" stroke="#10E599" stroke-opacity="0.4" stroke-width="4.5"/>
+
+    <!-- Radar Range Rings -->
+    <circle cx="120" cy="120" r="102" stroke="#10E599" stroke-width="2.2" stroke-opacity="0.25" fill="none"/>
+    <circle cx="120" cy="120" r="91" stroke="#10E599" stroke-width="4" stroke-dasharray="9 7" stroke-opacity="0.6" fill="none"/>
+
+    <!-- Cardinal Ticks -->
+    <line x1="120" y1="17" x2="120" y2="31" stroke="#10E599" stroke-width="6" stroke-linecap="round"/>
+    <line x1="120" y1="209" x2="120" y2="223" stroke="#10E599" stroke-width="4.8" stroke-opacity="0.6" stroke-linecap="round"/>
+    <line x1="17" y1="120" x2="31" y2="120" stroke="#10E599" stroke-width="4.8" stroke-opacity="0.6" stroke-linecap="round"/>
+    <line x1="209" y1="120" x2="223" y2="120" stroke="#10E599" stroke-width="4.8" stroke-opacity="0.6" stroke-linecap="round"/>
+
+    <!-- Diagonal Ticks -->
+    <line x1="53" y1="53" x2="62" y2="62" stroke="#10E599" stroke-width="3.5" stroke-opacity="0.5"/>
+    <line x1="187" y1="53" x2="178" y2="62" stroke="#10E599" stroke-width="3.5" stroke-opacity="0.5"/>
+    <line x1="53" y1="187" x2="62" y2="178" stroke="#10E599" stroke-width="3.5" stroke-opacity="0.5"/>
+    <line x1="187" y1="187" x2="178" y2="178" stroke="#10E599" stroke-width="3.5" stroke-opacity="0.5"/>
+
+    <!-- Latitude Ellipse -->
+    <ellipse cx="120" cy="120" rx="58" ry="82" stroke="#10E599" stroke-width="2.4" stroke-opacity="0.25" fill="none"/>
+    <line x1="31" y1="120" x2="209" y2="120" stroke="#10E599" stroke-width="2.2" stroke-opacity="0.2"/>
+
+    <!-- Horizontal Stabilizer Wings -->
+    <polygon points="120,120 159,120 120,113" fill="#10E599" fill-opacity="0.7"/>
+    <polygon points="120,120 159,120 120,127" fill="#059669" fill-opacity="0.7"/>
+    <polygon points="120,120 81,120 120,113" fill="#E2E8F0" fill-opacity="0.6"/>
+    <polygon points="120,120 81,120 120,127" fill="#94A3B8" fill-opacity="0.6"/>
+
+    <!-- Needles -->
+    <polygon points="120,206 120,120 100,120" fill="#FFFFFF"/>
+    <polygon points="120,206 140,120 120,120" fill="#94A3B8"/>
+    <polygon points="120,34 120,120 100,120" fill="#34D399"/>
+    <polygon points="120,34 140,120 120,120" fill="#059669"/>
+
+    <!-- Center Hub -->
+    <circle cx="120" cy="120" r="17" fill="#0C0A17" stroke="#10E599" stroke-width="4.8"/>
+    <circle cx="120" cy="120" r="8.5" fill="#10E599"/>
+  </g>
+
+  <!-- Left Side: Brand Wordmark (matching user screenshot RTL alignment) -->
+  <g transform="translate(890, 140)">
+    <!-- Line 1: EduAtlas + AI Pill -->
+    <!-- Edu in pure white, Atlas in #10E599 -->
+    <text x="-160" y="0" text-anchor="end" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="108" font-weight="900" fill="#FFFFFF" letter-spacing="-1.5">Edu<tspan fill="#10E599">Atlas</tspan></text>
+    
+    <!-- AI Pill Box -->
+    <rect x="-135" y="-84" width="135" height="96" rx="28" fill="#10E599" fill-opacity="0.12" stroke="#10E599" stroke-width="4.5" stroke-opacity="0.45"/>
+    <text x="-67" y="-14" text-anchor="middle" font-family="'JetBrains Mono', monospace, sans-serif" font-size="56" font-weight="800" fill="#10E599">AI</text>
+  </g>
+
+  <!-- Line 2: Arabic subtitle -->
+  <text x="890" y="240" text-anchor="end" font-family="'Cairo', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif" font-size="54" font-weight="700" fill="#A5B4FC" letter-spacing="0">رادار الملاحة الأكاديمية والمنح الدولية</text>
+
+</svg>
