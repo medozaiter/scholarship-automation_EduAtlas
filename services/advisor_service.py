@@ -2065,7 +2065,7 @@ Student in {major}
         active_news_text = ""
         try:
             from services.news_service import news_service
-            top_active_news = news_service.get_active_news_for_ai(limit=6)
+            top_active_news = news_service.get_active_news_for_ai(limit=15)
             if top_active_news:
                 news_lines = []
                 for n in top_active_news:
