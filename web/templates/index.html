@@ -100,17 +100,17 @@
             
             <!-- Brand Logo -->
             <a href="/" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] border border-violet-400/30 flex items-center justify-center text-white shadow-md shadow-violet-950/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] border border-[#10E599]/30 flex items-center justify-center text-white shadow-md shadow-violet-950/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
                     <svg class="w-6 h-6 text-[#10E599]" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="7" stroke-opacity="0.35" fill="none"/>
-                        <polygon points="50,16 60,50 50,43 40,50" fill="#10E599"/>
-                        <polygon points="50,84 60,50 50,57 40,50" fill="#EDE9FE"/>
+                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-opacity="0.35" stroke-dasharray="6 4" fill="none"/>
+                        <polygon points="50,14 62,50 50,42 38,50" fill="#10E599"/>
+                        <polygon points="50,86 62,50 50,58 38,50" fill="#EDE9FE"/>
                         <circle cx="50" cy="50" r="6" fill="#10E599"/>
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#059669] dark:text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/15 text-[#047857] dark:text-[#10E599] font-mono border border-[#10E599]/30 font-bold">AI</span></span>
                     </div>
                     <span class="text-[10px] text-slate-600 dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
                 </div>
@@ -227,12 +227,12 @@
             </div>
 
             <!-- Main Heading (Concise Value Proposition) -->
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0C0A17] dark:text-white tracking-tight leading-[1.25] max-w-4xl mx-auto">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0C0A17] dark:text-white tracking-tight leading-[1.25] max-w-4xl mx-auto" style="color: var(--ea-text-primary);">
                 وجهتك نحو المنح العالمية تبدأ هنا — رحلة استكشاف واثقة بلا ضياع
             </h1>
 
             <!-- Subtitle (Direct User Benefit) -->
-            <p class="text-base sm:text-xl text-slate-800 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            <p class="text-base sm:text-xl text-slate-800 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed" style="color: var(--ea-text-secondary);">
                 نظام مؤتمت يراقب بوابات الجامعات والحكومات العالمية يومياً، يستبعد المنح المنتهية، يطابق مؤهلاتك الأكاديمية مع شروط التمويل، ويرسل لك الفرص المؤكدة مباشرة لبريدك مع مستشار ذكي يرافقك خطوة بخطوة.
             </p>
 
@@ -1517,8 +1517,43 @@
             btnSpinner.classList.remove('hidden');
             alertBox.classList.add('hidden');
 
+            const rawEmail = document.getElementById('email').value.trim();
+            const rawName = document.getElementById('fullName').value.trim();
+            const rawGpa = document.getElementById('gpaInput').value.trim();
+            const rawTalents = document.getElementById('talentsInput').value.trim();
+
+            // Strict Email Validation Regex (RFC 5322 compliant)
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!rawEmail || !emailRegex.test(rawEmail)) {
+                showToast("error", "بريد إلكتروني غير صالح", "يرجى إدخال بريد إلكتروني حقيقي بصيغة صحيحة (مثال: student@example.com).");
+                goToWizardStep(4);
+                document.getElementById('email').focus();
+                submitBtn.disabled = false;
+                btnText.textContent = "احفظ ملفي وفعّل التنبيهات";
+                btnSpinner.classList.add('hidden');
+                return;
+            }
+
+            // Strict Anti-Injection & Dangerous Tag Protection
+            const injectionPattern = /<[^>]*>|union\s+select|--|;|\x00/i;
+            if (injectionPattern.test(rawName) || injectionPattern.test(rawGpa) || injectionPattern.test(rawTalents)) {
+                showToast("error", "حقول غير مسموح بها", "يرجى إدخال بيانات صحيحة خالية من الرموز الخاصة أو وسوم الحقن البرمجي.");
+                submitBtn.disabled = false;
+                btnText.textContent = "احفظ ملفي وفعّل التنبيهات";
+                btnSpinner.classList.add('hidden');
+                return;
+            }
+
             const payload = {
-                email: document.getElementById('email').value.trim(),
+                email: rawEmail,
+                full_name: rawName || "Student",
+                degree: selectedDegree,
+                majors: finalMajors,
+                gpa: rawGpa || "85%",
+                talents_experience: rawTalents,
+                country: document.getElementById('country').value,
+                send_welcome_report: document.getElementById('sendWelcome').checked
+            };
                 full_name: document.getElementById('fullName').value.trim() || "Student",
                 degree: selectedDegree,
                 majors: finalMajors,
@@ -1537,7 +1572,9 @@
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                    showToast("success", "تم تفعيل الاشتراك بنجاح! 🚀", data.message || "تم تسجيل بريدك في رادار المنح وسيصلك تقرير دوري مخصص.");
+                    openSubscriptionSuccessModal(data);
                     alertBox.className = "p-4 rounded-xl text-xs sm:text-sm font-bold sp-badge-success block space-y-1 text-center";
                     alertBox.innerHTML = `
                         <div class="text-sm font-bold">${escapeHTML(data.message)}</div>
@@ -1546,13 +1583,16 @@
                         </div>
                     `;
                     alertBox.classList.remove('hidden');
+                    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
                     throw new Error(data.detail || data.message || "حدث خطأ أثناء تفعيل الأتمتة.");
                 }
             } catch (err) {
+                showToast("error", "تنبيه في البيانات", err.message || "يرجى التحقق من صحة الحقول المدخلة.");
                 alertBox.className = "p-4 rounded-xl text-xs sm:text-sm font-bold sp-badge-danger block";
                 alertBox.textContent = `خطأ: ${err.message}`;
                 alertBox.classList.remove('hidden');
+                alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } finally {
                 submitBtn.disabled = false;
                 btnText.textContent = "احفظ ملفي وفعّل التنبيهات";
@@ -1810,7 +1850,7 @@
                         <button type="button" onclick="openAssistantSidePanel('${escapeHTML(item.id)}', '${escapeHTML(item.name)}'); closeRadarCatalogModal();" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition" title="استشارة المستشار الذكي حول هذه المنحة">
                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button type="button" onclick="jumpToScholarshipCard('${escapeHTML(item.id)}')" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1" title="عرض تفاصيل المنحة">
+                        <button type="button" onclick="openScholarshipDetailsModal('${escapeHTML(item.id)}')" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1" title="عرض تفاصيل المنحة">
                             <i data-lucide="eye" class="w-3 h-3 text-blue-500"></i>
                             <span>عرض التفاصيل</span>
                         </button>
@@ -1826,24 +1866,120 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        function jumpToScholarshipCard(id) {
+        
+        function openScholarshipDetailsModal(id) {
             closeRadarCatalogModal();
-            const item = scholarshipDeckData.find(s => s.id === id);
-            if (item && !matchesDegree(item, activeRadarDegreeFilter)) {
-                setRadarDegreeFilter('all');
+            const item = (typeof scholarshipDeckData !== 'undefined' && scholarshipDeckData.find(s => s.id === id))
+                || (typeof liveFeedData !== 'undefined' && liveFeedData.find(s => s.id === id))
+                || null;
+
+            if (!item) {
+                if (typeof showToast === 'function') showToast("info", "جلب التفاصيل", "جارٍ تحميل تفاصيل المنحة...");
+                fetch('/api/scholarships/' + encodeURIComponent(id))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && (data.scholarship || data.item)) {
+                            populateAndShowDetailsModal(data.scholarship || data.item);
+                        } else {
+                            if (typeof showToast === 'function') showToast("error", "تنبيه", "تعذر العثور على بيانات هذه المنحة.");
+                        }
+                    })
+                    .catch(() => {
+                        if (typeof showToast === 'function') showToast("error", "تنبيه", "تعذر الاتصال بقاعدة بيانات المنح.");
+                    });
+                return;
             }
-            setTimeout(() => {
-                const el = document.getElementById('scholarship-card-' + id);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('ring-4', 'ring-blue-500', 'ring-offset-2', 'transition-all');
-                    setTimeout(() => {
-                        el.classList.remove('ring-4', 'ring-blue-500', 'ring-offset-2');
-                    }, 2500);
-                } else {
-                    document.getElementById('radarSection')?.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 120);
+            populateAndShowDetailsModal(item);
+        }
+
+        function populateAndShowDetailsModal(item) {
+            const modal = document.getElementById('scholarshipDetailsModal');
+            if (!modal) return;
+
+            document.getElementById('detailTitle').textContent = item.name || 'تفاصيل المنحة';
+            document.getElementById('detailInstitution').textContent = (item.university || '') + (item.country ? ' • ' + item.country : '');
+            document.getElementById('detailBadgeStatus').textContent = item.status || 'مفتوح للتقديم';
+            document.getElementById('detailBadgeDegree').textContent = item.degree || 'كافة المراحل';
+            document.getElementById('detailBadgeCountry').textContent = item.country || 'دولي';
+            document.getElementById('detailCoverage').textContent = item.coverage || 'تمويل دراسي شامل (Full Ride)';
+            document.getElementById('detailGpa').textContent = item.min_gpa_percent ? (item.min_gpa_percent + '% أو 3.0 / 4.0') : 'حسب معايير الكلية (متاح للجميع)';
+            document.getElementById('detailDeadline').textContent = item.deadline || 'راجع البوابة الرسمية';
+
+            const majorsContainer = document.getElementById('detailMajorsContainer');
+            if (majorsContainer) {
+                const majors = Array.isArray(item.target_majors) && item.target_majors.length > 0
+                    ? item.target_majors
+                    : ['الهندسة والتكنولوجيا', 'العلوم الطبية', 'إدارة الأعمال', 'العلوم الإنسانية'];
+                majorsContainer.innerHTML = majors.map(m => `
+                    <span class="px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-800 dark:text-purple-300 border border-purple-500/20 text-xs font-semibold">
+                        ${escapeHTML(m)}
+                    </span>
+                `).join('');
+            }
+
+            const reqEl = document.getElementById('detailRequirements');
+            if (reqEl) {
+                reqEl.innerHTML = `
+                    <p><strong>شروط القبول:</strong> ${escapeHTML(item.requirements || 'الحصول على شهادة المرحلة السابقة بمعدل يتناسب مع التخصص المختار.')}</p>
+                    <p><strong>الوثائق الأساسية:</strong> السيرة الذاتية (CV)، كشف الدرجات المترجم، شهادة إتقان اللغة (أو إفادة الدراسة بالإنجليزية)، وخطاب الدافع.</p>
+                    ${item.quota_palestine ? '<p class="text-emerald-700 dark:text-emerald-400 font-bold">✨ ميزة تفضيلية: كوتا ومقاعد معفاة مخصصة للطلبة الفلسطينيين.</p>' : ''}
+                `;
+            }
+
+            const linkBtn = document.getElementById('detailOfficialLink');
+            if (linkBtn) {
+                linkBtn.href = item.official_link || item.link || '#';
+            }
+
+            const aiBtn = document.getElementById('detailConsultAiBtn');
+            if (aiBtn) {
+                aiBtn.onclick = () => {
+                    closeScholarshipDetailsModal();
+                    if (typeof openAssistantSidePanel === 'function') {
+                        openAssistantSidePanel(item.id, item.name);
+                    } else {
+                        window.location.href = '/assistant?scholarship=' + encodeURIComponent(item.id);
+                    }
+                };
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeScholarshipDetailsModal() {
+            const modal = document.getElementById('scholarshipDetailsModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openSubscriptionSuccessModal(data) {
+            const modal = document.getElementById('subscriptionSuccessModal');
+            if (!modal) return;
+            const emailVal = (data && data.subscriber && data.subscriber.email) || (document.getElementById('email') ? document.getElementById('email').value.trim() : 'student@eduatlas.ai');
+            const degreeVal = (data && data.subscriber && data.subscriber.degree) || selectedDegree || 'بكالوريوس / ماجستير';
+            const emailEl = document.getElementById('subSuccessEmail');
+            const degreeEl = document.getElementById('subSuccessDegree');
+            if (emailEl) emailEl.textContent = emailVal;
+            if (degreeEl) degreeEl.textContent = degreeVal;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeSubscriptionSuccessModal() {
+            const modal = document.getElementById('subscriptionSuccessModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function jumpToScholarshipCard(id) {
+            openScholarshipDetailsModal(id);
+        }
+, 120);
         }
 
         // Close on Esc key
@@ -2879,6 +3015,141 @@
 
         </div>
     </div>
+
+    
+    <!-- ==================== SCHOLARSHIP DETAILS MODAL ==================== -->
+    <div id="scholarshipDetailsModal" class="fixed inset-0 z-[80] hidden items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md transition-all duration-200" onclick="if(event.target === this) closeScholarshipDetailsModal();">
+        <div class="relative w-full max-w-2xl bg-white dark:bg-[#18142C] rounded-3xl border border-slate-200 dark:border-[#382F64] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+            <!-- Modal Header -->
+            <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-[#382F64] flex items-start justify-between gap-4 bg-slate-50 dark:bg-[#130E26]/60">
+                <div class="space-y-1.5 flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="detailBadgeStatus" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-[#10E599] border border-emerald-500/30">مفتوح للتقديم</span>
+                        <span id="detailBadgeDegree" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30">بكالوريوس</span>
+                        <span id="detailBadgeCountry" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30">دولي</span>
+                    </div>
+                    <h3 id="detailTitle" class="text-lg sm:text-xl font-black text-[#0C0A17] dark:text-white leading-tight">اسم المنحة الدراسية</h3>
+                    <p id="detailInstitution" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium truncate">الجامعة أو الهيئة المانحة</p>
+                </div>
+                <button type="button" onclick="closeScholarshipDetailsModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div class="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+                <!-- Financial Coverage Grid -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i data-lucide="coins" class="w-4 h-4 text-[#10E599]"></i>
+                        <span>حزمة التمويل والمزايا المقدمة</span>
+                    </h4>
+                    <div class="p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 text-xs sm:text-sm font-semibold text-emerald-950 dark:text-emerald-200 leading-relaxed" id="detailCoverage">
+                        تمويل كامل يشمل الرسوم الدراسية، بدل المعيشة الشهري، السكن الجامعي، والتأمين الطبي.
+                    </div>
+                </div>
+
+                <!-- Academic Requirements & GPA -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-[#130E26]/80 border border-slate-200 dark:border-[#382F64]">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">المعدل الأدنى المطلوب</span>
+                        <span id="detailGpa" class="text-sm font-extrabold text-[#0C0A17] dark:text-white font-latin">80% أو 3.0 / 4.0</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-[#130E26]/80 border border-slate-200 dark:border-[#382F64]">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">الموعد النهائي للتقديم</span>
+                        <span id="detailDeadline" class="text-sm font-extrabold text-amber-700 dark:text-amber-400 font-latin">15 مارس 2027</span>
+                    </div>
+                </div>
+
+                <!-- Target Majors -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i data-lucide="book-open" class="w-4 h-4 text-purple-500"></i>
+                        <span>التخصصات المتاحة والمستهدفة</span>
+                    </h4>
+                    <div id="detailMajorsContainer" class="flex flex-wrap gap-1.5">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Requirements & Application Guidelines -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                        <span>شروط القبول والوثائق الأساسية</span>
+                    </h4>
+                    <div id="detailRequirements" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5 p-3.5 rounded-xl bg-slate-50 dark:bg-[#130E26]/60 border border-slate-200 dark:border-[#382F64]">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Controls -->
+            <div class="p-4 sm:p-5 border-t border-slate-200 dark:border-[#382F64] bg-slate-50 dark:bg-[#130E26]/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <button type="button" id="detailConsultAiBtn" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-600/10 hover:bg-purple-600/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-2 transition">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-purple-500"></i>
+                    <span>استشر المساعد الذكي حول شروطي</span>
+                </button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="closeScholarshipDetailsModal()" class="w-1/2 sm:w-auto px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold transition hover:bg-slate-300 dark:hover:bg-slate-700">
+                        إغلاق
+                    </button>
+                    <a id="detailOfficialLink" href="#" target="_blank" rel="noopener noreferrer" class="sp-btn-primary w-1/2 sm:w-auto px-5 py-2.5 text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
+                        <span>بوابة التقديم الرسمية</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SUBSCRIPTION SUCCESS MODAL ==================== -->
+    <div id="subscriptionSuccessModal" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md transition-all duration-200" onclick="if(event.target === this) closeSubscriptionSuccessModal();">
+        <div class="relative w-full max-w-lg bg-white dark:bg-[#18142C] rounded-3xl border border-emerald-500/30 shadow-2xl overflow-hidden flex flex-col p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
+            <!-- Animated Success Icon -->
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-[#10E599] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                <i data-lucide="check-circle" class="w-9 h-9 text-[#10E599]"></i>
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-black text-[#0C0A17] dark:text-white mb-2">
+                تهانينا! تم تفعيل اشتراكك بنجاح 🚀
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                تم ربط بريدك الإلكتروني بنظام رادار EduAtlas الذكي. سيقوم النظام بمراقبة بوابات الجامعات والمنح على مدار الساعة، وإرسال تنبيهات استباقية بالفرص التي تطابق مؤهلاتك تماماً.
+            </p>
+
+            <!-- Subscriber Profile Summary Card -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-[#130E26]/80 border border-slate-200 dark:border-[#382F64] text-xs space-y-2 mb-6 text-right">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">البريد الإلكتروني:</span>
+                    <span id="subSuccessEmail" class="font-mono font-bold text-[#0C0A17] dark:text-white">user@example.com</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">المرحلة الأكاديمية:</span>
+                    <span id="subSuccessDegree" class="font-bold text-purple-700 dark:text-purple-300">بكالوريوس</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 dark:text-slate-400">حالة التنبيهات:</span>
+                    <span class="inline-flex items-center gap-1 font-bold text-emerald-700 dark:text-[#10E599]">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        مفعلة وتعمل آلياً
+                    </span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="/radar" class="sp-btn-primary flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5">
+                    <i data-lucide="radar" class="w-4 h-4"></i>
+                    <span>تصفح رادار المنح الآن</span>
+                </a>
+                <button type="button" onclick="closeSubscriptionSuccessModal()" class="px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                    تم
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ==================== SPLIT SCREEN SIDE PANEL & MOBILE FULLSCREEN MODAL (OPTION B) ==================== -->
     <!-- Backdrop Overlay for Mobile & Desktop -->

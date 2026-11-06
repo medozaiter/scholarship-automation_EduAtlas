@@ -119,17 +119,17 @@
             
             <!-- Brand Logo -->
             <a href="/" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] border border-violet-400/30 flex items-center justify-center text-white shadow-md shadow-violet-950/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6D28D9] via-[#7C3AED] to-[#4C1D95] border border-[#10E599]/30 flex items-center justify-center text-white shadow-md shadow-violet-950/30 group-hover:scale-105 transition-transform shrink-0 relative overflow-hidden">
                     <svg class="w-6 h-6 text-[#10E599]" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="7" stroke-opacity="0.35" fill="none"/>
-                        <polygon points="50,16 60,50 50,43 40,50" fill="#10E599"/>
-                        <polygon points="50,84 60,50 50,57 40,50" fill="#EDE9FE"/>
+                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-opacity="0.35" stroke-dasharray="6 4" fill="none"/>
+                        <polygon points="50,14 62,50 50,42 38,50" fill="#10E599"/>
+                        <polygon points="50,86 62,50 50,58 38,50" fill="#EDE9FE"/>
                         <circle cx="50" cy="50" r="6" fill="#10E599"/>
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/10 text-[#10E599] font-mono border border-[#10E599]/20">AI</span></span>
+                        <span class="text-base sm:text-lg font-black tracking-tight text-[#0C0A17] dark:text-white leading-none font-latin">Edu<span class="text-[#059669] dark:text-[#10E599]">Atlas</span> <span class="text-xs px-1.5 py-0.5 rounded-md bg-[#10E599]/15 text-[#047857] dark:text-[#10E599] font-mono border border-[#10E599]/30 font-bold">AI</span></span>
                     </div>
                     <span class="text-[10px] text-slate-600 dark:text-[#A5B4FC] font-medium hidden sm:block mt-0.5">رادار الملاحة الأكاديمية والمنح الدولية</span>
                 </div>
@@ -256,7 +256,7 @@
     <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
 
         <!-- Newsroom Hero Spotlight Section -->
-        <section id="heroSection" class="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/60 p-6 sm:p-8 backdrop-blur-sm">
+        <section id="heroSection" class="sp-card relative rounded-3xl overflow-hidden border border-slate-200 dark:border-[#382F64] bg-white dark:bg-[#18142C] p-6 sm:p-8 backdrop-blur-sm shadow-xl">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <!-- Featured Article Hero Card -->
                 <div id="featuredHeroCard" class="lg:col-span-8 relative rounded-2xl overflow-hidden border border-slate-800/80 bg-slate-950/70 min-h-[340px] flex flex-col justify-end p-6 sm:p-8 group shadow-xl">
@@ -302,7 +302,7 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i>
-                            <h2 class="text-sm font-black text-white">الأكثر رواجاً في المنح</h2>
+                            <h2 class="text-sm font-black text-[#0C0A17] dark:text-white">الأكثر رواجاً في المنح</h2>
                         </div>
                         <span class="text-[11px] text-slate-400 font-latin">Live Radar</span>
                     </div>
@@ -312,12 +312,32 @@
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Emergency Relief & Travel Search Prompt Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs font-semibold scrollbar-none">
+                <span class="text-slate-500 dark:text-slate-400 text-[11px] shrink-0 font-bold">استكشاف عاجل:</span>
+                <button type="button" onclick="triggerNewsPrompt('غزة')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🕊️ طوارئ غزة والابتعاث</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>✈️ التأشيرات وتنسيق السفر</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>📋 إجراءات المعابر واستئناف الدراسة</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🏛️ منح الملاذ وإيرلندا</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('')" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 transition">
+                    <span>إعادة ضبط</span>
+                </button>
+            </div>
+            </section>
 
         <!-- Search, Filter & Categories Navigation Bar -->
         <section class="space-y-4">
             <!-- Search & Controls Bar -->
-            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+            <div class="sp-card flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white dark:bg-[#18142C] p-3 rounded-2xl border border-slate-200 dark:border-[#382F64]">
                 <!-- Search Input -->
                 <div class="relative flex-1">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
@@ -399,7 +419,27 @@
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400 font-latin">0</span>
                 </button>
             </div>
-        </section>
+
+            <!-- Emergency Relief & Travel Search Prompt Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs font-semibold scrollbar-none">
+                <span class="text-slate-500 dark:text-slate-400 text-[11px] shrink-0 font-bold">استكشاف عاجل:</span>
+                <button type="button" onclick="triggerNewsPrompt('غزة')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🕊️ طوارئ غزة والابتعاث</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>✈️ التأشيرات وتنسيق السفر</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>📋 إجراءات المعابر واستئناف الدراسة</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🏛️ منح الملاذ وإيرلندا</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('')" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 transition">
+                    <span>إعادة ضبط</span>
+                </button>
+            </div>
+            </section>
 
         <!-- News Cards Grid Section -->
         <section class="space-y-4">
@@ -432,7 +472,27 @@
                     جرب البحث بكلمات مختلفة أو تفعيل خيار كافة الأخبار بما فيها الأرشيفية.
                 </p>
             </div>
-        </section>
+
+            <!-- Emergency Relief & Travel Search Prompt Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs font-semibold scrollbar-none">
+                <span class="text-slate-500 dark:text-slate-400 text-[11px] shrink-0 font-bold">استكشاف عاجل:</span>
+                <button type="button" onclick="triggerNewsPrompt('غزة')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🕊️ طوارئ غزة والابتعاث</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>✈️ التأشيرات وتنسيق السفر</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>📋 إجراءات المعابر واستئناف الدراسة</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🏛️ منح الملاذ وإيرلندا</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('')" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 transition">
+                    <span>إعادة ضبط</span>
+                </button>
+            </div>
+            </section>
 
         <!-- Automated Protection Notice Footer Card -->
         <section class="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -449,7 +509,27 @@
                 <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                 <span>نظام الرصد الذاتي نشط 24/7</span>
             </div>
-        </section>
+
+            <!-- Emergency Relief & Travel Search Prompt Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs font-semibold scrollbar-none">
+                <span class="text-slate-500 dark:text-slate-400 text-[11px] shrink-0 font-bold">استكشاف عاجل:</span>
+                <button type="button" onclick="triggerNewsPrompt('غزة')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🕊️ طوارئ غزة والابتعاث</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>✈️ التأشيرات وتنسيق السفر</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>📋 إجراءات المعابر واستئناف الدراسة</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
+                    <span>🏛️ منح الملاذ وإيرلندا</span>
+                </button>
+                <button type="button" onclick="triggerNewsPrompt('')" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 transition">
+                    <span>إعادة ضبط</span>
+                </button>
+            </div>
+            </section>
 
     </main>
 
@@ -563,8 +643,10 @@
         // Category icons map
         const CATEGORY_ICONS = {
             'scholarships': 'award',
+            'gaza_relief': 'heart-handshake',
+            'visas_and_travel': 'plane-takeoff',
             'universities': 'landmark',
-            'study_abroad': 'plane-takeoff',
+            'study_abroad': 'compass',
             'admissions': 'file-check',
             'research': 'microscope',
             'funding_opportunities': 'coins',
@@ -572,38 +654,42 @@
             'internship_opportunities': 'briefcase'
         };
 
-        // Category localized SVG covers (EduAtlas Visual Identity)
+        // Real Editorial Photography Covers (Direction B - Modern Cartographer)
         const CATEGORY_COVERS = {
-            'scholarships': '/static/img/covers/scholarships.svg',
-            'universities': '/static/img/covers/admissions.svg',
-            'study_abroad': '/static/img/covers/visas.svg',
-            'admissions': '/static/img/covers/admissions.svg',
-            'research': '/static/img/covers/research.svg',
-            'funding_opportunities': '/static/img/covers/funding.svg',
-            'international_programs': '/static/img/covers/scholarships.svg',
-            'internship_opportunities': '/static/img/covers/training.svg'
+            'scholarships': 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
+            'gaza_relief': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80',
+            'visas_and_travel': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&q=80',
+            'universities': 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&q=80',
+            'study_abroad': 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80',
+            'admissions': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&q=80',
+            'research': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1200&q=80',
+            'funding_opportunities': 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&q=80',
+            'international_programs': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80',
+            'internship_opportunities': 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80',
+            'default': 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&q=80'
         };
 
         function getCategoryCover(category) {
-            if (!category) return '/static/img/covers/default.svg';
+            if (!category) return CATEGORY_COVERS['default'];
             const cat = String(category).toLowerCase();
             if (CATEGORY_COVERS[cat]) return CATEGORY_COVERS[cat];
-            if (cat.includes('scholarship') || cat.includes('منح')) return '/static/img/covers/scholarships.svg';
-            if (cat.includes('admission') || cat.includes('قبول') || cat.includes('جامع')) return '/static/img/covers/admissions.svg';
-            if (cat.includes('visa') || cat.includes('travel') || cat.includes('سفر') || cat.includes('خارج')) return '/static/img/covers/visas.svg';
-            if (cat.includes('research') || cat.includes('بحث')) return '/static/img/covers/research.svg';
-            if (cat.includes('fund') || cat.includes('تمويل')) return '/static/img/covers/funding.svg';
-            if (cat.includes('training') || cat.includes('تدريب')) return '/static/img/covers/training.svg';
-            return '/static/img/covers/default.svg';
+            if (cat.includes('gaza') || cat.includes('غزة') || cat.includes('إجلاء') || cat.includes('طوارئ')) return CATEGORY_COVERS['gaza_relief'];
+            if (cat.includes('visa') || cat.includes('travel') || cat.includes('سفر') || cat.includes('تأشير')) return CATEGORY_COVERS['visas_and_travel'];
+            if (cat.includes('scholarship') || cat.includes('منح')) return CATEGORY_COVERS['scholarships'];
+            if (cat.includes('admission') || cat.includes('قبول') || cat.includes('جامع')) return CATEGORY_COVERS['universities'];
+            if (cat.includes('research') || cat.includes('بحث')) return CATEGORY_COVERS['research'];
+            if (cat.includes('fund') || cat.includes('تمويل')) return CATEGORY_COVERS['funding_opportunities'];
+            return CATEGORY_COVERS['default'];
         }
 
         function resolveArticleImage(art) {
-            if (!art) return '/static/img/covers/default.svg';
-            const fallback = getCategoryCover(art.category);
+            if (!art) return CATEGORY_COVERS['default'];
             const img = art.image_url;
-            if (!img || img.includes('1523050854058') || img.includes('1507668077129') || img.includes('unsplash.com')) {
-                return fallback;
+            if (img && (img.startsWith('http://') || img.startsWith('https://')) && !img.endsWith('.svg')) {
+                return img;
             }
+            return getCategoryCover(art.category);
+        }
             return img;
         }
 
@@ -814,20 +900,20 @@
                 ` : '';
 
                 const cardHtml = `
-                    <article class="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition duration-300 flex flex-col group shadow-lg">
+                    <article class="sp-card bg-white dark:bg-[#18142C] border border-slate-200 dark:border-[#382F64] rounded-2xl overflow-hidden hover:border-[#10E599]/50 hover:shadow-xl transition-all duration-300 flex flex-col group">
                         <!-- Card Media -->
-                        <div class="relative h-44 overflow-hidden bg-slate-950 cursor-pointer" onclick="openArticleModal('${art.id}')">
+                        <div class="relative h-48 overflow-hidden bg-slate-950 cursor-pointer" onclick="openArticleModal('${art.id}')">
                             <img src="${initialCover}" 
                                  alt="${escapeHTML(art.title)}" 
                                  loading="lazy"
                                  onerror="this.onerror=null; this.src='${fallbackCover}';"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                             
                             <!-- Badges Overlay -->
                             <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-blue-600 text-white flex items-center gap-1 shadow">
-                                    <i data-lucide="${iconName}" class="w-3 h-3"></i>
+                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-gradient-to-r from-purple-700 to-indigo-800 text-white flex items-center gap-1 shadow-md border border-purple-400/30">
+                                    <i data-lucide="${iconName}" class="w-3 h-3 text-[#10E599]"></i>
                                     <span>${art.category_label || 'منح دراسية'}</span>
                                 </span>
                             </div>
@@ -837,10 +923,10 @@
                         <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
                             <div class="space-y-2.5">
                                 ${deadlineTag}
-                                <h3 onclick="openArticleModal('${art.id}')" class="text-sm font-bold text-white hover:text-blue-400 transition cursor-pointer line-clamp-2 leading-snug">
+                                <h3 onclick="openArticleModal('${art.id}')" class="text-sm font-bold text-[#0C0A17] dark:text-white hover:text-purple-600 dark:hover:text-[#10E599] transition cursor-pointer line-clamp-2 leading-snug">
                                     ${art.title}
                                 </h3>
-                                <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                                <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                                     ${art.summary}
                                 </p>
                             </div>
@@ -990,6 +1076,16 @@
         }
 
         // Search debounce
+        
+        window.triggerNewsPrompt = function(keyword) {
+            const searchInput = document.getElementById('newsSearchInput');
+            if (searchInput) {
+                searchInput.value = keyword;
+                currentSearch = keyword;
+                loadNewsData();
+            }
+        };
+        
         function setupSearch() {
             let timeout = null;
             const input = document.getElementById('newsSearchInput');

@@ -29,11 +29,13 @@ from services.telegram_service import telegram_service
 
 logger = logging.getLogger("scholarpilot.news")
 
-# 8 Validated Educational Categories
+# 10 Validated Educational & Emergency Relief Categories
 NEWS_CATEGORIES = {
     "scholarships": {"ar": "منح دراسية", "icon": "award"},
+    "gaza_relief": {"ar": "طوارئ غزة والابتعاث العاجل", "icon": "heart-handshake"},
+    "visas_and_travel": {"ar": "التأشيرات وإجراءات السفر", "icon": "plane-takeoff"},
     "universities": {"ar": "جامعات", "icon": "landmark"},
-    "study_abroad": {"ar": "دراسة بالخارج", "icon": "plane-takeoff"},
+    "study_abroad": {"ar": "دراسة بالخارج", "icon": "compass"},
     "admissions": {"ar": "قبول وتسجيل", "icon": "file-check"},
     "research": {"ar": "بحث علمي", "icon": "microscope"},
     "funding_opportunities": {"ar": "فرص تمويل", "icon": "coins"},
@@ -41,12 +43,26 @@ NEWS_CATEGORIES = {
     "internship_opportunities": {"ar": "فرص تدريب", "icon": "briefcase"},
 }
 
-# Strict Blacklist for Non-Educational / Irrelevant Content
+# Real Photographic Covers for Editorial Excellence (Zero Generic Icon SVGs)
+EDITORIAL_PHOTO_COVERS = {
+    "scholarships": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80",
+    "gaza_relief": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80",
+    "visas_and_travel": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&q=80",
+    "universities": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&q=80",
+    "study_abroad": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80",
+    "admissions": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&q=80",
+    "research": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1200&q=80",
+    "funding_opportunities": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&q=80",
+    "international_programs": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80",
+    "internship_opportunities": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80",
+    "default": "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&q=80"
+}
+
+# Strict Blacklist for Gossip, Gambling, and Non-Academic Entertainment
 DISALLOWED_KEYWORDS = [
     "مباراة", "كرة قدم", "دوري", "هدف", "فنان", "مغني", "أغنية", "كليب",
     "مسلسل", "فيلم", "سينما", "مهرجان كان", "حزب", "انتخابات برلمانية",
-    "برلمان", "معركة", "قصف", "سلاح", "مقتل", "حادث سير", "كازينو",
-    "قمار", "مراهنات", "celebrity", "gossip", "casino", "betting", "poker"
+    "برلمان", "كازينو", "قمار", "مراهنات", "celebrity", "gossip", "casino", "betting", "poker"
 ]
 
 
@@ -396,7 +412,7 @@ class NewsService:
                     "publish_date": datetime.now().isoformat(),
                     "source_name": univ or s_name,
                     "source_url": s.get("link") or "https://scholarpilot-ai-mkac.onrender.com",
-                    "image_url": "/static/img/covers/scholarships.svg",
+                    "image_url": EDITORIAL_PHOTO_COVERS.get("scholarships", EDITORIAL_PHOTO_COVERS["default"]),
                     "country": country,
                     "degree_level": degree,
                     "scholarship_id": s_id,

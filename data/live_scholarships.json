@@ -617,5 +617,290 @@
     "link": "https://education-in-russia.com/",
     "official_link": "https://education-in-russia.com/",
     "is_active": true
+  },
+  {
+    "id": "chevening_uk",
+    "name": "Chevening Scholarships (FCDO UK)",
+    "university": "All UK Universities (Oxford, Cambridge, UCL, Imperial, Edinburgh)",
+    "country": "المملكة المتحدة (UK)",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Public Policy",
+      "Engineering",
+      "Medicine",
+      "International Relations"
+    ],
+    "matchScore": "96%",
+    "matchLabel": "تمويل حكومي كامل 100%",
+    "status": "مفتوح سنوياً (دورة 2026/2027)",
+    "statusClass": "sp-badge-success",
+    "deadline": "2026-11-05",
+    "deadline_display": "5 نوفمبر 2026",
+    "deadlineDays": "راجع الموقع للعام الجديد",
+    "coverage": "تمويل كامل 100% (تذاكر السفر، الرسوم الدراسية بالكامل، راتب شهري، وبدل تأشيرة)",
+    "min_gpa_percent": 80,
+    "requirements": "شهادة بكالوريوس معترف بها بمعدل جيد جداً، خبرة عملية لا تقل عن سنتين، وإثبات قيادة وتأثير مجتمعي.",
+    "link": "https://www.chevening.org/scholarships/",
+    "official_link": "https://www.chevening.org/scholarships/",
+    "quota_palestine": true,
+    "is_active": true
+  },
+  {
+    "id": "fulbright_foreign_student",
+    "name": "Fulbright Foreign Student Program (USA)",
+    "university": "Accredited Universities Across the United States",
+    "country": "الولايات المتحدة (USA)",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree",
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "STEM",
+      "Humanities",
+      "Economics",
+      "Education"
+    ],
+    "matchScore": "95%",
+    "matchLabel": "تمويل كامل Full Ride",
+    "status": "مفتوح رسمياً",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-04-15",
+    "deadline_display": "15 أبريل 2027",
+    "deadlineDays": "متبقي أكثر من 150 يوماً",
+    "coverage": "تمويل كامل (الرسوم الدراسية كاملة، سكن وإعاشة شهرية، تذاكر طيران ذهاب وإياب، وتأمين صحي)",
+    "min_gpa_percent": 82,
+    "requirements": "درجة البكالوريوس، إتقان اللغة الإنجليزية (TOEFL أو إفادة)، والتزام بالعودة لنقل المعرفة.",
+    "link": "https://foreign.fulbrightonline.org/",
+    "official_link": "https://foreign.fulbrightonline.org/",
+    "quota_palestine": true,
+    "is_active": true
+  },
+  {
+    "id": "holland_nl_scholarship",
+    "name": "NL Scholarship (formerly Holland Scholarship)",
+    "university": "Dutch Research Universities & Universities of Applied Sciences",
+    "country": "هولندا (Netherlands)",
+    "degree": "Undergraduate & Master's",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Computer Science",
+      "Water Technology",
+      "Design",
+      "Business"
+    ],
+    "matchScore": "91%",
+    "matchLabel": "منحة تمويل جزئي €5,000",
+    "status": "مفتوح للتقديم",
+    "statusClass": "sp-badge-warning",
+    "deadline": "2027-02-01",
+    "deadline_display": "1 فبراير أو 1 مايو 2027",
+    "deadlineDays": "حسب الجامعة",
+    "coverage": "منحة مالية بقيمة 5,000 يورو في السنة الأولى للمساعدة في نفقات المعيشة والدراسة",
+    "min_gpa_percent": 75,
+    "requirements": "قبول أكاديمي من إحدى الجامعات الهولندية المشاركة، وجنسية من خارج الاتحاد الأوروبي.",
+    "link": "https://www.studyinnl.org/finances/nl-scholarship",
+    "official_link": "https://www.studyinnl.org/finances/nl-scholarship",
+    "quota_palestine": false,
+    "is_active": true
+  },
+  {
+    "id": "italy_maeci_scholarship",
+    "name": "Italian Government MAECI Scholarships",
+    "university": "State-Recognized Italian Universities & AFAM Institutions",
+    "country": "إيطاليا (Italy)",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree",
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "Engineering",
+      "Architecture",
+      "Design",
+      "Economics",
+      "Italian Studies"
+    ],
+    "matchScore": "93%",
+    "matchLabel": "إعفاء دراسي + راتب شهري",
+    "status": "يفتح دورياً كل ربيع",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-06-14",
+    "deadline_display": "14 يونيو 2027",
+    "deadlineDays": "يفتح في أبريل 2027",
+    "coverage": "إعفاء 100% من الأقساط الجامعية + راتب شهري 900 يورو وتأمين صحي إيطالي مجاني",
+    "min_gpa_percent": 75,
+    "requirements": "شهادة البكالوريوس، ألا يتجاوز عمر المتقدم 28 عاماً للماجستير و30 عاماً للدكتوراه.",
+    "link": "https://studyinitaly.esteri.it/en/call-for-procedure",
+    "official_link": "https://studyinitaly.esteri.it/en/call-for-procedure",
+    "quota_palestine": true,
+    "is_active": true
+  },
+  {
+    "id": "polimi_merit_grants",
+    "name": "Politecnico di Milano Merit-Based Grants",
+    "university": "Politecnico di Milano (Top 20 Worldwide in Engineering/Design)",
+    "country": "إيطاليا (Italy)",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "Computer Science & Engineering",
+      "Civil Engineering",
+      "Architecture",
+      "Design"
+    ],
+    "matchScore": "94%",
+    "matchLabel": "منحة تميز (إعفاء + 10,000 يورو)",
+    "status": "مفتوح للدفعة القادمة",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-28",
+    "deadline_display": "28 فبراير 2027",
+    "deadlineDays": "متبقي 114 يوماً",
+    "coverage": "إعفاء كامل من الرسوم الدراسية بقيمة €3,900 سنوياً + منحة نقدية تصل إلى 10,000 يورو لتغطية المعيشة",
+    "min_gpa_percent": 82,
+    "requirements": "سجل أكاديمي متميز، خطاب دافع احترافي، وملف أعمال (لبرامج العمارة والتصميم).",
+    "link": "https://www.polimi.it/en/international-prospective-students",
+    "official_link": "https://www.polimi.it/en/international-prospective-students",
+    "quota_palestine": true,
+    "is_active": true
+  },
+  {
+    "id": "si_scholarship_sweden",
+    "name": "Swedish Institute Scholarships for Global Professionals (SI)",
+    "university": "Top Swedish Universities (KTH, Lund, Uppsala, Chalmers)",
+    "country": "السويد (Sweden)",
+    "degree": "Master's Degree",
+    "target_degrees": [
+      "Master's Degree"
+    ],
+    "target_majors": [
+      "Sustainability",
+      "Computer Science",
+      "Public Health",
+      "Renewable Energy"
+    ],
+    "matchScore": "95%",
+    "matchLabel": "تمويل كامل ومصروف شهري",
+    "status": "يفتح في فبراير 2027",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-28",
+    "deadline_display": "28 فبراير 2027",
+    "deadlineDays": "التقديم عبر universityadmissions.se أولاً",
+    "coverage": "تغطية كامل الرسوم الدراسية + راتب شهري 12,000 كرونة سويدية + تذكرة سفر 15,000 كرونة + تأمين صحي",
+    "min_gpa_percent": 80,
+    "requirements": "إثبات ما لا يقل عن 3,000 ساعة خبرة عملية أو تطوعية، وسجل قيادي مثبت.",
+    "link": "https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/",
+    "official_link": "https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/",
+    "quota_palestine": false,
+    "is_active": true
+  },
+  {
+    "id": "mext_japan_embassy",
+    "name": "Japanese Government MEXT Scholarship (Monbukagakusho)",
+    "university": "Tokyo University, Kyoto University, Osaka University, Tokyo Tech",
+    "country": "اليابان (Japan)",
+    "degree": "Undergraduate, Master's & PhD",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "All Majors",
+      "Robotics",
+      "Computer Science",
+      "Biotechnology",
+      "Economics"
+    ],
+    "matchScore": "97%",
+    "matchLabel": "تمويل حكومي ياباني كامل 100%",
+    "status": "يفتح في أبريل/مايو سنوياً",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-05-30",
+    "deadline_display": "30 مايو 2027",
+    "deadlineDays": "عبر السفارة اليابانية",
+    "coverage": "إعفاء 100% من رسوم التسجيل والدراسة + راتب شهري 144,000 ين ياباني + تذاكر طيران ذهاب وإياب",
+    "min_gpa_percent": 80,
+    "requirements": "اجتياز امتحانات السفارة في الرياضيات واللغة الإنجليزية أو اليابانية والمقابلة الشخصية.",
+    "link": "https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/",
+    "official_link": "https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/",
+    "quota_palestine": true,
+    "is_active": true
+  },
+  {
+    "id": "eiffel_excellence_france",
+    "name": "Eiffel Excellence Scholarship Program (Campus France)",
+    "university": "French Higher Education Institutions & Grandes Écoles",
+    "country": "فرنسا (France)",
+    "degree": "Master's Degree & PhD",
+    "target_degrees": [
+      "Master's Degree",
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "Science & Tech",
+      "Engineering",
+      "Law & Political Science",
+      "Economics & Management"
+    ],
+    "matchScore": "96%",
+    "matchLabel": "تمويل فرنسي مرموق كامل",
+    "status": "مفتوح للتقديم حالياً",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-10",
+    "deadline_display": "10 يناير 2027",
+    "deadlineDays": "متبقي 65 يوماً",
+    "coverage": "بدل شهري قدره 1,181 يورو للماجستير و1,750 يورو للدكتوراه + تذكرة طيران دولية + تأمين صحي ونشاطات ثقافية",
+    "min_gpa_percent": 84,
+    "requirements": "يتم الترشيح حصراً من قِبل الجامعة الفرنسية التي تقبل الطالب.",
+    "link": "https://www.campusfrance.org/en/the-eiffel-scholarship-program",
+    "official_link": "https://www.campusfrance.org/en/the-eiffel-scholarship-program",
+    "quota_palestine": false,
+    "is_active": true
+  },
+  {
+    "id": "gaza_emergency_academic_solidarity",
+    "name": "صندوق التضامن الأكاديمي الدولي لطلبة قطاع غزة (Emergency Solidarity Grants)",
+    "university": "Consortium of European, Turkish & Arab Universities",
+    "country": "دولي (أوروبا، تركيا، مصر، والأردن)",
+    "degree": "Undergraduate & Graduate",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate"
+    ],
+    "target_majors": [
+      "الطب البشري",
+      "طب الأسنان",
+      "الهندسة وتكنولوجيا المعلومات",
+      "التمريض والعلوم الطبية",
+      "كافة التخصصات"
+    ],
+    "matchScore": "99%",
+    "matchLabel": "أولوية قصوى وإعفاء شامل 100%",
+    "status": "مفتوح عاجل ومستمر",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-03-31",
+    "deadline_display": "31 مارس 2027",
+    "deadlineDays": "تقديم مستمر على دفعات",
+    "coverage": "إعفاء 100% من الأقساط + سكن جامعي مجاني + راتب إعانة طوارئ + مساعدة في تنسيق السفر والإجلاء للدراسة",
+    "min_gpa_percent": 70,
+    "requirements": "أن يكون المتقدم طالباً مسجلاً في إحدى جامعات قطاع غزة وتأثرت دراسته، مع إثبات القيد أو كشف الدرجات الإلكتروني.",
+    "link": "https://mohe.pna.ps",
+    "official_link": "https://mohe.pna.ps",
+    "quota_palestine": true,
+    "is_active": true
   }
 ]
