@@ -27,10 +27,21 @@
     icons.forEach(icon => {
       icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
     });
-    if (window.lucide) {
-      window.lucide.createIcons();
+    const mainIcon = document.getElementById('themeIcon');
+    if (mainIcon) {
+      mainIcon.innerHTML = isDark
+        ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
+        : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
+    }
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      try { lucide.createIcons(); } catch(e) {}
     }
   }
+
+  // Universal aliases
+  window.toggleTheme = window.toggleEduAtlasTheme;
+  window.updateThemeButton = updateThemeToggleIcons;
+  window.updateThemeIcon = updateThemeToggleIcons;
 
   // ===================================================================
   // 2. INSTANT SEARCH DEBOUNCE ENGINE

@@ -76,13 +76,45 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+        <!-- Unified Instant Theme Manager & Mode Synchronizer -->
     <script>
-        // Init theme immediately to prevent FOUC
-        if (localStorage.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
+        function applySavedTheme() {
+            try {
+                const saved = localStorage.getItem('theme');
+                if (saved === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch(e) {}
         }
+        applySavedTheme();
+
+        function updateThemeButton() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const iconWrap = document.getElementById('themeIcon');
+            if (iconWrap) {
+                iconWrap.innerHTML = isDark
+                    ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
+                    : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
+            }
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                try { lucide.createIcons(); } catch(e) {}
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            try {
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            } catch(e) {}
+            updateThemeButton();
+        }
+
+        window.toggleTheme = toggleTheme;
+        window.updateThemeButton = updateThemeButton;
+        window.updateThemeIcon = updateThemeButton;
+        document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
 </head>
 <body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white relative bg-[#F4F1EA] dark:bg-[#0B1724] text-[#16324F] dark:text-[#F4F1EA] transition-colors duration-200 overflow-x-hidden max-w-full w-full ea-topographic-bg">
@@ -1539,8 +1571,8 @@
             const rawTalents = document.getElementById('talentsInput').value.trim();
 
             // Strict Email Validation Regex (RFC 5322 compliant)
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!rawEmail || !emailRegex.test(rawEmail)) {
+            const subscriberEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!rawEmail || !subscriberEmailRegex.test(rawEmail)) {
                 showToast("error", "بريد إلكتروني غير صالح", "يرجى إدخال بريد إلكتروني حقيقي بصيغة صحيحة (مثال: student@example.com).");
                 goToWizardStep(4);
                 document.getElementById('email').focus();
@@ -1567,14 +1599,6 @@
                 majors: finalMajors,
                 gpa: rawGpa || "85%",
                 talents_experience: rawTalents,
-                country: document.getElementById('country').value,
-                send_welcome_report: document.getElementById('sendWelcome').checked
-            };
-                full_name: document.getElementById('fullName').value.trim() || "Student",
-                degree: selectedDegree,
-                majors: finalMajors,
-                gpa: document.getElementById('gpaInput').value.trim() || "85%",
-                talents_experience: document.getElementById('talentsInput').value.trim(),
                 country: document.getElementById('country').value,
                 send_welcome_report: document.getElementById('sendWelcome').checked
             };
@@ -1994,8 +2018,6 @@
 
         function jumpToScholarshipCard(id) {
             openScholarshipDetailsModal(id);
-        }
-, 120);
         }
 
         // Close on Esc key

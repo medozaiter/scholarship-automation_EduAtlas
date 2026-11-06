@@ -72,6 +72,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+        <!-- Unified Instant Theme Manager & Mode Synchronizer -->
     <script>
         function applySavedTheme() {
             try {
@@ -85,23 +86,31 @@
         }
         applySavedTheme();
 
+        function updateThemeButton() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const iconWrap = document.getElementById('themeIcon');
+            if (iconWrap) {
+                iconWrap.innerHTML = isDark
+                    ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
+                    : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
+            }
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                try { lucide.createIcons(); } catch(e) {}
+            }
+        }
+
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
             try {
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             } catch(e) {}
-            updateThemeIcon();
+            updateThemeButton();
         }
 
-        function updateThemeIcon() {
-            const iconWrap = document.getElementById('themeIcon');
-            if (!iconWrap) return;
-            const isDark = document.documentElement.classList.contains('dark');
-            iconWrap.innerHTML = isDark
-                ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
-                : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
-            if (window.lucide) lucide.createIcons();
-        }
+        window.toggleTheme = toggleTheme;
+        window.updateThemeButton = updateThemeButton;
+        window.updateThemeIcon = updateThemeButton;
+        document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
 
     <style>

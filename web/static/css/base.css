@@ -150,13 +150,43 @@ p:last-child {
   color: #FFFFFF;
 }
 
-/* Light Mode Dynamic Cartographic Gradient */
+/* Light Mode Dynamic Cartographic Gradient & High Contrast */
+html:not(.dark) {
+  color-scheme: light;
+}
+
 html:not(.dark) body {
   background: linear-gradient(180deg, #E6FAF0 0%, #EFF4FC 22%, #F7F9FD 55%, #FFFFFF 100%) fixed !important;
   color: #0C0A17 !important;
 }
 
+html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3,
+html:not(.dark) h4, html:not(.dark) h5, html:not(.dark) h6,
+html:not(.dark) .sp-hero-title, html:not(.dark) .ea-hero-title {
+  color: #0C0A17 !important;
+}
+
+html:not(.dark) p:not(.sp-btn-primary):not(.ea-btn-primary) {
+  color: #1E293B;
+}
+
+html:not(.dark) .sp-card,
+html:not(.dark) .ea-card {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #0C0A17 !important;
+}
+
+html:not(.dark) .sp-sticky-nav {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom-color: #E2E8F0 !important;
+}
+
 /* Dark Mode Deep Obsidian Mesh */
+html.dark {
+  color-scheme: dark;
+}
+
 html.dark body {
   background: radial-gradient(circle at 50% 0%, #18142C 0%, #0C0A17 75%) fixed !important;
   color: #F8F9FD !important;
