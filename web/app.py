@@ -1,5 +1,7 @@
 import os
 import re
+import html
+import ipaddress
 import asyncio
 import logging
 from datetime import datetime, date
@@ -144,8 +146,20 @@ async def rate_limiting_middleware(request: Request, call_next):
         forwarded = request.headers.get("x-forwarded-for")
         peer_ip = request.client.host if request.client else "127.0.0.1"
 
-        # Anti-spoofing: only trust X-Forwarded-For if direct peer is local reverse proxy or testclient
-        if forwarded and peer_ip in ["127.0.0.1", "::1", "localhost", "testclient"]:
+        # Anti-spoofing: verify if direct peer is trusted (localhost, testclient, private cloud subnets, or TRUSTED_PROXIES)
+        is_trusted_peer = peer_ip in ["127.0.0.1", "::1", "localhost", "testclient"]
+        if not is_trusted_peer:
+            try:
+                parsed_ip = ipaddress.ip_address(peer_ip)
+                is_trusted_peer = parsed_ip.is_private or parsed_ip.is_loopback
+            except ValueError:
+                is_trusted_peer = False
+
+        trusted_proxies_env = os.getenv("TRUSTED_PROXIES", "")
+        if trusted_proxies_env and peer_ip in [p.strip() for p in trusted_proxies_env.split(",")]:
+            is_trusted_peer = True
+
+        if forwarded and is_trusted_peer:
             client_ip = forwarded.split(",")[0].strip()
         else:
             client_ip = peer_ip
@@ -489,29 +503,14 @@ async def startup_event():
 async def health_check():
     """
     Ultra-fast (<5ms) liveness and readiness probe for Render, Cron-job.org, and uptime monitors.
-    Returns 200 OK immediately with system status, database health, and email subsystem status.
+    Returns 200 OK with minimal status to prevent infrastructure fingerprinting and internal reconnaissance.
+    Full subsystem details require authenticated admin user or valid X-Cron-Secret header via /api/health/diagnostics.
     """
-    raw_db = os.getenv("DATABASE_URL", "")
-    db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store"
-    email_info = get_email_provider_info()
-    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "version": "2.5.0",
-        "service": "EduAtlas",
-        "database": {
-            "type": db_type,
-            "connected": is_db_available(),
-            "pool": "active"
-        },
-        "email": email_info,
-        "ai": {
-            "provider": "Google AI Studio",
-            "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            "configured": bool(gemini_key and len(gemini_key) > 5)
-        }
+        "service": "EduAtlas"
     }
 
 
@@ -1781,6 +1780,7 @@ async def verify_email_get_endpoint(token: str):
     except HTTPException:
         raise
     except ValueError as ve:
+        escaped_err = html.escape(str(ve))
         return HTMLResponse(
             f"""
             <!DOCTYPE html>
@@ -1796,7 +1796,7 @@ async def verify_email_get_endpoint(token: str):
                 <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl text-center border border-rose-200">
                     <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✕</div>
                     <h1 class="text-lg font-bold text-rose-700 mb-2">تعذر تفعيل البريد الأكاديمي</h1>
-                    <p class="text-sm text-slate-600 mb-6">{str(ve)}</p>
+                    <p class="text-sm text-slate-600 mb-6">{escaped_err}</p>
                     <a href="/" class="inline-block px-6 py-2.5 bg-[#16324F] text-white font-bold rounded-xl text-xs">العودة للصفحة الرئيسية</a>
                 </div>
             </body>

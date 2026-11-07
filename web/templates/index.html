@@ -72,8 +72,9 @@
     <!-- Lucide Outlined Modern Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Canvas Confetti & Marked.js -->
+    <!-- Canvas Confetti, DOMPurify & Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
         <!-- Unified Instant Theme Manager & Mode Synchronizer -->
@@ -2921,7 +2922,7 @@
                                 ${badgeHtml}
                             </div>
                             <div class="markdown-body leading-relaxed text-slate-700 dark:text-slate-200 space-y-2">
-                                ${marked.parse(data.advice || '')}
+                                ${(window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') ? window.DOMPurify.sanitize(marked.parse(data.advice || '')) : marked.parse(data.advice || '')}
                             </div>
                         </div>
                     `;

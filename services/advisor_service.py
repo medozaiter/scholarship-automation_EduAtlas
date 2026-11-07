@@ -1032,6 +1032,10 @@ class AdvisorService:
                 import xml.etree.ElementTree as ET
                 with zipfile.ZipFile(io.BytesIO(content_bytes)) as docx_zip:
                     if "word/document.xml" in docx_zip.namelist():
+                        info = docx_zip.getinfo("word/document.xml")
+                        # Defense in depth: limit decompressed XML to 5MB to prevent Zip Bomb / XML memory exhaustion
+                        if info.file_size > 5 * 1024 * 1024:
+                            raise ValueError("الملف المضغوط داخل المستند يتجاوز الحد المسموح به للأمان (5MB).")
                         xml_bytes = docx_zip.read("word/document.xml")
                         tree = ET.fromstring(xml_bytes)
                         texts = [elem.text for elem in tree.iter() if elem.text]
