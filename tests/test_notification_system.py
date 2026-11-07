@@ -1,3 +1,4 @@
+import time
 import sys
 import os
 import unittest
@@ -25,6 +26,21 @@ class TestNotificationSystem(unittest.TestCase):
         cls.client = TestClient(app)
         cls.demo_email = "test_scholar_notif@scholarpilot.com"
         cls.actor_email = "actor_scholar@scholarpilot.com"
+        from services.auth_service import AuthService
+        auth_service = AuthService()
+        try:
+            auth_service.register(
+                email=cls.demo_email,
+                password="Password123!#",
+                full_name="Notif Scholar",
+                username="notif_scholar"
+            )
+        except Exception:
+            pass
+        user = auth_service.login(cls.demo_email, "Password123!#")
+        if user and user.get("session_token"):
+            cls.client.cookies.set("session_token", user["session_token"])
+            cls.client.headers["Authorization"] = f"Bearer {user['session_token']}"
 
     def test_01_serve_notifications_page(self):
         """Test that /notifications page serves clean HTML with zero server errors."""
@@ -106,7 +122,7 @@ class TestNotificationSystem(unittest.TestCase):
         # Enable community likes for test user first
         update_user_notification_preferences(self.demo_email, {"community_likes": True})
 
-        post_id = "post_grouping_test_99"
+        post_id = f"post_grouping_test_{time.time()}"
         actor1 = {"email": "scholar_a@test.com", "full_name": "أحمد باحث", "username": "ahmed_researcher"}
         actor2 = {"email": "scholar_b@test.com", "full_name": "سارة طالبة", "username": "sara_student"}
 

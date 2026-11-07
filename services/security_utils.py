@@ -828,9 +828,11 @@ class SecurityRateLimiter:
         self._check_counter: int = 0
 
         self.LIMITS = {
-            "login": (5, 60),      # Strict 5/min limit for authentication to prevent brute force
-            "auth": (10, 60),      # 10/min for registration & password reset
-            "advisor": (25, 60),
+            "login": (5, 900),     # Strict 5 requests / 15 minutes for authentication login
+            "auth": (5, 900),      # 5 requests / 15 minutes for registration & password reset
+            "search": (60, 60),    # 60 requests / minute for search operations
+            "advisor": (20, 60),   # 20 requests / minute for AI assistant queries
+            "contact": (3, 3600),  # 3 requests / hour for contact form submissions
             "radar_scan": (15, 60),
             "document_generation": (10, 60),
             "subscribe": (6, 60),
@@ -839,6 +841,8 @@ class SecurityRateLimiter:
             "general": (60, 60),   # 60/min for general public API endpoints
         }
         self._daily_advisor_quotas: Dict[str, int] = {}
+        self.GUEST_DAILY_ADVISOR_LIMIT: int = 10         # Guests: 10 messages/day
+        self.REGISTERED_DAILY_ADVISOR_LIMIT: int = 100   # Registered users: 100 messages/day
         self.DAILY_ADVISOR_LIMIT: int = 10
         self._hourly_generations: Dict[str, List[float]] = {}
         self.HOURLY_GENERATION_LIMIT: int = 10
@@ -917,6 +921,15 @@ class SecurityRateLimiter:
             self._failed_logins[identifier] = history
             return len(history)
 
+    def get_failed_login_count(self, identifier: str) -> int:
+        """Returns the count of failed login attempts for an email or IP in the last 15 minutes."""
+        now = time.time()
+        window = 900
+        with self._lock:
+            history = self._failed_logins.get(identifier, [])
+            valid = [ts for ts in history if ts > (now - window)]
+            return len(valid)
+
     def is_account_locked(self, identifier: str, max_failures: int = 5) -> Tuple[bool, int]:
         now = time.time()
         window = 900
@@ -947,34 +960,38 @@ class SecurityRateLimiter:
             return True, 0
 
 
-    def check_daily_advisor_quota(self, identifier: str) -> Tuple[bool, int, int]:
+    def check_daily_advisor_quota(self, identifier: str, is_registered: bool = False) -> Tuple[bool, int, int]:
         """
-        Enforces maximum 10 questions per user/IP per calendar day.
+        Enforces AI assistant daily message quota:
+        - Guests: 10 messages/day
+        - Registered users: 100 messages/day
         Returns: (allowed: bool, used_today: int, remaining: int)
         """
         date_str = datetime.now().strftime("%Y-%m-%d")
         clean_id = (identifier or "anonymous").strip().lower()
         key = f"advisor_daily:{clean_id}:{date_str}"
+        limit = self.REGISTERED_DAILY_ADVISOR_LIMIT if is_registered else self.GUEST_DAILY_ADVISOR_LIMIT
 
         with self._lock:
             used = self._daily_advisor_quotas.get(key, 0)
-            remaining = max(0, self.DAILY_ADVISOR_LIMIT - used)
-            allowed = used < self.DAILY_ADVISOR_LIMIT
+            remaining = max(0, limit - used)
+            allowed = used < limit
             return allowed, used, remaining
 
-    def consume_daily_advisor_question(self, identifier: str) -> Tuple[int, int]:
+    def consume_daily_advisor_question(self, identifier: str, is_registered: bool = False) -> Tuple[int, int]:
         """
-        Consumes one question from the daily quota.
+        Consumes one message from the user's daily quota.
         Returns: (used_today: int, remaining: int)
         """
         date_str = datetime.now().strftime("%Y-%m-%d")
         clean_id = (identifier or "anonymous").strip().lower()
         key = f"advisor_daily:{clean_id}:{date_str}"
+        limit = self.REGISTERED_DAILY_ADVISOR_LIMIT if is_registered else self.GUEST_DAILY_ADVISOR_LIMIT
 
         with self._lock:
             used = self._daily_advisor_quotas.get(key, 0) + 1
             self._daily_advisor_quotas[key] = used
-            remaining = max(0, self.DAILY_ADVISOR_LIMIT - used)
+            remaining = max(0, limit - used)
             return used, remaining
 
     def check_hourly_generation_limit(self, identifier: str, max_limit: Optional[int] = None, window: int = 3600) -> Tuple[bool, int, int, int]:

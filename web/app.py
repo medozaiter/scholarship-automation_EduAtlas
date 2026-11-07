@@ -175,6 +175,15 @@ async def rate_limiting_middleware(request: Request, call_next):
             category = "login"
         elif path.startswith("/api/auth/"):
             category = "auth"
+        elif path in ["/api/contact", "/api/support", "/api/feedback"]:
+            category = "contact"
+        elif (
+            path in ["/api/scholarships/search", "/api/scholarships/live", "/api/search"]
+            or (path.startswith("/api/news") and (request.query_params.get("search") or request.query_params.get("q")))
+            or request.query_params.get("search")
+            or request.query_params.get("q")
+        ):
+            category = "search"
         elif path in [
             "/api/advisor/review-cv", "/api/advisor/upload-cv",
             "/api/advisor/review-letter", "/api/advisor/upload-letter",
@@ -185,7 +194,7 @@ async def rate_limiting_middleware(request: Request, call_next):
             category = "upload"
         elif path.startswith("/api/advisor/"):
             category = "advisor"
-        elif path in ["/api/match/calculate", "/api/scholarships/live", "/api/student/send-report"]:
+        elif path in ["/api/match/calculate", "/api/student/send-report"]:
             category = "radar_scan"
         elif path == "/api/subscribe":
             category = "subscribe"
@@ -282,6 +291,7 @@ EXEMPT_CSRF_PATHS = {
     "/api/auth/csrf-token",
     "/api/auth/refresh",
     "/api/subscribe",
+    "/api/contact",
     "/api/cron/trigger-scan",
     "/api/advisor/consult",
     "/api/advisor/chances",
@@ -574,6 +584,37 @@ async def trigger_cron_radar_scan(
 
 
 # ==================== STRICT REQUEST VALIDATION MODELS ====================
+
+class ContactFormRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    name: str = Field(..., min_length=2, max_length=100)
+    email: str = Field(..., max_length=120)
+    subject: str = Field(..., min_length=3, max_length=150)
+    message: str = Field(..., min_length=10, max_length=3000)
+    recaptcha_token: Optional[str] = Field(None, max_length=1000)
+
+    @field_validator("email")
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        clean = validate_email(v)
+        if not clean:
+            raise ValueError("البريد الإلكتروني غير صالح.")
+        return clean
+
+    @field_validator("name")
+    @classmethod
+    def check_name(cls, v: str) -> str:
+        clean = validate_name(v)
+        if not clean:
+            raise ValueError("الاسم يجب أن يحتوي على أحرف صالحة فقط.")
+        return clean
+
+    @field_validator("subject", "message")
+    @classmethod
+    def check_content(cls, v: str) -> str:
+        detect_sql_injection(v)
+        return sanitize_text(v, max_length=3000)
+
 
 class SubscriptionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -1427,6 +1468,11 @@ async def serve_notifications_page():
 async def register_account(req: RegisterRequest, request: Request, response: Response):
     """Creates a new student account with full academic identity attributes and sets session cookie."""
     try:
+        # Enforce CAPTCHA on Registration
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
+        if not captcha_ok:
+            raise HTTPException(status_code=400, detail=captcha_msg)
         user = auth_service.register(
             email=req.email,
             password=req.password,
@@ -1522,15 +1568,27 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
 @app.post("/api/auth/login")
 async def login_account(req: LoginRequest, request: Request, response: Response):
     """Authenticates student with bcrypt verification, lockout protection, remember-me support, and secure cookies."""
+    email_clean = (req.email or "").strip().lower()
+    client_ip = request.client.host if request.client else "127.0.0.1"
     try:
-        # reCAPTCHA Verification
-        client_ip = request.client.host if request.client else "127.0.0.1"
-        captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
-        if not captcha_ok:
-            raise HTTPException(status_code=400, detail=captcha_msg)
+        # Enforce CAPTCHA on login after failed attempts (Adaptive Challenge)
+        failed_by_email = security_rate_limiter.get_failed_login_count(email_clean)
+        failed_by_ip = security_rate_limiter.get_failed_login_count(client_ip)
+        requires_captcha = (failed_by_email >= 1 or failed_by_ip >= 1 or bool(req.recaptcha_token))
+
+        if requires_captcha:
+            captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
+            if not captcha_ok:
+                raise HTTPException(
+                    status_code=400,
+                    detail="تم رصد محاولات دخول سابقة غير ناجحة. يرجى إكمال التحقق الأمني (CAPTCHA) لتأكيد هويتك.",
+                    headers={"X-Requires-Captcha": "true"}
+                )
         user = auth_service.login(req.email, req.password, remember_me=bool(req.remember_me))
         if not user:
+            security_rate_limiter.record_failed_login(client_ip)
             raise HTTPException(status_code=401, detail="البريد الإلكتروني أو كلمة المرور غير صحيحة.")
+        security_rate_limiter.record_successful_login(client_ip)
         token = user.get("session_token", "")
         refresh_tok = user.get("refresh_token", "")
         refresh_max_age = user.get("refresh_expires_in_seconds", (30 * 86400 if req.remember_me else 7 * 86400))
@@ -1974,6 +2032,47 @@ async def get_public_profile_api(username: str, request: Request):
     except Exception as e:
         logger.error(f"Public profile error: {e}")
         raise HTTPException(status_code=500, detail="تعذر استرجاع الملف الشخصي.")
+
+@app.post("/api/contact")
+async def submit_contact_form(req: ContactFormRequest, request: Request, background_tasks: BackgroundTasks):
+    """
+    Submits a student support inquiry or feedback with strict CAPTCHA enforcement 
+    and 3 requests / hour rate limiting.
+    """
+    client_ip = request.client.host if request.client else "127.0.0.1"
+
+    # 1. Enforce CAPTCHA on Contact forms
+    captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
+    if not captcha_ok:
+        raise HTTPException(status_code=400, detail=captcha_msg)
+
+    # 2. Dispatch email notification in background if email subsystem is active
+    try:
+        from services.email_service import dispatch_email
+        support_email = os.getenv("SUPPORT_EMAIL", os.getenv("ADMIN_EMAIL", "support@scholarpilot.ai"))
+        subject = f"[EduAtlas Contact] {req.subject} - {req.name}"
+        html_body = f"""
+        <div style="font-family: Arial, sans-serif; direction: rtl; line-height: 1.6; color: #1e293b; padding: 20px;">
+            <h2 style="color: #059669;">رسالة تواصل جديدة عبر منصة EduAtlas</h2>
+            <p><strong>الاسم:</strong> {html.escape(req.name)}</p>
+            <p><strong>البريد الأكاديمي:</strong> {html.escape(req.email)}</p>
+            <p><strong>الموضوع:</strong> {html.escape(req.subject)}</p>
+            <p><strong>عنوان IP:</strong> {client_ip}</p>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+            <p><strong>نص الرسالة:</strong></p>
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; white-space: pre-wrap;">{html.escape(req.message)}</div>
+        </div>
+        """
+        background_tasks.add_task(dispatch_email, support_email, subject, html_body)
+    except Exception as em_err:
+        logger.warning(f"Contact form notification warning: {em_err}")
+
+    return {
+        "success": True,
+        "message": "تم استلام رسالتك وتأكيد التحقق الأمني بنجاح! سيقوم فريق الدعم الأكاديمي بالرد على بريدك خلال 24 ساعة."
+    }
+
+
 @app.post("/api/subscribe")
 async def subscribe_student(req: SubscriptionRequest, background_tasks: BackgroundTasks):
     """Registers a student with comprehensive profile for recurring weekly scholarship email reports."""
@@ -2482,16 +2581,21 @@ async def get_advisor_telemetry_route():
 
 @app.get("/api/advisor/quota")
 async def get_advisor_quota_api(request: Request, email: Optional[str] = None):
-    """Returns the current daily question quota and remaining balance for the user or IP."""
+    """Returns the current daily question quota: 10 messages/day for guests, 100 messages/day for registered users."""
     safe_email = _get_verified_profile_email(request, email)
+    user = get_authenticated_user(request)
+    is_registered = bool(safe_email or user)
     client_ip = request.client.host if request.client else "127.0.0.1"
-    client_id = safe_email or client_ip
-    allowed, used_today, remaining = security_rate_limiter.check_daily_advisor_quota(client_id)
+    client_id = safe_email or (user.get("email") if user else None) or client_ip
+
+    allowed, used_today, remaining = security_rate_limiter.check_daily_advisor_quota(client_id, is_registered=is_registered)
+    limit = 100 if is_registered else 10
     return {
         "success": True,
-        "daily_limit": 10,
+        "daily_limit": limit,
         "used_today": used_today,
         "remaining": remaining,
+        "is_registered": is_registered,
         "is_exhausted": not allowed
     }
 
@@ -2499,19 +2603,23 @@ async def get_advisor_quota_api(request: Request, email: Optional[str] = None):
 @app.post("/api/advisor/chat")
 @app.post("/api/advisor/consult")
 async def consult_advisor(req: AdvisorChatRequest, request: Request):
-    """Real-time AI Scholarship Advisor with daily 10-question quota enforcement and profile awareness."""
+    """Real-time AI Scholarship Advisor with daily quota: 10 messages/day for guests, 100 messages/day for registered users."""
     try:
         safe_email = _get_verified_profile_email(request, req.email)
+        user = get_authenticated_user(request)
+        is_registered = bool(safe_email or user)
         client_ip = request.client.host if request.client else "127.0.0.1"
-        client_id = safe_email or client_ip
+        client_id = safe_email or (user.get("email") if user else None) or client_ip
+        limit = 100 if is_registered else 10
 
-        # Enforce 10-Question Daily Quota per User / IP
-        allowed, used_today, remaining = security_rate_limiter.check_daily_advisor_quota(client_id)
+        # Enforce Tiered Daily Message Quota (Guests: 10/day, Registered: 100/day)
+        allowed, used_today, remaining = security_rate_limiter.check_daily_advisor_quota(client_id, is_registered=is_registered)
         if not allowed:
-            raise HTTPException(
-                status_code=429,
-                detail="عذراً، لقد استنفدت الحد اليومي المسموح به للاستشارات الأكاديمية (10 أسئلة يومياً). يتجدد رصيدك تلقائياً مع بداية اليوم القادم لمواصلة استكشاف المنح والتقديم."
-            )
+            if is_registered:
+                msg = f"عذراً، لقد استنفدت الحد اليومي المسموح به للحسابات المسجلة ({limit} رسالة يومياً). يتجدد رصيدك تلقائياً مع بداية اليوم القادم."
+            else:
+                msg = f"عذراً، لقد استنفدت الحد اليومي المسموح به للزوار ({limit} رسائل يومياً). يمكنك إنشاء حساب أو تسجيل الدخول مجاناً لرفع حدك إلى 100 استشارة يومياً!"
+            raise HTTPException(status_code=429, detail=msg)
 
         profile = advisor_service.resolve_student_profile(email=safe_email, explicit_profile=req.profile)
         res = await advisor_service.consult_ai_advisor(
@@ -2522,11 +2630,12 @@ async def consult_advisor(req: AdvisorChatRequest, request: Request):
             scholarship_id=req.scholarship_id
         )
 
-        used_today, remaining = security_rate_limiter.consume_daily_advisor_question(client_id)
+        used_today, remaining = security_rate_limiter.consume_daily_advisor_question(client_id, is_registered=is_registered)
         res["daily_quota"] = {
-            "limit": 10,
+            "limit": limit,
             "used": used_today,
-            "remaining": remaining
+            "remaining": remaining,
+            "is_registered": is_registered
         }
         return res
     except HTTPException:
