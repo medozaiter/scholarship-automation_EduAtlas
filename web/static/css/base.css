@@ -200,8 +200,8 @@ html:not(.dark) .bg-slate-950 h1,
 html:not(.dark) .bg-slate-950 h2,
 html:not(.dark) .bg-slate-950 h3,
 html:not(.dark) .bg-slate-950 h4,
-html:not(.dark) .bg-blue-600 h1,
-html:not(.dark) .bg-blue-600 h2,
+html:not(.dark) .bg-emerald-600 h1,
+html:not(.dark) .bg-emerald-600 h2,
 html:not(.dark) .bg-emerald-600 h1,
 html:not(.dark) .bg-emerald-600 h2 {
   color: #FFFFFF !important;
@@ -255,4 +255,51 @@ html.dark .ea-topographic-bg {
   background-repeat: repeat;
   background-attachment: fixed;
   color: #F8F9FD !important;
+}
+
+/* ===================================================================
+ * 5. ENTERPRISE INPUT VALIDATION, ACCESSIBILITY & LAYOUT DEFENSE
+ * =================================================================== */
+
+/* Layout overflow protection: prevent continuous strings from stretching cards */
+p, span, h1, h2, h3, h4, h5, h6, .sp-card, .ea-card, blockquote, .sp-subcard {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Invalid form state highlighting */
+.sp-input[aria-invalid="true"],
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: #F43F5E !important;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18) !important;
+}
+
+/* Real-time validation error badge with gentle shake */
+.ea-validation-error {
+  color: #F43F5E !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  animation: eaValidationShake 0.22s ease-in-out;
+}
+
+@keyframes eaValidationShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* Character counters */
+.char-counter-pill {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94A3B8;
+  margin-top: 0.25rem;
+  text-align: left;
+  direction: ltr;
 }

@@ -68,6 +68,7 @@
     <!-- Production Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
     <script src="/static/js/warm-scholar.js" defer></script>
+    <script src="/static/js/saas-engine.js" defer></script>
 
     <!-- Lucide Outlined Modern Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -117,6 +118,7 @@
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
+    <script src="/static/js/validation_engine.js"></script>
 </head>
 <body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white relative bg-[#F8F9FD] dark:bg-[#0C0A17] text-[#0C0A17] dark:text-[#F8F9FD] transition-colors duration-200 overflow-x-hidden max-w-full w-full ea-topographic-bg">
 
@@ -168,44 +170,44 @@
             <!-- Primary Navigation Links (Desktop RTL) -->
             <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
                 <!-- 1. الرئيسية -->
-                <a href="/" class="px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 font-bold transition flex items-center gap-1.5 border border-blue-500/20 shadow-xs">
-                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                <a href="/" class="px-3 py-2 rounded-xl text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold transition flex items-center gap-1.5 border border-emerald-500/20 shadow-xs">
+                    <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                     <span>الرئيسية</span>
                 </a>
 
                 <!-- 2. رادار المنح -->
-                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح</span>
                     <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
                 </a>
 
                 <!-- 3. المساعد الذكي -->
-                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                     <span>المساعد الذكي</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
 
                 <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
-                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
                     <span>مجتمع الطلبة</span>
                 </a>
 
                 <!-- 5. أخبار المنح -->
-                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <span>أخبار المنح</span>
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
             </nav>
 
             <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Notifications Center Link -->
-                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
-                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                     <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
                 </a>
 
@@ -217,7 +219,7 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-blue-500 transition shadow-xs">
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-emerald-500 transition shadow-xs">
                     <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
@@ -235,7 +237,7 @@
     <div id="mobileNavBackdrop" onclick="toggleMobileNavDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[990] md:hidden transition-opacity"></div>
     <div id="mobileNavDrawer" class="hidden fixed inset-x-0 top-16 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-[#334155] shadow-2xl p-4 z-[995] md:hidden space-y-3">
         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-            <a href="/" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500">
+            <a href="/" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-emerald-600 text-white flex items-center gap-2 shadow-xs border border-emerald-500">
                 <i data-lucide="home" class="w-4 h-4"></i>
                 <span>الرئيسية</span>
             </a>
@@ -262,12 +264,16 @@
         </div>
     </div>
 
-    <!-- ==================== HERO SECTION ==================== -->
-    <section class="relative pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 overflow-hidden topo-contour-bg">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+    <!-- ==================== HERO SECTION (MODERN SAAS EXPERIENCE) ==================== -->
+    <section class="relative pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 overflow-hidden topo-contour-bg saas-parallax-hero">
+        <!-- Ambient Decorative Glow Orbs for Depth -->
+        <div class="saas-ambient-orb w-96 h-96 -top-20 -right-20 bg-emerald-400/20 pointer-events-none"></div>
+        <div class="saas-ambient-orb w-96 h-96 -bottom-20 -left-20 bg-purple-500/15 pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
             
-            <!-- Intake Status Badge -->
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/25 text-xs font-semibold text-purple-900 dark:text-purple-300">
+            <!-- Intake Status Badge (Floating Micro-Interaction) -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/25 text-xs font-semibold text-purple-900 dark:text-purple-300 saas-float saas-pill-glow shadow-xs">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -275,34 +281,34 @@
                 <span>نظام مؤتمت 24/7 • رصد ذكي للمنح المعتمدة، استبعاد المواعيد المنتهية، وتنبيهات فورية لبريدك</span>
             </div>
 
-            <!-- Main Heading (Concise Value Proposition) -->
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0C0A17] dark:text-white tracking-tight leading-[1.25] max-w-4xl mx-auto">
+            <!-- Main Heading with Smooth Reveal -->
+            <h1 class="reveal-on-scroll text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0C0A17] dark:text-white tracking-tight leading-[1.25] max-w-4xl mx-auto">
                 وجهتك نحو المنح العالمية تبدأ هنا — رحلة استكشاف واثقة بلا ضياع
             </h1>
 
-            <!-- Subtitle (Direct User Benefit) -->
-            <p class="text-base sm:text-xl text-slate-800 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            <!-- Subtitle with Smooth Reveal -->
+            <p class="reveal-on-scroll delay-100 text-base sm:text-xl text-slate-800 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 نظام مؤتمت يراقب بوابات الجامعات والحكومات العالمية يومياً، يستبعد المنح المنتهية، يطابق مؤهلاتك الأكاديمية مع شروط التمويل، ويرسل لك الفرص المؤكدة مباشرة لبريدك مع مستشار ذكي يرافقك خطوة بخطوة.
             </p>
 
             <!-- Value Highlights -->
-            <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-600 dark:text-slate-300 pt-1">
-                <span class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+            <div class="reveal-on-scroll delay-150 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-600 dark:text-slate-300 pt-1">
+                <span class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 hover:scale-105 transition-transform">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                     <span>تحديث يومي مستمر واستبعاد المنح المنتهية</span>
                 </span>
-                <span class="flex items-center gap-1.5 text-purple-700 dark:text-purple-400">
+                <span class="flex items-center gap-1.5 text-purple-700 dark:text-purple-400 hover:scale-105 transition-transform">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                     <span>مطابقة مخصصة 100% حسب معدلك وتخصصك</span>
                 </span>
-                <span class="flex items-center gap-1.5 text-indigo-800 dark:text-indigo-400">
+                <span class="flex items-center gap-1.5 text-purple-800 dark:text-indigo-400 hover:scale-105 transition-transform">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                     <span>تنبيهات بريدية استباقية قبل إغلاق التقديم</span>
                 </span>
             </div>
 
-            <!-- Hero Action Controls -->
-            <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+            <!-- Hero Action Controls with Interactive Hover & Shimmer -->
+            <div class="reveal-on-scroll delay-200 pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
                 <a href="#matchSection" class="sp-btn-primary w-full sm:w-auto px-6 py-3.5 text-sm font-bold flex items-center justify-center gap-2 shadow-sm">
                     <i data-lucide="mail-check" class="w-4 h-4"></i>
                     <span>احسب فرصتك وفعّل التنبيهات مجاناً</span>
@@ -313,57 +319,93 @@
                 </button>
             </div>
 
-            <!-- Key Platform Metrics (Credible, Realistic, Value-Driven) -->
-            <div class="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                <div class="sp-card p-4 text-center">
+            <!-- Key Platform Metrics (Animated Statistics Counters & Stagger Group) -->
+            <div class="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto stagger-group">
+                <div class="sp-card p-4 text-center reveal-on-scroll">
                     <div class="flex items-center justify-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs mb-1">
                         <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
                         <span>منح معتمدة ونشطة</span>
                     </div>
-                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums">+100</span>
+                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums saas-stat-num" data-counter-target="+100">+100</span>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">تمويل كامل: رسوم، سكن، وراتب</p>
                 </div>
 
-                <div class="sp-card p-4 text-center">
+                <div class="sp-card p-4 text-center reveal-on-scroll">
                     <div class="flex items-center justify-center gap-1.5 text-purple-700 dark:text-purple-400 font-bold text-xs mb-1">
                         <i data-lucide="globe" class="w-3.5 h-3.5"></i>
                         <span>وجهات دراسية عالمية</span>
                     </div>
-                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums">+45 دولة</span>
+                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums saas-stat-num" data-counter-target="+45 دولة">+45 دولة</span>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">أوروبا، بريطانيا، كندا، وآسيا</p>
                 </div>
 
-                <div class="sp-card p-4 text-center">
-                    <div class="flex items-center justify-center gap-1.5 text-indigo-800 dark:text-indigo-400 font-bold text-xs mb-1">
+                <div class="sp-card p-4 text-center reveal-on-scroll">
+                    <div class="flex items-center justify-center gap-1.5 text-purple-800 dark:text-indigo-400 font-bold text-xs mb-1">
                         <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                         <span>فحص وتحديث دوري</span>
                     </div>
-                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums">24/7 يومياً</span>
+                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums saas-stat-num" data-counter-target="24/7 يومياً">24/7 يومياً</span>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">مراقبة مستمرة للمواقع الرسمية</p>
                 </div>
 
-                <div class="sp-card p-4 text-center">
+                <div class="sp-card p-4 text-center reveal-on-scroll">
                     <div class="flex items-center justify-center gap-1.5 text-purple-600 dark:text-purple-400 font-bold text-xs mb-1">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                         <span>منح منتهية الصلاحية</span>
                     </div>
-                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums">0% منتهية</span>
+                    <span class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-latin tabular-nums saas-stat-num" data-counter-target="0% منتهية">0% منتهية</span>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">استبعاد فوري لأي فرصة مغلقة</p>
                 </div>
             </div>
 
-            <!-- Trust Bar / Verified Partners -->
-            <div class="pt-8 text-center">
-                <span class="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold block mb-4">
-                    رصد مباشر ومستمر من البوابات الرسمية لكبرى المنح العالمية
-                </span>
-                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs font-bold text-slate-600 dark:text-slate-400">
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">DAAD (ألمانيا)</span>
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">Chevening (بريطانيا)</span>
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">Türkiye Bursları (تركيا)</span>
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">Stipendium Hungaricum (المجر)</span>
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">Erasmus Mundus (أوروبا)</span>
-                    <span class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 shadow-xs">Global Korea (كوريا)</span>
+            <!-- Trust Bar / Verified Partners Showcase (Horizontal Scroll Showcase) -->
+            <div class="pt-8 text-center reveal-on-scroll">
+                <div class="flex items-center justify-between mb-3 px-2 max-w-4xl mx-auto">
+                    <span class="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold">
+                        رصد مباشر ومستمر من البوابات الرسمية لكبرى المنح العالمية
+                    </span>
+                    <div class="hidden sm:flex items-center gap-1.5">
+                        <button type="button" data-scroll-prev="heroShowcaseScroll" aria-label="السابق" class="saas-scroll-control-btn">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" data-scroll-next="heroShowcaseScroll" aria-label="التالي" class="saas-scroll-control-btn">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="heroShowcaseScroll" class="saas-horizontal-scroll max-w-4xl mx-auto gap-3 text-xs font-bold text-slate-600 dark:text-slate-400 py-2">
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-emerald-500/50 hover:text-emerald-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>DAAD (ألمانيا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-purple-500/50 hover:text-purple-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600"></i>
+                        <span>Chevening (بريطانيا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-emerald-500/50 hover:text-emerald-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>Türkiye Bursları (تركيا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-purple-500/50 hover:text-purple-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600"></i>
+                        <span>Stipendium Hungaricum (المجر)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-emerald-500/50 hover:text-emerald-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>Erasmus Mundus (أوروبا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-purple-500/50 hover:text-purple-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600"></i>
+                        <span>Global Korea (GKS كوريا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-emerald-500/50 hover:text-emerald-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>Fulbright (أمريكا)</span>
+                    </span>
+                    <span class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-xs hover:border-purple-500/50 hover:text-purple-600 transition flex items-center gap-2 shrink-0">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-purple-600"></i>
+                        <span>MEXT (اليابان)</span>
+                    </span>
                 </div>
             </div>
 
@@ -371,7 +413,7 @@
     </section>
 
     <!-- ==================== HOW IT WORKS SECTION (4 CLEAR STEPS IN < 10 SECONDS) ==================== -->
-    <section id="howItWorksSection" class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/30">
+    <section id="howItWorksSection" class="reveal-on-scroll py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/30">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
             
             <div class="text-center space-y-2">
@@ -387,12 +429,12 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-group">
                 <!-- Step 1 -->
-                <div class="sp-card p-5 flex flex-col justify-between relative group hover:border-blue-500/50 transition-all duration-300">
+                <div class="sp-card p-5 flex flex-col justify-between relative group hover:border-emerald-500/50 transition-all duration-300">
                     <div>
                         <div class="flex items-center justify-between w-full mb-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-600/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold shadow-xs">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold shadow-xs">
                                 <i data-lucide="user-plus" class="w-5 h-5"></i>
                             </div>
                             <span class="text-2xl font-black text-slate-300 dark:text-slate-700 font-latin">01</span>
@@ -414,7 +456,7 @@
                 <div class="sp-card p-5 flex flex-col justify-between relative group hover:border-indigo-500/50 transition-all duration-300">
                     <div>
                         <div class="flex items-center justify-between w-full mb-3">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-800 dark:text-indigo-400 flex items-center justify-center font-bold shadow-xs">
+                            <div class="w-10 h-10 rounded-xl bg-purple-600/10 text-purple-800 dark:text-purple-400 flex items-center justify-center font-bold shadow-xs">
                                 <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
                             </div>
                             <span class="text-2xl font-black text-slate-300 dark:text-slate-700 font-latin">02</span>
@@ -426,7 +468,7 @@
                             اختر درجتك العلمية، معدلك، ودول الابتعاث التي تطمح للدراسة فيها لتخصيص الفرص.
                         </p>
                     </div>
-                    <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-400">
+                    <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-1 text-[11px] font-bold text-purple-800 dark:text-indigo-400">
                         <i data-lucide="target" class="w-3.5 h-3.5"></i>
                         <span>تخصيص دقيق يمنع التشتت</span>
                     </div>
@@ -481,7 +523,7 @@
     </section>
 
     <!-- ==================== AUTOMATED EMAIL ALERTS SPOTLIGHT ==================== -->
-    <section class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 overflow-hidden relative">
+    <section class="reveal-on-scroll py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 overflow-hidden relative">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 
@@ -513,7 +555,7 @@
                         </div>
 
                         <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
                                 <i data-lucide="alarm-clock" class="w-4 h-4"></i>
                             </div>
                             <div>
@@ -523,7 +565,7 @@
                         </div>
 
                         <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-purple-800 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
                                 <i data-lucide="external-link" class="w-4 h-4"></i>
                             </div>
                             <div>
@@ -544,10 +586,10 @@
                 <!-- Mockup Column (5 cols) -->
                 <div class="lg:col-span-5">
                     <div class="relative mx-auto max-w-sm sm:max-w-md">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-20"></div>
+                        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-purple-700 rounded-3xl blur-xl opacity-20"></div>
 
                         <!-- Live Interactive Email Mockup Card -->
-                        <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-right">
+                        <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-right saas-float-delayed">
                             <!-- Email Top Bar -->
                             <div class="bg-slate-100 dark:bg-slate-800/80 px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                                 <div class="flex items-center gap-1.5">
@@ -562,7 +604,7 @@
                             <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-1">
                                 <div class="flex items-center justify-between text-[11px]">
                                     <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1">
-                                        <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-500"></i>
+                                        <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-600"></i>
                                         <span>تنبيهات EduAtlas للمنح</span>
                                     </span>
                                     <span class="text-emerald-700 dark:text-emerald-400 font-bold font-mono">الآن (مباشر)</span>
@@ -575,7 +617,7 @@
                             <!-- Email Body Preview -->
                             <div class="p-5 space-y-3.5 text-xs">
                                 <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-bold text-[10px]">بريطانيا (UK)</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/40 text-emerald-800 dark:text-emerald-300 dark:bg-purple-950/40 dark:text-emerald-300 font-bold text-[10px]">بريطانيا (UK)</span>
                                     <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">تمويل كامل 100%</span>
                                 </div>
 
@@ -592,7 +634,7 @@
                                     <span class="font-latin font-bold text-slate-800 dark:text-slate-200">2026-11-20</span>
                                 </div>
 
-                                <a href="#matchSection" class="w-full py-2 px-3 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-blue-700 transition">
+                                <a href="#matchSection" class="w-full py-2 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-emerald-700 transition">
                                     <span>فحص متطلبات المنحة والتقديم</span>
                                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                                 </a>
@@ -607,7 +649,7 @@
     </section>
 
     <!-- ==================== AI ACADEMIC ADVISOR SHOWCASE ==================== -->
-    <section class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/30">
+    <section class="reveal-on-scroll py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/30">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
             
             <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/25 text-xs font-bold text-purple-700 dark:text-purple-400">
@@ -625,15 +667,15 @@
 
             <!-- Quick Interactive Prompt Chips -->
             <div class="pt-2 flex flex-wrap items-center justify-center gap-2.5 max-w-3xl mx-auto">
-                <button type="button" onclick="openSidePanelWithPrompt('هل معدلي وتخصصي يؤهلاني لمنحة DAAD الألمانية؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-500 group-hover:rotate-12 transition-transform"></i>
+                <button type="button" onclick="openSidePanelWithPrompt('هل معدلي وتخصصي يؤهلاني لمنحة DAAD الألمانية؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-purple-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-600 group-hover:rotate-12 transition-transform"></i>
                     <span>هل معدلي وتخصصي يؤهلاني لمنحة DAAD الألمانية؟</span>
                 </button>
-                <button type="button" onclick="openSidePanelWithPrompt('ما هي شروط المقابلة الشخصية وكتابة مقالات منحة تشيفنينغ؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500 group-hover:rotate-12 transition-transform"></i>
+                <button type="button" onclick="openSidePanelWithPrompt('ما هي شروط المقابلة الشخصية وكتابة مقالات منحة تشيفنينغ؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-purple-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-600 group-hover:rotate-12 transition-transform"></i>
                     <span>ما هي شروط المقابلة الشخصية لمنحة تشيفنينغ؟</span>
                 </button>
-                <button type="button" onclick="openSidePanelWithPrompt('كيف أكتب خطاب دوافع (Motivation Letter) قوي للمنح الأوروبية؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
+                <button type="button" onclick="openSidePanelWithPrompt('كيف أكتب خطاب دوافع (Motivation Letter) قوي للمنح الأوروبية؟')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-purple-400 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 shadow-xs transition group">
                     <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-500 group-hover:rotate-12 transition-transform"></i>
                     <span>كيف أكتب خطاب دوافع قوي للمنح الأوروبية؟</span>
                 </button>
@@ -651,7 +693,7 @@
     </section>
 
     <!-- ==================== ADMISSION PREDICTOR & 4-STEP ONBOARDING WIZARD ==================== -->
-    <section id="matchSection" class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80">
+    <section id="matchSection" class="reveal-on-scroll py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <div class="text-center space-y-3">
@@ -668,10 +710,10 @@
             </div>
 
             <!-- Profile Completeness Meter -->
-            <div class="sp-card p-4 sm:p-5 border border-blue-500/30 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-transparent space-y-3">
+            <div class="sp-card p-4 sm:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-900/10 via-purple-900/10 to-transparent space-y-3">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold">
                             <i data-lucide="gauge" class="w-4 h-4"></i>
                         </div>
                         <div>
@@ -690,7 +732,7 @@
 
                 <!-- Animated Progress Bar -->
                 <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                    <div id="completenessProgressBar" class="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-500 transition-all duration-500 rounded-full" style="width: 25%;"></div>
+                    <div id="completenessProgressBar" class="h-full bg-gradient-to-r from-emerald-600 via-purple-600 to-emerald-500 transition-all duration-500 rounded-full" style="width: 25%;"></div>
                 </div>
             </div>
 
@@ -701,7 +743,7 @@
                 <div class="grid grid-cols-4 gap-2 border-b border-slate-200 dark:border-slate-800 pb-5 text-center">
                     <!-- Step 1 -->
                     <button type="button" onclick="goToWizardStep(1)" id="stepTabBtn-1" class="flex flex-col items-center gap-1.5 group cursor-pointer">
-                        <span id="stepBadge-1" class="w-8 h-8 rounded-full bg-blue-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md">1</span>
+                        <span id="stepBadge-1" class="w-8 h-8 rounded-full bg-emerald-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md">1</span>
                         <span class="text-[11px] sm:text-xs font-bold text-purple-700 dark:text-purple-400">البيانات والمعدل</span>
                     </button>
                     <!-- Step 2 -->
@@ -726,7 +768,7 @@
                     <!-- ================= STEP 1: Academic Info & GPA ================= -->
                     <div id="wizardStep-1" class="wizard-step-pane space-y-4">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
-                            <i data-lucide="user-check" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
                             <span>الخطوة 1 من 4: بيانات الطالب والتحصيل الأكاديمي</span>
                         </div>
 
@@ -739,7 +781,7 @@
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                         <i data-lucide="user" class="w-4 h-4"></i>
                                     </span>
-                                    <input type="text" id="fullName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
+                                    <input type="text" id="fullName" required minlength="2" maxlength="100" placeholder="مثال: أحمد محمد"
                                         oninput="sanitizeFullNameInput(this);"
                                         onblur="validateField('fullName');"
                                         class="sp-input pr-9">
@@ -755,7 +797,7 @@
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                         <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
                                     </span>
-                                    <input type="text" id="gpaInput" required maxlength="8" placeholder="3.75 أو 85.5%"
+                                    <input type="text" id="gpaInput" required maxlength="10" placeholder="3.75 أو 85.5%"
                                         oninput="sanitizeGpaInput(this);"
                                         onblur="validateField('gpaInput');"
                                         class="sp-input pr-9 font-mono tabular-nums">
@@ -794,7 +836,7 @@
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                                         <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                                     </span>
-                                    <input type="text" id="institutionInput" placeholder="مثال: جامعة القدس / ثانوية عامة"
+                                    <input type="text" id="institutionInput" maxlength="150" placeholder="مثال: جامعة القدس / ثانوية عامة"
                                         oninput="sanitizeInstitutionInput(this);"
                                         onblur="validateField('institutionInput');"
                                         class="sp-input pr-9">
@@ -814,7 +856,7 @@
                     <!-- ================= STEP 2: Target Degree & Majors ================= -->
                     <div id="wizardStep-2" class="wizard-step-pane hidden space-y-4">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm sm:text-base mb-2">
-                            <i data-lucide="compass" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i>
                             <span>الخطوة 2 من 4: المرحلة الدراسية والتخصصات المستهدفة</span>
                         </div>
 
@@ -828,7 +870,7 @@
                                     <i data-lucide="book-open" class="w-4 h-4"></i>
                                     <span>ثانوية عامة</span>
                                 </button>
-                                <button type="button" data-val="Undergraduate (Bachelor's)" class="degree-btn p-3 rounded-xl border border-blue-500 bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                <button type="button" data-val="Undergraduate (Bachelor's)" class="degree-btn p-3 rounded-xl border border-emerald-500 bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
                                     <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                                     <span>بكالوريوس</span>
                                 </button>
@@ -942,10 +984,10 @@
                         </div>
 
                         <!-- Instant Admission Probability Result Box -->
-                        <div class="sp-subcard p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3 mt-3">
+                        <div class="sp-subcard p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-3 mt-3">
                             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="calculator" class="w-4 h-4 text-blue-500"></i>
+                                    <i data-lucide="calculator" class="w-4 h-4 text-emerald-600"></i>
                                     <div>
                                         <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">فحص وتوقع نسبة القبول الفورية</span>
                                         <span class="text-[11px] text-slate-400">تقييم فرصتك التقديرية بناءً على سجلك الأكاديمي الحالي</span>
@@ -1020,7 +1062,7 @@
                         <!-- Preferences Checkboxes Grid -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
-                                <input type="checkbox" id="prefInstant" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <input type="checkbox" id="prefInstant" checked class="w-4 h-4 mt-0.5 rounded text-emerald-700 dark:text-emerald-400 focus:ring-0">
                                 <div class="text-xs">
                                     <strong class="text-slate-900 dark:text-white block font-bold">تنبيهات الرادار الفورية</strong>
                                     <span class="text-slate-500 dark:text-slate-400 text-[11px]">إشعار مباشر عند فتح أي منحة جديدة مطابقة</span>
@@ -1028,7 +1070,7 @@
                             </label>
 
                             <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
-                                <input type="checkbox" id="prefWeekly" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <input type="checkbox" id="prefWeekly" checked class="w-4 h-4 mt-0.5 rounded text-emerald-700 dark:text-emerald-400 focus:ring-0">
                                 <div class="text-xs">
                                     <strong class="text-slate-900 dark:text-white block font-bold">الحصاد الأسبوعي المنظم</strong>
                                     <span class="text-slate-500 dark:text-slate-400 text-[11px]">ملخص كل سبت بأفضل الفرص المفتوحة</span>
@@ -1044,7 +1086,7 @@
                             </label>
 
                             <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-start gap-2.5 cursor-pointer">
-                                <input type="checkbox" id="sendWelcome" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-0">
+                                <input type="checkbox" id="sendWelcome" checked class="w-4 h-4 mt-0.5 rounded text-emerald-700 dark:text-emerald-400 focus:ring-0">
                                 <div class="text-xs">
                                     <strong class="text-slate-900 dark:text-white block font-bold">إرسال التقرير الأولي فوراً</strong>
                                     <span class="text-slate-500 dark:text-slate-400 text-[11px]">استلام أول حزمة منح مطابقة خلال دقيقة واحدة</span>
@@ -1115,7 +1157,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <!-- All -->
                     <button type="button" id="degreeFilterAll" onclick="setRadarDegreeFilter('all')"
-                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-blue-600 text-white shadow-sm border border-blue-600">
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 bg-emerald-600 text-white shadow-sm border border-emerald-600">
                         <i data-lucide="layers" class="w-4 h-4"></i>
                         <span>كافة المنح المفتوحة</span>
                         <span id="badgeCountAll" class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-latin font-bold">31</span>
@@ -1132,9 +1174,9 @@
                     <!-- Master's -->
                     <button type="button" id="degreeFilterMaster" onclick="setRadarDegreeFilter('master')"
                         class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 border border-transparent hover:border-slate-300 dark:hover:border-slate-700">
-                        <i data-lucide="scroll" class="w-4 h-4 text-indigo-500"></i>
+                        <i data-lucide="scroll" class="w-4 h-4 text-purple-600"></i>
                         <span>منح الماجستير (Master's)</span>
-                        <span id="badgeCountMaster" class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 font-latin font-bold">11</span>
+                        <span id="badgeCountMaster" class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-purple-800 dark:text-indigo-400 font-latin font-bold">11</span>
                     </button>
 
                     <!-- PhD -->
@@ -1149,14 +1191,14 @@
                 <!-- Quick Catalog & In-Page View Mode Toggle -->
                 <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 dark:border-slate-800">
                     <!-- Open Full Catalog Modal -->
-                    <button type="button" onclick="openRadarCatalogModal()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-2 hover:border-blue-500/50 shadow-xs transition" title="عرض كافة المنح وتصنيفاتها الـ 3 في نافذة مدمجة بدون تمرير">
-                        <i data-lucide="list-filter" class="w-4 h-4 text-blue-500"></i>
+                    <button type="button" onclick="openRadarCatalogModal()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-2 hover:border-emerald-500/50 shadow-xs transition" title="عرض كافة المنح وتصنيفاتها الـ 3 في نافذة مدمجة بدون تمرير">
+                        <i data-lucide="list-filter" class="w-4 h-4 text-emerald-600"></i>
                         <span>فهرس المنح السريع</span>
-                        <span id="catalogSectionCountBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-500/10 text-purple-700 dark:text-purple-400 font-latin font-bold">31</span>
+                        <span id="catalogSectionCountBadge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-purple-500/10 text-purple-700 dark:text-purple-400 font-latin font-bold">31</span>
                     </button>
 
                     <!-- In-page View Mode Toggle (Grid Cards vs Compact List) -->
-                    <button type="button" id="radarViewToggleBtn" onclick="toggleRadarViewMode()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 hover:border-blue-500/50 transition" title="التبديل بين عرض البطاقات الكبيرة وعرض القائمة المدمجة">
+                    <button type="button" id="radarViewToggleBtn" onclick="toggleRadarViewMode()" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 hover:border-emerald-500/50 transition" title="التبديل بين عرض البطاقات الكبيرة وعرض القائمة المدمجة">
                         <i id="radarViewToggleIcon" data-lucide="layout-list" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
                         <span id="radarViewToggleText">قائمة مدمجة</span>
                     </button>
@@ -1172,7 +1214,7 @@
     </section>
 
     <!-- ==================== FAQ SECTION ==================== -->
-    <section id="faqSection" class="py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80">
+    <section id="faqSection" class="reveal-on-scroll py-14 sm:py-20 border-b border-slate-200/80 dark:border-slate-800/80">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
             <div class="text-center space-y-2">
@@ -1262,67 +1304,34 @@
         // =====================================================================
         let currentWizardStep = 1;
 
-        // --- STRICT REAL-TIME VALIDATION & SANITIZATION SUITE ---
+        // --- STRICT ENTERPRISE VALIDATION ENGINE INTEGRATION ---
         function isValidFullName(name) {
-            if (!name) return false;
-            const clean = name.trim();
-            if (clean.length < 3 || clean.length > 60) return false;
-            const regex = /^[\u0600-\u06FFa-zA-Z\s\.\-']{3,60}$/;
-            if (!regex.test(clean)) return false;
-            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
-            return letterCount >= 3;
+            if (typeof EduAtlasValidator !== 'undefined') {
+                return EduAtlasValidator.validateFullName(name, true).valid;
+            }
+            return !!(name && name.trim().length >= 2);
         }
 
         function isValidGpa(gpaStr) {
-            if (!gpaStr) return false;
-            const clean = gpaStr.trim();
-            if (clean.length > 8) return false;
-
-            // 1. Explicit slash scale e.g. 3.75/4 or 4.5/5
-            const slashMatch = clean.match(/^([0-5](?:\.\d{1,2})?)\s*\/\s*([45](?:\.0)?)$/);
-            if (slashMatch) {
-                const val = parseFloat(slashMatch[1]);
-                const scale = parseFloat(slashMatch[2]);
-                return val >= 0.5 && val <= scale;
+            if (typeof EduAtlasValidator !== 'undefined') {
+                return EduAtlasValidator.validateGpa(gpaStr, true).valid;
             }
-
-            // 2. Percentage with '%' e.g. 85.5% or 95%
-            if (clean.includes('%')) {
-                const pctMatch = clean.match(/^(\d{1,3}(?:\.\d{1,2})?)\s*%$/);
-                if (pctMatch) {
-                    const val = parseFloat(pctMatch[1]);
-                    return val >= 40.0 && val <= 100.0;
-                }
-                return false;
-            }
-
-            // 3. Numeric value without symbol
-            const numMatch = clean.match(/^(\d{1,3}(?:\.\d{1,2})?)$/);
-            if (numMatch) {
-                const val = parseFloat(numMatch[1]);
-                // Out of 4.0/5.0 scale (0.5 to 5.0) or percentage (40 to 100)
-                if (val >= 0.5 && val <= 5.0) return true;
-                if (val >= 40.0 && val <= 100.0) return true;
-            }
-
-            return false;
+            return !!(gpaStr && gpaStr.trim().length >= 2);
         }
 
         function isValidInstitution(inst) {
-            if (!inst) return true; // Optional field
-            const clean = inst.trim();
-            if (clean.length === 0) return true;
-            if (clean.length < 3 || clean.length > 80) return false;
-            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
-            if (letterCount < 3) return false;
-            // Reject repeated garbage characters
-            if (/([!@#$%^&*()_+=\[\]{};':"\\|<>?~`,.\-\/])\1{2,}/.test(clean)) return false;
+            if (!inst || !inst.trim()) return true;
+            if (typeof EduAtlasValidator !== 'undefined') {
+                return EduAtlasValidator.validateUniversity(inst, false).valid;
+            }
             return true;
         }
 
         function isValidEmail(email) {
-            if (!email) return false;
-            return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
+            if (typeof EduAtlasValidator !== 'undefined') {
+                return EduAtlasValidator.validateEmail(email).valid;
+            }
+            return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email || '');
         }
 
         function showFieldError(fieldId, msg) {
@@ -1421,16 +1430,9 @@
             const val = el.value.trim();
 
             if (fieldId === 'fullName') {
-                if (!val) {
-                    showFieldError(fieldId, 'الاسم الكامل مطلوب.');
-                    return false;
-                }
-                if (val.length < 3) {
-                    showFieldError(fieldId, 'الاسم قصير جداً (3 أحرف على الأقل).');
-                    return false;
-                }
-                if (!isValidFullName(val)) {
-                    showFieldError(fieldId, 'يرجى إدخال اسم حقيقي (أحرف عربية أو إنجليزية فقط دون رموز خاصة).');
+                const res = EduAtlasValidator.validateFullName(val, true);
+                if (!res.valid) {
+                    showFieldError(fieldId, res.message);
                     return false;
                 }
                 clearFieldError(fieldId);
@@ -1438,12 +1440,9 @@
             }
 
             if (fieldId === 'gpaInput') {
-                if (!val) {
-                    showFieldError(fieldId, 'حقل المعدل التراكمي مطلوب.');
-                    return false;
-                }
-                if (!isValidGpa(val)) {
-                    showFieldError(fieldId, 'المعدل غير صحيح. أدخل قيمة بنظام 4.0 (مثال: 3.75) أو نسبة مئوية (مثال: 85%).');
+                const res = EduAtlasValidator.validateGpa(val, true);
+                if (!res.valid) {
+                    showFieldError(fieldId, res.message);
                     return false;
                 }
                 clearFieldError(fieldId);
@@ -1451,8 +1450,19 @@
             }
 
             if (fieldId === 'institutionInput') {
-                if (val && !isValidInstitution(val)) {
-                    showFieldError(fieldId, 'يرجى إدخال اسم مدرسة أو جامعة صالح بدون رموز عشوائية.');
+                const res = EduAtlasValidator.validateUniversity(val, false);
+                if (!res.valid) {
+                    showFieldError(fieldId, res.message);
+                    return false;
+                }
+                clearFieldError(fieldId);
+                return true;
+            }
+
+            if (fieldId === 'country') {
+                const res = EduAtlasValidator.validateCountry(val, true);
+                if (!res.valid) {
+                    showFieldError(fieldId, res.message);
                     return false;
                 }
                 clearFieldError(fieldId);
@@ -1460,17 +1470,21 @@
             }
 
             if (fieldId === 'customMajor') {
+                if (val) {
+                    const res = EduAtlasValidator.validateMajor(val, false);
+                    if (!res.valid) {
+                        showFieldError(fieldId, res.message);
+                        return false;
+                    }
+                }
                 clearFieldError('customMajor');
                 return true;
             }
 
             if (fieldId === 'email') {
-                if (!val) {
-                    showFieldError(fieldId, 'البريد الإلكتروني مطلوب.');
-                    return false;
-                }
-                if (!isValidEmail(val)) {
-                    showFieldError(fieldId, 'يرجى إدخال عنوان بريد إلكتروني صالح (مثال: name@example.com).');
+                const res = EduAtlasValidator.validateEmail(val);
+                if (!res.valid) {
+                    showFieldError(fieldId, res.message);
                     return false;
                 }
                 clearFieldError(fieldId);
@@ -1561,7 +1575,7 @@
                 if (pane) pane.classList.toggle('hidden', i !== step);
                 if (badge) {
                     if (i === step) {
-                        badge.className = "w-8 h-8 rounded-full bg-blue-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-blue-400";
+                        badge.className = "w-8 h-8 rounded-full bg-emerald-600 text-white font-mono font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-emerald-400";
                     } else if (i < step) {
                         badge.className = "w-8 h-8 rounded-full bg-emerald-500 text-white font-mono font-bold text-xs flex items-center justify-center shadow-xs";
                         badge.innerHTML = "✓";
@@ -1640,7 +1654,7 @@
 
             return `
             <span class="sp-deadline-badge normal font-bold">
-                <i data-lucide="calendar" class="w-3 h-3 text-blue-500"></i>
+                <i data-lucide="calendar" class="w-3 h-3 text-emerald-600"></i>
                 <span>الموعد: <span dir="ltr" class="font-mono">${escapeHTML(raw)}</span></span>
             </span>`;
         }
@@ -1653,20 +1667,20 @@
                 badges.push('<span class="sp-coverage-badge text-emerald-700 dark:text-emerald-400 border-emerald-500/30"><i data-lucide="shield-check" class="w-3 h-3 text-emerald-500"></i> ممولة بالكامل</span>');
             }
             if (text.includes('طيران') || text.includes('تذكرة') || text.includes('flight')) {
-                badges.push('<span class="sp-coverage-badge text-sky-600 dark:text-sky-400 border-sky-500/30"><i data-lucide="plane" class="w-3 h-3 text-sky-500"></i> تذكرة طيران</span>');
+                badges.push('<span class="sp-coverage-badge text-purple-600 dark:text-purple-400 border-purple-500/30"><i data-lucide="plane" class="w-3 h-3 text-purple-600"></i> تذكرة طيران</span>');
             }
             if (text.includes('تحضيرية') || text.includes('لغة') || text.includes('language')) {
                 badges.push('<span class="sp-coverage-badge text-purple-600 dark:text-purple-400 border-purple-500/30"><i data-lucide="book" class="w-3 h-3 text-purple-500"></i> سنة تحضيرية</span>');
             }
             if (text.includes('سكن') || text.includes('إقامة') || text.includes('dorm')) {
-                badges.push('<span class="sp-coverage-badge text-indigo-800 dark:text-indigo-400 border-indigo-500/30"><i data-lucide="home" class="w-3 h-3 text-indigo-500"></i> سكن مجاني</span>');
+                badges.push('<span class="sp-coverage-badge text-purple-800 dark:text-indigo-400 border-indigo-500/30"><i data-lucide="home" class="w-3 h-3 text-purple-600"></i> سكن مجاني</span>');
             }
             if (text.includes('راتب') || text.includes('شهري') || text.includes('stipend')) {
                 badges.push('<span class="sp-coverage-badge text-amber-600 dark:text-amber-400 border-amber-500/30"><i data-lucide="coins" class="w-3 h-3 text-amber-500"></i> راتب شهري</span>');
             }
 
             if (badges.length === 0) {
-                badges.push(`<span class="sp-coverage-badge"><i data-lucide="check" class="w-3 h-3 text-blue-500"></i> ${escapeHTML(text)}</span>`);
+                badges.push(`<span class="sp-coverage-badge"><i data-lucide="check" class="w-3 h-3 text-emerald-600"></i> ${escapeHTML(text)}</span>`);
             }
             return badges.join(' ');
         }
@@ -1708,7 +1722,7 @@
                 document.querySelectorAll('.degree-btn').forEach(b => {
                     b.className = "degree-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition";
                 });
-                btn.className = "degree-btn p-3 rounded-xl border border-blue-500 bg-blue-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition";
+                btn.className = "degree-btn p-3 rounded-xl border border-emerald-500 bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition";
                 selectedDegree = btn.getAttribute('data-val');
             });
         });
@@ -1720,7 +1734,7 @@
                 const majorVal = chip.getAttribute('data-major');
                 const isSelected = selectedMajors.includes(majorVal);
                 if (isSelected) {
-                    chip.className = "major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 bg-blue-600 text-white border-blue-600 shadow-sm";
+                    chip.className = "major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 bg-emerald-600 text-white border-emerald-600 shadow-sm";
                 } else {
                     chip.className = "major-chip px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300";
                 }
@@ -2086,7 +2100,7 @@
                 phd: document.getElementById('modalFilterPhd')
             };
 
-            const activeClasses = "bg-blue-600 text-white shadow-xs border-transparent";
+            const activeClasses = "bg-emerald-600 text-white shadow-xs border-transparent";
             const inactiveClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800";
 
             Object.entries(buttons).forEach(([k, btn]) => {
@@ -2127,7 +2141,7 @@
             if (filtered.length === 0) {
                 list.innerHTML = `
                     <div class="p-8 text-center text-slate-500 dark:text-slate-400 space-y-2">
-                        <i data-lucide="layers" class="w-8 h-8 mx-auto text-blue-400"></i>
+                        <i data-lucide="layers" class="w-8 h-8 mx-auto text-emerald-400"></i>
                         <div class="text-sm font-bold text-slate-800 dark:text-slate-200">لم يتم العثور على منح تطابق هذا البحث أو التصنيف</div>
                         <button type="button" onclick="setModalDegreeFilter('all'); document.getElementById('modalSearchInput').value=''; filterModalCatalogSearch();" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold inline-flex items-center gap-1.5 mt-2">
                             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
@@ -2149,7 +2163,7 @@
                     degreeBadges += `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
                 }
                 if (isMaster) {
-                    degreeBadges += `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
+                    degreeBadges += `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/10 text-purple-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
                 }
                 if (isPhd) {
                     degreeBadges += `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
@@ -2161,12 +2175,12 @@
                 const deadlineBadge = calculateDeadlineCountdown(item.deadline);
 
                 return `
-                <div class="sp-subcard p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-blue-500/40 transition-colors group">
+                <div class="sp-subcard p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-emerald-500/40 transition-colors group">
                     <div class="flex items-start gap-3 min-w-0 flex-1">
                         ${matchRing}
                         <div class="min-w-0 space-y-1 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors">
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-600 transition-colors">
                                     <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
                                 </h4>
                                 <span class="sp-badge ${item.statusClass} text-[10px] py-0.2">
@@ -2175,7 +2189,7 @@
                             </div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1">
                                 <span class="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
-                                    <i data-lucide="map-pin" class="w-3 h-3 text-blue-500 shrink-0"></i>
+                                    <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600 shrink-0"></i>
                                     <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
                                 </span>
                                 ${deadlineBadge}
@@ -2188,11 +2202,11 @@
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
-                        <button type="button" onclick="openAssistantSidePanel('${escapeHTML(item.id)}', '${escapeHTML(item.name)}'); closeRadarCatalogModal();" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition" title="استشارة المستشار الذكي حول هذه المنحة">
+                        <button type="button" onclick="openAssistantSidePanel('${escapeHTML(item.id)}', '${escapeHTML(item.name)}'); closeRadarCatalogModal();" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition" title="استشارة المستشار الذكي حول هذه المنحة">
                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                         </button>
                         <button type="button" onclick="openScholarshipDetailsModal('${escapeHTML(item.id)}')" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1" title="عرض تفاصيل المنحة">
-                            <i data-lucide="eye" class="w-3 h-3 text-blue-500"></i>
+                            <i data-lucide="eye" class="w-3 h-3 text-emerald-600"></i>
                             <span>عرض التفاصيل</span>
                         </button>
                         <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-3 py-1.5 text-xs font-bold flex items-center gap-1" title="الانتقال إلى رابط التقديم الرسمي">
@@ -2341,7 +2355,7 @@
                 phd: document.getElementById('degreeFilterPhd')
             };
 
-            const activeClasses = "bg-blue-600 text-white shadow-sm border-blue-600";
+            const activeClasses = "bg-emerald-600 text-white shadow-sm border-emerald-600";
             const inactiveClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 border-transparent hover:border-slate-300 dark:hover:border-slate-700";
 
             Object.entries(buttons).forEach(([key, btn]) => {
@@ -2510,7 +2524,7 @@
                 counter.textContent = "انتهت القائمة";
                 container.innerHTML = `
                     <div class="sp-card p-8 text-center flex flex-col items-center justify-center min-h-[440px]">
-                        <div class="w-14 h-14 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3">
+                        <div class="w-14 h-14 rounded-xl bg-purple-500/10 text-purple-700 flex items-center justify-center mb-3">
                             <i data-lucide="check-check" class="w-7 h-7"></i>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">تصفحت كافة الفرص المقترحة لملفك</h3>
@@ -2731,7 +2745,7 @@
                     ? 'bg-slate-900/95 dark:bg-slate-900/95 border-emerald-500/40 text-white shadow-emerald-500/10' 
                     : type === 'error'
                     ? 'bg-slate-900/95 dark:bg-slate-900/95 border-rose-500/40 text-white shadow-rose-500/10'
-                    : 'bg-slate-900/95 dark:bg-slate-900/95 border-blue-500/40 text-white shadow-blue-500/10'
+                    : 'bg-slate-900/95 dark:bg-slate-900/95 border-emerald-500/40 text-white shadow-blue-500/10'
             }`;
 
             const iconSvg = type === 'success'
@@ -2739,10 +2753,10 @@
                      <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                    </div>`
                 : type === 'loading'
-                ? `<div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+                ? `<div class="w-9 h-9 rounded-xl bg-purple-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                      <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                    </div>`
-                : `<div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+                : `<div class="w-9 h-9 rounded-xl bg-purple-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><line x1="12" y1="8" x2="12" y2="12" stroke-width="2"></line><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"></line></svg>
                    </div>`;
 
@@ -2807,11 +2821,11 @@
             document.getElementById('radarGridView').classList.toggle('hidden', isSwiper);
 
             document.getElementById('modeSwiperBtn').className = isSwiper
-                ? "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm flex items-center gap-1.5 transition"
+                ? "px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 transition"
                 : "px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition";
 
             document.getElementById('modeGridBtn').className = !isSwiper
-                ? "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm flex items-center gap-1.5 transition"
+                ? "px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 transition"
                 : "px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition";
 
             if (!isSwiper) {
@@ -2830,7 +2844,7 @@
                 grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
                 grid.innerHTML = `
                     <div class="col-span-1 md:col-span-2 lg:col-span-3 sp-card p-12 text-center flex flex-col items-center justify-center">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-emerald-600 flex items-center justify-center mb-4">
                             <i data-lucide="layers" class="w-7 h-7"></i>
                         </div>
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">لا توجد منح متوفرة لهذه المرحلة حالياً</h3>
@@ -2854,7 +2868,7 @@
 
                     let degreeBadges = '';
                     if (isBachelor) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
-                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
+                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-purple-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
                     if (isPhd) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
 
                     const portalUrl = (item.link && item.link !== '#' && item.link.trim() !== '') ? item.link : (OFFICIAL_PORTALS[item.id] || '#');
@@ -2869,7 +2883,7 @@
                                 ${matchRing}
                                 <div class="space-y-1.5 min-w-0 flex-1">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors">
+                                        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-purple-600 transition-colors">
                                             <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
                                         </h3>
                                         <span class="sp-badge ${item.statusClass} text-[10px]">
@@ -2878,7 +2892,7 @@
                                     </div>
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
                                         <span class="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
-                                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
+                                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
                                             <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
                                         </span>
                                         ${deadlineBadge}
@@ -2892,7 +2906,7 @@
 
                             <div class="flex items-center gap-2 self-end lg:self-center shrink-0">
                                 <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary p-2.5 text-xs font-bold" title="نبّهني قبل انتهاء الموعد">
-                                    <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="bell" class="w-3.5 h-3.5 text-emerald-600"></i>
                                 </button>
                                 <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary px-3 py-2 text-xs font-bold flex items-center gap-1.5 hover:border-purple-500/50" title="استوديو الوثائق">
                                     <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
@@ -2906,7 +2920,7 @@
                         </div>
 
                         <!-- Expandable Explainable AI Match Accordion -->
-                        <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-purple-700 dark:text-purple-400 hover:text-blue-500 font-bold transition">
+                        <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-purple-700 dark:text-purple-400 hover:text-purple-600 font-bold transition">
                             <span class="flex items-center gap-1.5">
                                 <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
                                 <span>لماذا تناسبك هذه المنحة؟ (تحليل مطابقة الذكاء الاصطناعي)</span>
@@ -2941,7 +2955,7 @@
                                     <span>صياغة خطاب الدافع في الاستوديو</span>
                                 </a>
                                 <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary px-3 py-1.5 text-[11px] font-bold flex items-center gap-1">
-                                    <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="bookmark" class="w-3.5 h-3.5 text-emerald-600"></i>
                                     <span>حفظ في متتبع المنح (Kanban)</span>
                                 </button>
                             </div>
@@ -2958,7 +2972,7 @@
 
                     let degreeBadges = '';
                     if (isBachelor) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"><i data-lucide="graduation-cap" class="w-3 h-3"></i> بكالوريوس</span>`;
-                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
+                    if (isMaster) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-500/10 text-purple-800 dark:text-indigo-400 border border-indigo-500/20"><i data-lucide="scroll" class="w-3 h-3"></i> ماجستير</span>`;
                     if (isPhd) degreeBadges += `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"><i data-lucide="microscope" class="w-3 h-3"></i> دكتوراه</span>`;
 
                     const portalUrl = (item.link && item.link !== '#' && item.link.trim() !== '') ? item.link : (OFFICIAL_PORTALS[item.id] || '#');
@@ -2978,11 +2992,11 @@
                                     ${deadlineBadge}
                                 </div>
                             </div>
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-blue-500 transition-colors">
+                            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-purple-600 transition-colors">
                                 <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
                             </h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1.5 font-semibold">
-                                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i>
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
                                 <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate font-latin text-slate-500">${escapeHTML(item.university)}</span>
                             </p>
 
@@ -2992,7 +3006,7 @@
                             </div>
 
                             <!-- Expandable Explainable AI Match Accordion -->
-                            <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="w-full mt-1 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-purple-700 dark:text-purple-400 hover:text-blue-500 font-bold transition">
+                            <button type="button" onclick="toggleMatchExplanation('${escapeHTML(item.id)}')" class="w-full mt-1 pt-2.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-purple-700 dark:text-purple-400 hover:text-purple-600 font-bold transition">
                                 <span class="flex items-center gap-1.5">
                                     <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i>
                                     <span>لماذا تناسبك هذه المنحة؟</span>
@@ -3029,7 +3043,7 @@
                         <div class="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800 mt-3">
                             <div class="grid grid-cols-2 gap-2">
                                 <button type="button" onclick="saveToWatchlist('${escapeHTML(item.name)}', this)" class="sp-btn-secondary py-2 text-xs font-bold flex items-center justify-center gap-1.5">
-                                    <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="bell" class="w-3.5 h-3.5 text-emerald-600"></i>
                                     <span>تفعيل التنبيه</span>
                                 </button>
                                 <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-purple-500/50">
@@ -3118,10 +3132,10 @@
             const container = document.getElementById('sidePanelMessages');
             if (container) {
                 const note = document.createElement('div');
-                note.className = 'p-3 rounded-xl bg-purple-500/10 border border-purple-500/25 text-xs text-blue-700 dark:text-blue-300 flex items-center justify-between gap-2 animate-fade-in';
+                note.className = 'p-3 rounded-xl bg-purple-500/10 border border-purple-500/25 text-xs text-emerald-800 dark:text-emerald-300 dark:text-emerald-300 flex items-center justify-between gap-2 animate-fade-in';
                 note.innerHTML = `
                     <div class="flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-blue-500 shrink-0"></i>
+                        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-600 shrink-0"></i>
                         <span>تم توجيه الاستشارة نحو: <strong>${escapeHTML(schName)}</strong></span>
                     </div>
                     <button type="button" onclick="clearSidePanelContext()" class="text-[11px] underline text-slate-500 hover:text-slate-800 dark:hover:text-white">إلغاء</button>
@@ -3161,10 +3175,10 @@
                 const uMsg = document.createElement('div');
                 uMsg.className = 'flex items-start gap-2.5 justify-end';
                 uMsg.innerHTML = `
-                    <div class="p-3.5 rounded-2xl bg-blue-600 text-white max-w-[85%] text-xs shadow-xs leading-relaxed">
+                    <div class="p-3.5 rounded-2xl bg-emerald-600 text-white max-w-[85%] text-xs shadow-xs leading-relaxed">
                         ${escapeHTML(query)}
                     </div>
-                    <div class="w-7 h-7 rounded-xl bg-blue-600/20 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold text-xs shrink-0 font-latin">
+                    <div class="w-7 h-7 rounded-xl bg-emerald-600/20 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold text-xs shrink-0 font-latin">
                         You
                     </div>
                 `;
@@ -3212,7 +3226,7 @@
 
                     const badgeHtml = data.zero_token_direct
                         ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-bold border border-emerald-500/20">⚡ استجابة فورية موثقة (Zero-Token Fact)</span>'
-                        : (data.cached ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-purple-700 dark:text-purple-400 font-bold border border-blue-500/20">⚡ استجابة سريعة محفوظة (Cache Hit)</span>' : '');
+                        : (data.cached ? '<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-purple-700 dark:text-purple-400 font-bold border border-emerald-500/20">⚡ استجابة سريعة محفوظة (Cache Hit)</span>' : '');
 
                     aiMsg.innerHTML = `
                         <img src="/static/img/exact_brand_avatar_squircle.svg" alt="EduAtlas AI" class="w-7 h-7 rounded-xl border border-[#10E599]/40 bg-[#0C0A17] object-contain shrink-0 shadow-xs">
@@ -3270,7 +3284,7 @@
             <!-- Modal Header -->
             <header class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center shrink-0">
                         <i data-lucide="layers" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -3293,7 +3307,7 @@
                     <!-- The 3 Classification Buttons + All -->
                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <!-- All -->
-                        <button type="button" id="modalFilterAll" onclick="setModalDegreeFilter('all')" class="modal-degree-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow-xs">
+                        <button type="button" id="modalFilterAll" onclick="setModalDegreeFilter('all')" class="modal-degree-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-xs">
                             <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                             <span>كافة المنح</span>
                             <span id="modalBadgeCountAll" class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-latin font-bold">31</span>
@@ -3308,9 +3322,9 @@
 
                         <!-- Master's -->
                         <button type="button" id="modalFilterMaster" onclick="setModalDegreeFilter('master')" class="modal-degree-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
-                            <i data-lucide="scroll" class="w-3.5 h-3.5 text-indigo-500"></i>
+                            <i data-lucide="scroll" class="w-3.5 h-3.5 text-purple-600"></i>
                             <span>ماجستير</span>
-                            <span id="modalBadgeCountMaster" class="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 font-latin font-bold">11</span>
+                            <span id="modalBadgeCountMaster" class="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-500/10 text-purple-800 dark:text-indigo-400 font-latin font-bold">11</span>
                         </button>
 
                         <!-- PhD -->
@@ -3341,7 +3355,7 @@
                 </span>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="closeRadarCatalogModal(); document.getElementById('radarSection')?.scrollIntoView({ behavior: 'smooth' });" class="sp-btn-secondary px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5">
-                        <i data-lucide="arrow-down" class="w-3.5 h-3.5 text-blue-500"></i>
+                        <i data-lucide="arrow-down" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span>النزول لقسم الرادار</span>
                     </button>
                     <button type="button" onclick="closeRadarCatalogModal()" class="sp-btn-primary px-4 py-1.5 text-xs font-bold">
@@ -3363,7 +3377,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <span id="detailBadgeStatus" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-[#10E599] border border-emerald-500/30">مفتوح للتقديم</span>
                         <span id="detailBadgeDegree" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30">بكالوريوس</span>
-                        <span id="detailBadgeCountry" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30">دولي</span>
+                        <span id="detailBadgeCountry" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-emerald-800 dark:text-emerald-300 dark:text-emerald-300 border border-emerald-500/30">دولي</span>
                     </div>
                     <h3 id="detailTitle" class="text-lg sm:text-xl font-black text-[#0C0A17] dark:text-white leading-tight">اسم المنحة الدراسية</h3>
                     <p id="detailInstitution" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium truncate">الجامعة أو الهيئة المانحة</p>
@@ -3412,7 +3426,7 @@
                 <!-- Requirements & Application Guidelines -->
                 <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                        <i data-lucide="file-text" class="w-4 h-4 text-emerald-600"></i>
                         <span>شروط القبول والوثائق الأساسية</span>
                     </h4>
                     <div id="detailRequirements" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5 p-3.5 rounded-xl bg-slate-50 dark:bg-[#130E26]/60 border border-slate-200 dark:border-[#382F64]">
@@ -3496,7 +3510,7 @@
         <!-- Side Panel Header -->
         <header class="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2.5 min-w-0">
-                <div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <div class="relative w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 via-purple-600 to-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                     <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white dark:border-slate-900"></span>
                 </div>
@@ -3504,13 +3518,13 @@
                     <div class="flex items-center gap-2 flex-wrap">
                         <h3 class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
                             <span>المستشار الذكي</span>
-                            <span class="text-[10px] font-latin font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.2 rounded hidden sm:inline">Split View</span>
+                            <span class="text-[10px] font-latin font-bold text-purple-700 dark:text-purple-300 bg-purple-500/10 px-1.5 py-0.2 rounded hidden sm:inline">Split View</span>
                         </h3>
-                        <span id="sidePanelQuotaBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-purple-700 dark:text-purple-400 font-bold border border-blue-500/20">رصيد اليوم: 10/10 أسئلة</span>
+                        <span id="sidePanelQuotaBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold border border-emerald-500/20">رصيد اليوم: 10/10 أسئلة</span>
                     </div>
                     <!-- Context Pill -->
                     <div id="sidePanelContextPill" class="hidden items-center gap-1 text-[11px] text-purple-700 dark:text-purple-400 font-bold truncate">
-                        <i data-lucide="target" class="w-3.5 h-3.5 text-blue-500"></i>
+                        <i data-lucide="target" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span id="sidePanelContextText" class="truncate">المنحة</span>
                         <button type="button" onclick="clearSidePanelContext()" title="إلغاء التخصيص" class="hover:text-rose-500 text-slate-400 mr-1">✕</button>
                     </div>
@@ -3519,7 +3533,7 @@
 
             <!-- Header Action Controls -->
             <div class="flex items-center gap-1.5">
-                <button type="button" onclick="expandToDedicatedPage()" title="توسيع للشاشة الكاملة (Option A)" class="sp-btn-secondary px-2.5 py-1.5 text-xs font-bold hidden sm:flex items-center gap-1 text-purple-700 dark:text-purple-400 hover:border-blue-500">
+                <button type="button" onclick="expandToDedicatedPage()" title="توسيع للشاشة الكاملة (Option A)" class="sp-btn-secondary px-2.5 py-1.5 text-xs font-bold hidden sm:flex items-center gap-1 text-purple-700 dark:text-purple-400 hover:border-emerald-500">
                     <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
                     <span>شاشة كاملة</span>
                 </button>
@@ -3545,7 +3559,7 @@
 
         <!-- Typing Indicator -->
         <div id="sidePanelTyping" class="hidden px-4 py-2 shrink-0 flex items-center gap-2 text-xs text-purple-700 dark:text-purple-400">
-            <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span class="text-[11px] font-semibold">المستشار يحلل البيانات ويجهز الإجابة...</span>
         </div>
 
@@ -3553,16 +3567,16 @@
         <div class="shrink-0 p-2.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
             <div class="text-[10px] font-bold text-slate-400 mb-1.5">استفسارات سريعة مقترحة:</div>
             <div class="grid grid-cols-2 gap-1.5 text-xs">
-                <button type="button" onclick="sendSidePanelMessage('ابحث لي عن منح تناسب ملفي')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-blue-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
+                <button type="button" onclick="sendSidePanelMessage('ابحث لي عن منح تناسب ملفي')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
                     ابحث لي عن منح تناسب ملفي
                 </button>
-                <button type="button" onclick="sendSidePanelMessage('منح ممولة بالكامل 100%')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-blue-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
+                <button type="button" onclick="sendSidePanelMessage('منح ممولة بالكامل 100%')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
                     منح ممولة بالكامل 100%
                 </button>
-                <button type="button" onclick="sendSidePanelMessage('منح تقترب مواعيد إغلاقها')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-blue-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
+                <button type="button" onclick="sendSidePanelMessage('منح تقترب مواعيد إغلاقها')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
                     منح تقترب مواعيد إغلاقها
                 </button>
-                <button type="button" onclick="sendSidePanelMessage('أفضل المنح لملفي الأكاديمي')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-blue-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
+                <button type="button" onclick="sendSidePanelMessage('أفضل المنح لملفي الأكاديمي')" class="px-2.5 py-2 rounded-lg sp-subcard hover:border-emerald-500 text-slate-700 dark:text-slate-300 text-[11px] font-bold text-right truncate transition">
                     أفضل المنح لملفي الأكاديمي
                 </button>
             </div>
@@ -3586,8 +3600,8 @@
         <div class="pointer-events-auto group relative flex items-center gap-3">
             <!-- Modern Floating Tooltip -->
             <div class="pointer-events-none opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 shadow-xl rounded-xl px-3.5 py-2 bg-slate-900/95 dark:bg-slate-800/95 text-white border border-slate-700/60 backdrop-blur-md hidden sm:flex flex-col text-right">
-                <span class="text-xs font-bold flex items-center gap-1.5 text-blue-400">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span class="text-xs font-bold flex items-center gap-1.5 text-emerald-400">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>المستشار الذكي</span>
                 </span>
                 <span class="text-[10px] text-slate-300">مساعدك للتقديم والقبول 24/7</span>

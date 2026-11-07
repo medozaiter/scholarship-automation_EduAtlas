@@ -25,8 +25,16 @@ from services.email_service import get_email_provider_info, dispatch_email, get_
 from services.security_utils import (
     validate_email,
     validate_name,
+    validate_full_name,
+    validate_university,
+    validate_field_of_study,
+    validate_country,
+    validate_bio,
+    validate_search_query,
+    detect_gibberish_and_spam,
     validate_gpa,
     validate_password,
+    validate_username,
     sanitize_text,
     sanitize_advisor_query,
     validate_talents_experience,
@@ -591,28 +599,32 @@ class ContactFormRequest(BaseModel):
     email: str = Field(..., max_length=120)
     subject: str = Field(..., min_length=3, max_length=150)
     message: str = Field(..., min_length=10, max_length=3000)
+    phone: Optional[str] = Field(None, max_length=30)
     recaptcha_token: Optional[str] = Field(None, max_length=1000)
 
     @field_validator("email")
     @classmethod
     def check_email(cls, v: str) -> str:
-        clean = validate_email(v)
-        if not clean:
-            raise ValueError("البريد الإلكتروني غير صالح.")
-        return clean
+        return validate_email(v)
 
     @field_validator("name")
     @classmethod
     def check_name(cls, v: str) -> str:
-        clean = validate_name(v)
-        if not clean:
-            raise ValueError("الاسم يجب أن يحتوي على أحرف صالحة فقط.")
-        return clean
+        return validate_full_name(v)
+
+    @field_validator("phone")
+    @classmethod
+    def check_phone(cls, v: Optional[str]) -> Optional[str]:
+        if v and v.strip():
+            return validate_phone_number(v)
+        return None
 
     @field_validator("subject", "message")
     @classmethod
     def check_content(cls, v: str) -> str:
         detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("المحتوى المدخل يحتوي على تكرار عشوائي غير مفهوم أو نصوص غير صالحة.")
         return sanitize_text(v, max_length=3000)
 
 
@@ -637,12 +649,17 @@ class SubscriptionRequest(BaseModel):
     @field_validator("full_name")
     @classmethod
     def check_name(cls, v: Optional[str]) -> str:
-        return validate_name(v or "Student")
+        return validate_full_name(v or "Student")
 
     @field_validator("gpa")
     @classmethod
     def check_gpa(cls, v: Optional[str]) -> str:
         return validate_gpa(v or "85%")
+
+    @field_validator("country")
+    @classmethod
+    def check_country(cls, v: Optional[str]) -> str:
+        return validate_country(v or "Palestine", is_required=True)
 
     @field_validator("talents_experience")
     @classmethod
@@ -654,12 +671,12 @@ class SubscriptionRequest(BaseModel):
     def clean_majors(cls, v: List[str]) -> List[str]:
         if not v:
             raise ValueError("يرجى اختيار أو كتابة تخصص واحد على الأقل.")
-        cleaned = [sanitize_text(m, max_length=50) for m in v if m.strip()]
+        cleaned = [validate_field_of_study(m, is_required=True) for m in v if m.strip()]
         if not cleaned:
             raise ValueError("يرجى إدخال اسم تخصص صحيح.")
-        return cleaned[:8]  # Limit to max 8 majors
+        return cleaned[:8]
 
-    @field_validator("degree", "english_level", "country")
+    @field_validator("degree", "english_level")
     @classmethod
     def sanitize_fields(cls, v: Optional[str]) -> str:
         return sanitize_text(v, max_length=60)
@@ -704,8 +721,24 @@ class RegisterRequest(BaseModel):
     @field_validator("full_name")
     @classmethod
     def check_name(cls, v: str) -> str:
-        safe = validate_sql_safe(v, "الاسم الكامل")
-        return validate_name(safe)
+        return validate_full_name(v)
+
+    @field_validator("username")
+    @classmethod
+    def check_username(cls, v: Optional[str]) -> Optional[str]:
+        if v and v.strip():
+            return validate_username(v)
+        return None
+
+    @field_validator("university")
+    @classmethod
+    def check_university(cls, v: Optional[str]) -> str:
+        return validate_university(v or "", is_required=False)
+
+    @field_validator("country")
+    @classmethod
+    def check_reg_country(cls, v: Optional[str]) -> str:
+        return validate_country(v or "Palestine", is_required=False)
 
     @field_validator("gpa")
     @classmethod
@@ -726,13 +759,25 @@ class RegisterRequest(BaseModel):
             return validate_age(v)
         return None
 
+    @field_validator("bio")
+    @classmethod
+    def check_reg_bio(cls, v: Optional[str]) -> str:
+        return validate_bio(v or "", max_length=600)
+
+    @field_validator("majors")
+    @classmethod
+    def check_reg_majors(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+        if v:
+            return [validate_field_of_study(m) for m in v if m.strip()][:10]
+        return v
+
     @field_validator("talents_experience")
     @classmethod
     def check_talents(cls, v: Optional[str]) -> str:
         clean = validate_talents_experience(v or "")
         return validate_sql_safe(clean, "المهارات والخبرات")
 
-    @field_validator("degree", "english_level", "country", "city", "university")
+    @field_validator("degree", "english_level", "city")
     @classmethod
     def clean_text(cls, v: Optional[str]) -> str:
         clean = sanitize_text(v, max_length=120)
@@ -849,31 +894,57 @@ class UpdateProfileRequest(BaseModel):
     @field_validator("username")
     @classmethod
     def check_username(cls, v: Optional[str]) -> Optional[str]:
-        if v:
-            return sanitize_text(v, max_length=50)
+        if v and v.strip():
+            return validate_username(v)
         return v
 
     @field_validator("full_name")
     @classmethod
     def check_fullname(cls, v: Optional[str]) -> Optional[str]:
-        if v:
-            return validate_name(v)
+        if v and v.strip():
+            return validate_full_name(v)
+        return v
+
+    @field_validator("university")
+    @classmethod
+    def check_university(cls, v: Optional[str]) -> Optional[str]:
+        if v and v.strip():
+            return validate_university(v)
+        return v
+
+    @field_validator("country")
+    @classmethod
+    def check_country(cls, v: Optional[str]) -> Optional[str]:
+        if v and v.strip():
+            return validate_country(v)
         return v
 
     @field_validator("gpa")
     @classmethod
     def check_gpa(cls, v: Optional[str]) -> Optional[str]:
-        if v:
+        if v and v.strip():
             return validate_gpa(v)
         return v
 
-    @field_validator("city", "university", "degree", "graduation_year", "bio", "english_level", "country", "avatar_url", "cover_url")
+    @field_validator("bio")
+    @classmethod
+    def check_bio(cls, v: Optional[str]) -> Optional[str]:
+        if v and v.strip():
+            return validate_bio(v, max_length=600)
+        return v
+
+    @field_validator("majors")
+    @classmethod
+    def check_majors(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+        if v:
+            return [validate_field_of_study(m) for m in v if m.strip()][:10]
+        return v
+
+    @field_validator("city", "degree", "english_level", "avatar_url", "cover_url")
     @classmethod
     def sanitize_profile_strings(cls, v: Optional[str]) -> Optional[str]:
         if v is not None:
             max_len = 500 if ("url" in str(v).lower() or "/" in str(v)) else 150
-            if len(str(v)) > 200:
-                max_len = 2000
             return sanitize_text(v, max_length=max_len)
         return v
 
@@ -1020,6 +1091,11 @@ class MatchCalculationRequest(BaseModel):
     def check_gpa(cls, v: str) -> str:
         return validate_gpa(v)
 
+    @field_validator("country")
+    @classmethod
+    def check_country(cls, v: Optional[str]) -> str:
+        return validate_country(v or "Palestine", is_required=False)
+
     @field_validator("talents_experience")
     @classmethod
     def check_talents(cls, v: Optional[str]) -> str:
@@ -1030,7 +1106,7 @@ class MatchCalculationRequest(BaseModel):
     def check_majors(cls, v: List[str]) -> List[str]:
         if not v:
             return ["Software Engineering"]
-        cleaned = [sanitize_text(m, max_length=50) for m in v[:8] if m.strip()]
+        cleaned = [validate_field_of_study(m, is_required=True) for m in v[:8] if m.strip()]
         return cleaned or ["Software Engineering"]
 
 
@@ -1060,9 +1136,22 @@ class CreateCommunityPostRequest(BaseModel):
     is_success_story: Optional[bool] = False
     success_details: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
+    @field_validator("title")
+    @classmethod
+    def clean_post_title(cls, v: Optional[str]) -> str:
+        if v and v.strip():
+            detect_sql_injection(v)
+            if detect_gibberish_and_spam(v):
+                raise ValueError("عنوان المنشور يحتوي على رموز أو تكرار عشوائي غير مفهوم.")
+            return sanitize_text(v, max_length=250)
+        return ""
+
     @field_validator("content")
     @classmethod
     def clean_post_content(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("محتوى المنشور يحتوي على تكرار عشوائي غير مفهوم أو نصوص غير صالحة.")
         clean = sanitize_text(v, max_length=10000)
         if not clean:
             raise ValueError("محتوى المنشور مطلوب.")
@@ -1077,6 +1166,9 @@ class NewsCommentCreateRequest(BaseModel):
     @field_validator("content")
     @classmethod
     def clean_comment(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("التعليق يحتوي على تكرار عشوائي غير مفهوم أو نصوص غير صالحة.")
         clean = sanitize_text(v, max_length=2000)
         if not clean:
             raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
@@ -1091,6 +1183,9 @@ class AddCommunityCommentRequest(BaseModel):
     @field_validator("content")
     @classmethod
     def clean_comment(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("التعليق يحتوي على تكرار عشوائي غير مفهوم أو نصوص غير صالحة.")
         clean = sanitize_text(v, max_length=2000)
         if not clean:
             raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
@@ -1104,6 +1199,9 @@ class EditCommunityCommentRequest(BaseModel):
     @field_validator("content")
     @classmethod
     def clean_comment(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("التعليق يحتوي على تكرار عشوائي غير مفهوم أو نصوص غير صالحة.")
         clean = sanitize_text(v, max_length=2000)
         if not clean:
             raise ValueError("محتوى التعليق مطلوب ولا يمكن تركه فارغاً.")
@@ -1140,14 +1238,47 @@ class CommunityStorySubmit(BaseModel):
     gpa: Optional[str] = Field("85%+", max_length=20)
     tags: Optional[List[str]] = Field(default_factory=list, max_length=15)
 
+    @field_validator("author_name")
+    @classmethod
+    def clean_author_name(cls, v: str) -> str:
+        return validate_full_name(v)
+
+    @field_validator("author_country")
+    @classmethod
+    def clean_author_country(cls, v: Optional[str]) -> str:
+        return validate_country(v or "Palestine", is_required=False)
+
+    @field_validator("university")
+    @classmethod
+    def clean_story_univ(cls, v: Optional[str]) -> str:
+        return validate_university(v or "", is_required=False)
+
+    @field_validator("field_of_study")
+    @classmethod
+    def clean_story_major(cls, v: Optional[str]) -> str:
+        return validate_field_of_study(v or "", is_required=False)
+
+    @field_validator("gpa")
+    @classmethod
+    def clean_story_gpa(cls, v: Optional[str]) -> str:
+        if v and v.strip():
+            return validate_gpa(v)
+        return "85%"
+
     @field_validator("title")
     @classmethod
     def clean_title(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("عنوان القصة يحتوي على تكرار عشوائي غير مفهوم.")
         return sanitize_text(v, max_length=255)
 
     @field_validator("story_text")
     @classmethod
     def clean_story(cls, v: str) -> str:
+        detect_sql_injection(v)
+        if detect_gibberish_and_spam(v):
+            raise ValueError("نص القصة يحتوي على تكرار عشوائي غير مفهوم.")
         return sanitize_text(v, max_length=5000)
 
     @field_validator("scholarship_name")

@@ -71,7 +71,7 @@ async function loadDropdownNotifs(category = 'all') {
 
     list.innerHTML = `
         <div class="py-8 text-center text-slate-400 dark:text-slate-500">
-            <i data-lucide="loader-2" class="w-5 h-5 mx-auto animate-spin mb-2 text-blue-500"></i>
+            <i data-lucide="loader-2" class="w-5 h-5 mx-auto animate-spin mb-2 text-emerald-600"></i>
             <p class="text-xs">جاري تحميل أحدث التنبيهات...</p>
         </div>
     `;
@@ -121,7 +121,7 @@ function renderDropdownItem(n) {
     
     // Category visual config
     let catIcon = 'bell';
-    let catColor = 'text-blue-500 bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-900/60';
+    let catColor = 'text-purple-600 bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-900/60';
     let catLabel = 'تنبيه';
 
     if (cat === 'scholarship') {
@@ -142,7 +142,7 @@ function renderDropdownItem(n) {
     const linkUrl = n.action_url || n.link || '/notifications';
 
     return `
-        <div class="p-2.5 rounded-xl transition ${isUnread ? 'bg-blue-50/60 dark:bg-blue-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'} flex items-start gap-3 relative group" id="dropNotif_${n.id}">
+        <div class="p-2.5 rounded-xl transition ${isUnread ? 'bg-emerald-50/70 dark:bg-emerald-950/40' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'} flex items-start gap-3 relative group" id="dropNotif_${n.id}">
             <div class="w-8 h-8 rounded-lg ${catColor} border flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="${catIcon}" class="w-4 h-4"></i>
             </div>
@@ -151,7 +151,7 @@ function renderDropdownItem(n) {
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">${catLabel}</span>
                     <span class="text-[10px] text-slate-400">${timeAgo}</span>
                 </div>
-                <a href="${linkUrl}" class="block text-xs font-bold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-1 mt-0.5" onclick="quickMarkSingleRead('${n.id}', event)">
+                <a href="${linkUrl}" class="block text-xs font-bold text-slate-900 dark:text-slate-100 hover:text-emerald-600 dark:hover:text-emerald-400 line-clamp-1 mt-0.5" onclick="quickMarkSingleRead('${n.id}', event)">
                     ${escapeHTML(n.title)}
                 </a>
                 <p class="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">
@@ -159,7 +159,7 @@ function renderDropdownItem(n) {
                 </p>
             </div>
             ${isUnread ? `
-                <button type="button" onclick="quickMarkSingleRead('${n.id}', event)" class="p-1 rounded-md text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition shrink-0" title="تحديد كمقروء">
+                <button type="button" onclick="quickMarkSingleRead('${n.id}', event)" class="p-1 rounded-md text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 opacity-0 group-hover:opacity-100 transition shrink-0" title="تحديد كمقروء">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
                 </button>
             ` : ''}
@@ -181,7 +181,7 @@ function filterDropdownNotifs(cat, e) {
     // Update active tab buttons
     document.querySelectorAll('.notif-tab-btn').forEach(btn => {
         if (btn.getAttribute('data-tab') === cat) {
-            btn.className = 'notif-tab-btn flex-1 py-1 rounded-lg text-center transition bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-bold';
+            btn.className = 'notif-tab-btn flex-1 py-1 rounded-lg text-center transition bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-400 shadow-sm font-bold';
         } else {
             btn.className = 'notif-tab-btn flex-1 py-1 rounded-lg text-center transition hover:text-slate-900 dark:hover:text-white text-slate-500 dark:text-slate-400';
         }
@@ -229,7 +229,7 @@ async function quickMarkSingleRead(id, _e) {
         await fetchNotificationUnreadCount();
         const row = document.getElementById(`dropNotif_${id}`);
         if (row) {
-            row.classList.remove('bg-blue-50/60', 'dark:bg-blue-950/30');
+            row.classList.remove('bg-emerald-50/70', 'dark:bg-emerald-950/40');
             const checkBtn = row.querySelector('button');
             if (checkBtn) checkBtn.remove();
         }

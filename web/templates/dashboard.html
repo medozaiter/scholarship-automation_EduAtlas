@@ -67,6 +67,7 @@
     <!-- Production Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
     <script src="/static/js/warm-scholar.js" defer></script>
+    <script src="/static/js/saas-engine.js" defer></script>
 
     <!-- Lucide Outlined Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -114,6 +115,7 @@
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
+    <script src="/static/js/validation_engine.js"></script>
 </head>
 <body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white flex flex-col relative bg-[#F8F9FD] dark:bg-[#0C0A17] text-[#0C0A17] dark:text-[#F8F9FD] transition-colors duration-200 overflow-x-hidden max-w-full w-full ea-topographic-bg">
 
@@ -165,44 +167,44 @@
             <!-- Primary Navigation Links (Desktop RTL) -->
             <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
                 <!-- 1. الرئيسية -->
-                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                     <span>الرئيسية</span>
                 </a>
 
                 <!-- 2. رادار المنح -->
-                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح</span>
                     <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
                 </a>
 
                 <!-- 3. المساعد الذكي -->
-                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                     <span>المساعد الذكي</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
 
                 <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
-                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
                     <span>مجتمع الطلبة</span>
                 </a>
 
                 <!-- 5. أخبار المنح -->
-                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <span>أخبار المنح</span>
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
             </nav>
 
             <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Notifications Center Link -->
-                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
-                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                     <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
                 </a>
 
@@ -214,7 +216,7 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 rounded-xl transition shadow-xs">
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-purple-700 dark:text-purple-400 rounded-xl transition shadow-xs">
                     <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
@@ -252,7 +254,7 @@
                 <i data-lucide="newspaper" class="w-4 h-4"></i>
                 <span>أخبار المنح</span>
             </a>
-            <button type="button" onclick="toggleMobileNavDrawer(false); handleMyAccountNavigation(event);" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500 text-right">
+            <button type="button" onclick="toggleMobileNavDrawer(false); handleMyAccountNavigation(event);" class="p-3 rounded-xl bg-emerald-600 text-white flex items-center gap-2 shadow-xs border border-emerald-500 text-right">
                 <i data-lucide="user" class="w-4 h-4"></i>
                 <span>حسابي</span>
             </button>
@@ -268,7 +270,7 @@
                 
                 <!-- Tab Controls -->
                 <div class="flex border-b border-slate-200 dark:border-slate-800 text-xs font-bold mb-6 gap-3 pb-2">
-                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5">
+                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="text-purple-700 dark:text-purple-400 border-b-2 border-emerald-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5">
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         <span>تسجيل الدخول</span>
                     </button>
@@ -305,7 +307,7 @@
 
                     <div class="flex items-center justify-between text-xs pt-0.5">
                         <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
-                            <input type="checkbox" id="loginRememberMe" class="rounded border-slate-700 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" id="loginRememberMe" class="rounded border-slate-700 text-emerald-700 dark:text-emerald-400 focus:ring-emerald-500">
                             <span>تذكرني على هذا الجهاز (30 يوماً)</span>
                         </label>
                         <button type="button" onclick="openForgotPasswordModal()" class="text-purple-700 dark:text-purple-400 font-bold hover:underline">
@@ -408,7 +410,7 @@
             <div class="sp-card p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div class="flex items-start gap-4">
                     <!-- Avatar Preview -->
-                    <div id="dashAvatarBox" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xl sm:text-2xl flex items-center justify-center shadow-lg border-2 border-white/20 shrink-0 overflow-hidden font-latin">
+                    <div id="dashAvatarBox" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-purple-700 text-white font-black text-xl sm:text-2xl flex items-center justify-center shadow-lg border-2 border-white/20 shrink-0 overflow-hidden font-latin">
                         <span id="dashAvatarInitials">SP</span>
                         <img id="dashAvatarImg" src="" alt="Avatar" class="hidden w-full h-full object-cover">
                     </div>
@@ -428,10 +430,10 @@
                         </h1>
                         <div class="flex flex-wrap items-center gap-2 mt-2">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-500/10 border border-purple-500/25 text-xs font-bold text-purple-700 dark:text-purple-400 font-latin shadow-sm">
-                                <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-600"></i>
                                 <span id="userDisplayEmail">user@example.com</span>
                             </span>
-                            <span id="userHandleBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-xs font-latin font-bold text-cyan-600 dark:text-cyan-400">
+                            <span id="userHandleBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-xs font-latin font-bold text-purple-700 dark:text-emerald-400">
                                 <span>@</span><span id="userDisplayHandle">student</span>
                             </span>
                             <span id="userDisplayCountryBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300">
@@ -448,17 +450,17 @@
                         <span>عرض ملفي الأكاديمي العام</span>
                     </a>
                     <button type="button" onclick="triggerMyReport()" class="sp-btn-secondary px-4 py-2.5 text-xs font-bold flex items-center gap-2">
-                        <i data-lucide="send" class="w-3.5 h-3.5 text-blue-500"></i>
+                        <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span>إرسال تقريري المخصص لإيميلي</span>
                     </button>
                 </div>
             </div>
 
             <!-- PROFILE COMPLETENESS WIDGET -->
-            <div id="completenessWidget" class="sp-card p-6 border border-blue-500/30 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-cyan-500/5 space-y-4">
+            <div id="completenessWidget" class="sp-card p-6 border border-emerald-500/30 bg-gradient-to-r from-emerald-500/5 via-purple-500/5 to-emerald-500/5 space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shrink-0">
                             <i data-lucide="sparkles" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -477,7 +479,7 @@
 
                 <!-- Progress Bar -->
                 <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                    <div id="completenessBar" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div id="completenessBar" class="bg-gradient-to-r from-emerald-600 via-purple-600 to-emerald-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
 
                 <!-- Actionable Checklist of Missing Attributes -->
@@ -489,12 +491,12 @@
 
             <!-- NAVIGATION TABS -->
             <div class="flex border-b border-slate-200 dark:border-slate-800 gap-2 sm:gap-4 overflow-x-auto pb-1 text-xs sm:text-sm font-bold">
-                <button type="button" id="tabProfileNav" onclick="switchMainTab('profile')" class="tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-purple-700 dark:text-purple-400 flex items-center gap-2">
+                <button type="button" id="tabProfileNav" onclick="switchMainTab('profile')" class="tab-btn px-4 py-2.5 rounded-xl border-b-2 border-emerald-600 text-purple-700 dark:text-purple-400 flex items-center gap-2">
                     <i data-lucide="user" class="w-4 h-4"></i>
                     <span>الملف الأكاديمي والهوية</span>
                 </button>
                 <button type="button" id="tabRadarNav" onclick="switchMainTab('radar')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح والمقارنة</span>
                 </button>
                 <button type="button" id="tabWatchlistNav" onclick="switchMainTab('watchlist')" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2">
@@ -509,7 +511,7 @@
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>إعدادات الحساب والأمان</span>
                 </button>
-                <button type="button" onclick="DashboardApp.openSopStudio()" class="tab-btn px-4 py-2.5 rounded-xl text-purple-700 dark:text-purple-400 hover:bg-blue-500/10 flex items-center gap-1.5 mr-auto">
+                <button type="button" onclick="DashboardApp.openSopStudio()" class="tab-btn px-4 py-2.5 rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-500/10 flex items-center gap-1.5 mr-auto">
                     <i data-lucide="file-pen" class="w-4 h-4"></i>
                     <span>استوديو الوثائق (SOP)</span>
                 </button>
@@ -522,7 +524,7 @@
                     <!-- Basic Information Card -->
                     <div class="sp-card p-6 sm:p-7 space-y-4">
                         <div class="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center gap-2">
-                            <i data-lucide="user-check" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
                             <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">البيانات الأساسية والهوية</h2>
                         </div>
 
@@ -557,7 +559,7 @@
                             <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm space-y-3">
                                 <div class="flex items-center justify-between">
                                     <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                        <i data-lucide="camera" class="w-3.5 h-3.5 text-blue-500"></i>
+                                        <i data-lucide="camera" class="w-3.5 h-3.5 text-emerald-600"></i>
                                         <span>الصورة الشخصية (Avatar)</span>
                                     </label>
                                     <span class="text-[10px] text-slate-400">ملف JPG, PNG, WebP</span>
@@ -571,7 +573,7 @@
                                         <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="handleAvatarFileSelect(event)">
                                         <input type="hidden" id="editAvatarUrl">
                                         <button type="button" onclick="document.getElementById('avatarFileInput').click()" class="sp-btn-secondary w-full py-1.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
-                                            <i data-lucide="upload" class="w-3.5 h-3.5 text-blue-500"></i>
+                                            <i data-lucide="upload" class="w-3.5 h-3.5 text-emerald-600"></i>
                                             <span>رفع صورة شخصية</span>
                                         </button>
                                         <div id="avatarUploadStatus" class="text-[11px] text-slate-500 truncate">أقصى حجم 5 ميجابايت</div>
@@ -583,7 +585,7 @@
                             <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm space-y-3">
                                 <div class="flex items-center justify-between">
                                     <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                        <i data-lucide="image" class="w-3.5 h-3.5 text-blue-500"></i>
+                                        <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-600"></i>
                                         <span>صورة غلاف الحساب (Cover Banner)</span>
                                     </label>
                                     <span class="text-[10px] text-slate-400">بانر عريض</span>
@@ -597,7 +599,7 @@
                                         <input type="file" id="coverFileInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" onchange="handleCoverFileSelect(event)">
                                         <input type="hidden" id="editCoverUrl">
                                         <button type="button" onclick="document.getElementById('coverFileInput').click()" class="sp-btn-secondary w-full py-1.5 px-3 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
-                                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-blue-500"></i>
+                                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-emerald-600"></i>
                                             <span>رفع غلاف من جهازك</span>
                                         </button>
                                         <div id="coverUploadStatus" class="text-[11px] text-slate-500 truncate">أقصى حجم 5 ميجابايت</div>
@@ -607,8 +609,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">النبذة التعريفية والأكاديمية (Bio / About Me)</label>
-                            <textarea id="editBio" rows="3" class="sp-input text-xs w-full" placeholder="اكتب نبذة مختصرة عن اهتماماتك الأكاديمية، طموحك البحثي، ومشاريعك..."></textarea>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">النبذة التعريفية والأكاديمية (Bio / About Me)</label>
+                                <span id="editBioCounter" class="text-[11px] font-mono text-slate-400">0 / 600</span>
+                            </div>
+                            <textarea id="editBio" rows="3" maxlength="600" data-counter="true" class="sp-input text-xs w-full" placeholder="اكتب نبذة مختصرة عن اهتماماتك الأكاديمية، طموحك البحثي، ومشاريعك..."></textarea>
                         </div>
                     </div>
 
@@ -668,7 +673,7 @@
                     <div class="sp-card p-6 sm:p-7 space-y-4">
                         <div class="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="share-2" class="w-4 h-4 text-cyan-500"></i>
+                                <i data-lucide="share-2" class="w-4 h-4 text-purple-600"></i>
                                 <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">الشبكات المهنية ووسائل التواصل</h2>
                             </div>
                             <span class="text-[11px] text-slate-400">تظهر في ملفك العام للأكاديميين والمشرفين</span>
@@ -686,7 +691,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                                    <i data-lucide="linkedin" class="w-3.5 h-3.5 text-sky-500"></i>
+                                    <i data-lucide="linkedin" class="w-3.5 h-3.5 text-purple-600"></i>
                                     <span>LinkedIn</span>
                                 </label>
                                 <input type="url" id="socLinkedin" class="sp-input text-xs font-latin w-full" placeholder="https://linkedin.com/in/username">
@@ -704,7 +709,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                                    <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="facebook" class="w-3.5 h-3.5 text-emerald-600"></i>
                                     <span>Facebook</span>
                                 </label>
                                 <input type="url" id="socFacebook" class="sp-input text-xs font-latin w-full" placeholder="https://facebook.com/username">
@@ -722,7 +727,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                                    <i data-lucide="twitter" class="w-3.5 h-3.5 text-sky-400"></i>
+                                    <i data-lucide="twitter" class="w-3.5 h-3.5 text-purple-400"></i>
                                     <span>X (Twitter)</span>
                                 </label>
                                 <input type="url" id="socTwitter" class="sp-input text-xs font-latin w-full" placeholder="https://x.com/username">
@@ -731,7 +736,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                                    <i data-lucide="send" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                    <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-400"></i>
                                     <span>Telegram</span>
                                 </label>
                                 <input type="text" id="socTelegram" class="sp-input text-xs font-latin w-full" placeholder="@username أو رابط">
@@ -749,7 +754,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                                    <i data-lucide="globe" class="w-3.5 h-3.5 text-blue-400"></i>
+                                    <i data-lucide="globe" class="w-3.5 h-3.5 text-emerald-400"></i>
                                     <span>الموقع الشخصي (Website)</span>
                                 </label>
                                 <input type="url" id="socWebsite" class="sp-input text-xs font-latin w-full" placeholder="https://mywebsite.com">
@@ -779,7 +784,7 @@
                             <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">محرك رادار الفرص الأكاديمية المباشر</span>
                         </div>
                         <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                            <i data-lucide="radar" class="w-5 h-5 text-blue-500"></i>
+                            <i data-lucide="radar" class="w-5 h-5 text-emerald-600"></i>
                             <span>رادار المنح المفتوحة والمقارنة المتقدمة</span>
                         </h2>
                         <p class="text-xs text-slate-400 mt-0.5">تصفية فورية، فرز ذكي، وتحويل مباشر بين بطاقات الفرص وجدول المقارنة الشامل (11 معياراً) دون إعادة تحميل الصفحة.</p>
@@ -791,7 +796,7 @@
                             <button type="button" 
                                     id="viewModeGridBtn" 
                                     onclick="DashboardApp.setViewMode('grid')" 
-                                    class="p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-blue-600 text-white shadow-xs">
+                                    class="p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-xs">
                                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
                                 <span class="hidden sm:inline">عرض البطاقات</span>
                             </button>
@@ -807,7 +812,7 @@
                         <!-- Open SOP Studio button -->
                         <button type="button" 
                                 onclick="DashboardApp.openSopStudio()" 
-                                class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-400 shadow-xs hover:border-blue-500/50">
+                                class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-400 shadow-xs hover:border-emerald-500/50">
                             <i data-lucide="file-pen" class="w-3.5 h-3.5"></i>
                             <span>استوديو الوثائق (SOP)</span>
                         </button>
@@ -835,7 +840,7 @@
                     <div class="sp-card p-5">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs text-slate-400 font-bold block">المرحلة الدراسية</span>
-                            <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="graduation-cap" class="w-4 h-4 text-emerald-600"></i>
                         </div>
                         <span id="statDegree" class="text-base font-extrabold block text-slate-900 dark:text-white">-</span>
                     </div>
@@ -851,7 +856,7 @@
                     <div class="sp-card p-5">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs text-slate-400 font-bold block">التخصص الأكاديمي</span>
-                            <i data-lucide="cpu" class="w-4 h-4 text-indigo-500"></i>
+                            <i data-lucide="cpu" class="w-4 h-4 text-purple-600"></i>
                         </div>
                         <span id="statMajor" class="text-base font-extrabold text-purple-700 dark:text-purple-400 block">-</span>
                     </div>
@@ -889,7 +894,7 @@
                                 <span>إضافة منحة للمتتبع</span>
                             </button>
                             <a href="/#radarSection" class="sp-btn-secondary px-3 py-2 text-xs font-semibold flex items-center gap-1.5">
-                                <i data-lucide="radar" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <i data-lucide="radar" class="w-3.5 h-3.5 text-emerald-600"></i>
                                 <span>استعراض الرادار</span>
                             </a>
                         </div>
@@ -906,10 +911,10 @@
                              ondragover="onKanbanDragOver(event)" ondragleave="onKanbanDragLeave(event)" ondrop="onKanbanDrop(event, 'matched')">
                             <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                                     <h3 class="text-xs font-extrabold text-slate-900 dark:text-white">تم الرصد (Matched)</h3>
                                 </div>
-                                <span id="colCount-matched" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/10 text-purple-700 dark:text-purple-400">0</span>
+                                <span id="colCount-matched" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-400">0</span>
                             </div>
                             <div id="kanbanCards-matched" class="space-y-3 flex-1"></div>
                         </div>
@@ -961,7 +966,7 @@
                     <div class="sp-card w-full max-w-md p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-2xl">
                         <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-500"></i>
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
                                 <span>إضافة منحة جديدة إلى متتبع الطلبات</span>
                             </h3>
                             <button type="button" onclick="closeAddScholarshipToKanbanModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
@@ -1011,7 +1016,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-2">
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                                <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                                 <span>مركز التنبيهات المباشرة والإشعارات</span>
                                 <span id="dashUnreadPill" class="hidden px-2 py-0.5 rounded-full text-[11px] font-black bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">0 جديدة</span>
                             </h2>
@@ -1026,7 +1031,7 @@
 
                     <div id="dashboardNotificationsList" class="space-y-2.5 pt-1">
                         <div class="text-center py-6 text-slate-400 text-xs">
-                            <i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto text-blue-500 mb-2"></i>
+                            <i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto text-emerald-600 mb-2"></i>
                             <span>جاري تحميل التنبيهات...</span>
                         </div>
                     </div>
@@ -1040,7 +1045,7 @@
                 <div class="sp-card p-6 sm:p-7 space-y-4">
                     <div class="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
                             <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">توثيق البريد الإلكتروني</h2>
                         </div>
                         <span id="settingsEmailBadge" class="sp-badge sp-badge-info">قيد التحقق</span>
@@ -1105,7 +1110,7 @@
                 <!-- Privacy Settings Card -->
                 <div class="sp-card p-6 sm:p-7 space-y-4">
                     <div class="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center gap-2">
-                        <i data-lucide="lock" class="w-4 h-4 text-indigo-500"></i>
+                        <i data-lucide="lock" class="w-4 h-4 text-purple-600"></i>
                         <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">إعدادات الخصوصية والظهور</h2>
                     </div>
 
@@ -1117,7 +1122,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="privacyPublicToggle" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                             </label>
                         </div>
 
@@ -1128,7 +1133,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="privacyGpaToggle" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                             </label>
                         </div>
 
@@ -1139,7 +1144,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="privacyContactToggle" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                             </label>
                         </div>
                     </div>
@@ -1177,10 +1182,10 @@
 
     <!-- ==================== FORGOT PASSWORD MODAL ==================== -->
     <div id="forgotPwModal" class="hidden fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="sp-card max-w-md w-full p-6 sm:p-8 space-y-4 border border-blue-500/30 relative">
+        <div class="sp-card max-w-md w-full p-6 sm:p-8 space-y-4 border border-emerald-500/30 relative">
             <button type="button" onclick="closeForgotPasswordModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-sm">✕</button>
             <div class="flex items-center gap-2.5 text-slate-900 dark:text-white font-bold text-base">
-                <i data-lucide="key" class="w-5 h-5 text-blue-500"></i>
+                <i data-lucide="key" class="w-5 h-5 text-emerald-600"></i>
                 <span>استعادة كلمة المرور</span>
             </div>
 
@@ -1199,7 +1204,7 @@
 
             <!-- Step 2: Enter Token & New Password -->
             <div id="forgotStep2" class="hidden space-y-3">
-                <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/25 text-[11px] text-blue-400">
+                <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/25 text-[11px] text-emerald-400">
                     تم إرسال رمز الاستعادة إلى بريدك! يرجى إدخال الرمز وكلمة المرور الجديدة:
                 </div>
                 <div>
@@ -1285,10 +1290,10 @@
             document.getElementById('regForm').classList.toggle('hidden', isLogin);
             
             document.getElementById('tabLoginBtn').className = isLogin 
-                ? "text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
+                ? "text-purple-700 dark:text-purple-400 border-b-2 border-emerald-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
                 : "text-slate-400 hover:text-slate-200 pb-2 flex-1 text-center flex items-center justify-center gap-1.5";
             document.getElementById('tabRegBtn').className = !isLogin 
-                ? "text-purple-700 dark:text-purple-400 border-b-2 border-blue-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
+                ? "text-purple-700 dark:text-purple-400 border-b-2 border-emerald-600 pb-2 flex-1 text-center font-bold flex items-center justify-center gap-1.5" 
                 : "text-slate-400 hover:text-slate-200 pb-2 flex-1 text-center flex items-center justify-center gap-1.5";
             if (window.lucide) lucide.createIcons();
         }
@@ -1304,7 +1309,7 @@
                 const content = document.getElementById(`tabContent${capitalize(t)}`);
                 if (navBtn && content) {
                     if (t === tab) {
-                        navBtn.className = "tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-purple-700 dark:text-purple-400 flex items-center gap-2 font-bold";
+                        navBtn.className = "tab-btn px-4 py-2.5 rounded-xl border-b-2 border-emerald-600 text-purple-700 dark:text-purple-400 flex items-center gap-2 font-bold";
                         content.classList.remove('hidden');
                     } else {
                         navBtn.className = "tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2 font-bold";
@@ -1395,15 +1400,65 @@
             const alertBox = document.getElementById('authAlert');
             alertBox.classList.add('hidden');
 
+            const nameVal = document.getElementById('regName').value.trim();
+            const emailVal = document.getElementById('regEmail').value.trim();
+            const passVal = document.getElementById('regPassword').value.trim();
             const degreeVal = document.getElementById('regDegree').value;
             const gpaVal = document.getElementById('regGpa').value.trim() || "85%";
             const usernameVal = document.getElementById('regUsername').value.trim();
 
+            if (typeof EduAtlasValidator !== 'undefined') {
+                const nameCheck = EduAtlasValidator.validateFullName(nameVal, true);
+                if (!nameCheck.valid) {
+                    alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                    alertBox.textContent = nameCheck.message;
+                    alertBox.classList.remove('hidden');
+                    document.getElementById('regName').focus();
+                    return;
+                }
+                const emailCheck = EduAtlasValidator.validateEmail(emailVal);
+                if (!emailCheck.valid) {
+                    alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                    alertBox.textContent = emailCheck.message;
+                    alertBox.classList.remove('hidden');
+                    document.getElementById('regEmail').focus();
+                    return;
+                }
+                if (usernameVal) {
+                    const uCheck = EduAtlasValidator.validateUsername(usernameVal);
+                    if (!uCheck.valid) {
+                        alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                        alertBox.textContent = uCheck.message;
+                        alertBox.classList.remove('hidden');
+                        document.getElementById('regUsername').focus();
+                        return;
+                    }
+                }
+                const passCheck = EduAtlasValidator.validatePassword(passVal);
+                if (!passCheck.valid) {
+                    alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                    alertBox.textContent = passCheck.message;
+                    alertBox.classList.remove('hidden');
+                    document.getElementById('regPassword').focus();
+                    return;
+                }
+                if (gpaVal) {
+                    const gpaCheck = EduAtlasValidator.validateGpa(gpaVal, false);
+                    if (!gpaCheck.valid) {
+                        alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                        alertBox.textContent = gpaCheck.message;
+                        alertBox.classList.remove('hidden');
+                        document.getElementById('regGpa').focus();
+                        return;
+                    }
+                }
+            }
+
             const payload = {
-                full_name: document.getElementById('regName').value.trim(),
-                email: document.getElementById('regEmail').value.trim(),
+                full_name: nameVal,
+                email: emailVal,
                 username: usernameVal || null,
-                password: document.getElementById('regPassword').value.trim(),
+                password: passVal,
                 degree: degreeVal,
                 gpa: gpaVal,
                 majors: [degreeVal]
@@ -1611,7 +1666,7 @@
                 missing.forEach(m => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'px-3 py-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 text-xs font-semibold text-purple-900 dark:text-purple-300 hover:bg-blue-500/20 transition flex items-center gap-1';
+                    btn.className = 'px-3 py-1.5 rounded-xl border border-emerald-500/30 bg-purple-500/10 text-xs font-semibold text-purple-900 dark:text-purple-300 hover:bg-purple-500/20 transition flex items-center gap-1';
                     btn.innerHTML = `<i data-lucide="plus" class="w-3 h-3"></i><span>${escapeHTML(m.text)}</span>`;
                     btn.onclick = () => {
                         switchMainTab('profile');
@@ -1755,7 +1810,7 @@
                 } else if (days <= 30) {
                     daysBadge = `<span class="sp-deadline-badge approaching text-[10px]"><i data-lucide="clock" class="w-3 h-3 text-amber-500"></i>باقي <span dir="ltr">${days}</span> يوماً</span>`;
                 } else {
-                    daysBadge = `<span class="sp-deadline-badge normal text-[10px]"><i data-lucide="calendar" class="w-3 h-3 text-blue-500"></i><span dir="ltr">${escapeHTML(item.deadline || '')}</span></span>`;
+                    daysBadge = `<span class="sp-deadline-badge normal text-[10px]"><i data-lucide="calendar" class="w-3 h-3 text-emerald-600"></i><span dir="ltr">${escapeHTML(item.deadline || '')}</span></span>`;
                 }
 
                 const cardEl = document.createElement('div');
@@ -1779,7 +1834,7 @@
                             <span dir="ltr" class="sp-bidi-isolate font-latin font-bold">${escapeHTML(item.name)}</span>
                         </h4>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
-                            <i data-lucide="map-pin" class="w-3 h-3 text-blue-500 shrink-0"></i>
+                            <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600 shrink-0"></i>
                             <span>${escapeHTML(item.country)}</span> &bull; <span dir="ltr" class="sp-bidi-isolate">${escapeHTML(item.university)}</span>
                         </div>
                     </div>
@@ -1901,9 +1956,9 @@
 
             if (saved.length === 0) {
                 list.innerHTML = `
-                    <div class="p-6 rounded-2xl sp-subcard border border-blue-500/20 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent space-y-4">
+                    <div class="p-6 rounded-2xl sp-subcard border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold shrink-0">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-emerald-600 flex items-center justify-center font-bold shrink-0">
                                 <i data-lucide="compass" class="w-5 h-5"></i>
                             </div>
                             <div>
@@ -1915,7 +1970,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 space-y-1.5">
                                 <div class="flex items-center gap-2 text-purple-700 dark:text-purple-400 font-bold text-xs">
-                                    <span class="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center text-[11px] font-latin">1</span>
+                                    <span class="w-5 h-5 rounded-full bg-purple-500/10 flex items-center justify-center text-[11px] font-latin">1</span>
                                     <span>استكشف رادار المنح</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -1957,7 +2012,7 @@
                 list.innerHTML = saved.map((s, idx) => `
                     <div class="flex justify-between items-center p-4 rounded-xl sp-subcard text-xs">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold font-latin">#${idx+1}</span>
+                            <span class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold font-latin">#${idx+1}</span>
                             <span class="font-bold text-slate-900 dark:text-white text-sm">${escapeHTML(s)}</span>
                         </div>
                         <span class="sp-badge sp-badge-success">
@@ -2112,8 +2167,72 @@
             const btn = document.getElementById('saveProfileBtn');
             const orig = btn.innerHTML;
 
-            // Strict Client-Side Input Validation
+            const fullNameVal = document.getElementById('editFullName').value.trim();
+            const usernameVal = document.getElementById('editUsername').value.trim();
+            const univVal = document.getElementById('editUniversity').value.trim();
+            const countryVal = document.getElementById('editCountry').value.trim();
+            const majorVal = document.getElementById('editMajor').value.trim();
             const gpaVal = document.getElementById('editGpa').value.trim();
+            const bioVal = document.getElementById('editBio').value.trim();
+
+            if (typeof EduAtlasValidator !== 'undefined') {
+                if (fullNameVal) {
+                    const res = EduAtlasValidator.validateFullName(fullNameVal, true);
+                    if (!res.valid) {
+                        showToast("error", "اسم غير صالح", res.message);
+                        document.getElementById('editFullName').focus();
+                        return;
+                    }
+                }
+                if (usernameVal) {
+                    const res = EduAtlasValidator.validateUsername(usernameVal);
+                    if (!res.valid) {
+                        showToast("error", "اسم مستخدم غير صالح", res.message);
+                        document.getElementById('editUsername').focus();
+                        return;
+                    }
+                }
+                if (univVal) {
+                    const res = EduAtlasValidator.validateUniversity(univVal, false);
+                    if (!res.valid) {
+                        showToast("error", "اسم مؤسسة غير صالح", res.message);
+                        document.getElementById('editUniversity').focus();
+                        return;
+                    }
+                }
+                if (countryVal) {
+                    const res = EduAtlasValidator.validateCountry(countryVal, false);
+                    if (!res.valid) {
+                        showToast("error", "دولة غير معتمدة", res.message);
+                        document.getElementById('editCountry').focus();
+                        return;
+                    }
+                }
+                if (majorVal) {
+                    const res = EduAtlasValidator.validateMajor(majorVal, false);
+                    if (!res.valid) {
+                        showToast("error", "تخصص غير صالح", res.message);
+                        document.getElementById('editMajor').focus();
+                        return;
+                    }
+                }
+                if (gpaVal) {
+                    const res = EduAtlasValidator.validateGpa(gpaVal, false);
+                    if (!res.valid) {
+                        showToast("error", "معدل غير صالح", res.message);
+                        document.getElementById('editGpa').focus();
+                        return;
+                    }
+                }
+                if (bioVal) {
+                    const res = EduAtlasValidator.validateBio(bioVal, 600);
+                    if (!res.valid) {
+                        showToast("error", "النبذة التعريفية", res.message);
+                        document.getElementById('editBio').focus();
+                        return;
+                    }
+                }
+            }
             if (gpaVal) {
                 if (gpaVal.length > 8) {
                     showToast("error", "معدل غير منطقي", "المعدل المدخل طويل جداً (حد أقصى 8 خانات).");
@@ -2593,7 +2712,7 @@
                                 return `
                                     <div class="p-3 rounded-xl sp-subcard flex items-start justify-between gap-3 text-xs ${isUnread ? 'border-r-4 border-r-blue-500' : 'opacity-80'}">
                                         <div class="flex items-start gap-2.5">
-                                            <div class="w-7 h-7 rounded-lg ${n.type && n.type.includes('deadline') ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500'} flex items-center justify-center shrink-0 mt-0.5">
+                                            <div class="w-7 h-7 rounded-lg ${n.type && n.type.includes('deadline') ? 'bg-amber-500/10 text-amber-500' : 'bg-purple-500/10 text-emerald-600'} flex items-center justify-center shrink-0 mt-0.5">
                                                 <i data-lucide="${n.type && n.type.includes('deadline') ? 'clock' : 'target'}" class="w-3.5 h-3.5"></i>
                                             </div>
                                             <div>
@@ -2625,7 +2744,7 @@
                     ? 'bg-slate-900/95 dark:bg-slate-900/95 border-emerald-500/40 text-white shadow-emerald-500/10' 
                     : type === 'error'
                     ? 'bg-slate-900/95 dark:bg-slate-900/95 border-rose-500/40 text-white shadow-rose-500/10'
-                    : 'bg-slate-900/95 dark:bg-slate-900/95 border-blue-500/40 text-white shadow-blue-500/10'
+                    : 'bg-slate-900/95 dark:bg-slate-900/95 border-emerald-500/40 text-white shadow-blue-500/10'
             }`;
 
             const iconSvg = type === 'success'
@@ -2633,7 +2752,7 @@
                      <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                    </div>`
                 : type === 'loading'
-                ? `<div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+                ? `<div class="w-9 h-9 rounded-xl bg-purple-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                      <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                    </div>`
                 : `<div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
@@ -2717,16 +2836,16 @@
         <!-- Floating AI Assistant Button -->
         <div class="pointer-events-auto group relative flex items-center gap-3">
             <div class="pointer-events-none opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 shadow-xl rounded-xl px-3.5 py-2 bg-slate-900/95 dark:bg-slate-800/95 text-white border border-slate-700/60 backdrop-blur-md hidden sm:flex flex-col text-right">
-                <span class="text-xs font-bold flex items-center gap-1.5 text-blue-400">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span class="text-xs font-bold flex items-center gap-1.5 text-emerald-400">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>مرشد الفرص</span>
                 </span>
                 <span class="text-[10px] text-slate-300">مساعدك للتقديم والقبول 24/7</span>
             </div>
 
             <a href="/assistant" aria-label="Ask EduAtlas AI"
-               class="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 group">
-                <span class="absolute inset-0 rounded-2xl bg-blue-500/40 animate-ping opacity-40 pointer-events-none"></span>
+               class="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-purple-600 to-emerald-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 group">
+                <span class="absolute inset-0 rounded-2xl bg-emerald-500/40 animate-ping opacity-40 pointer-events-none"></span>
                 <i data-lucide="sparkles" class="w-6 h-6 text-white group-hover:rotate-12 transition-transform duration-300"></i>
                 <span class="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
             </a>

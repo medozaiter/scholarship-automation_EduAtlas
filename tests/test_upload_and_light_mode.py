@@ -148,7 +148,7 @@ class TestUploadAndLightMode(unittest.TestCase):
         self.assertEqual(res_home.status_code, 200)
         self.assertTrue("مجتمع الطلاب" in res_home.text or "المجتمع الطلابي" in res_home.text)
         self.assertTrue("أخبار المنح" in res_home.text or "آخر الأخبار" in res_home.text)
-        self.assertIn("bg-[#F4F1EA] dark:bg-[#0B1724]", res_home.text)
+        self.assertTrue("ea-topographic-bg" in res_home.text or "bg-[#F4F1EA]" in res_home.text)
         self.assertIn("mobileNavDrawer", res_home.text)
 
         # 2. Community page
@@ -156,21 +156,21 @@ class TestUploadAndLightMode(unittest.TestCase):
         self.assertEqual(res_comm.status_code, 200)
         self.assertTrue("مجتمع الطلاب" in res_comm.text or "المجتمع الطلابي" in res_comm.text)
         self.assertTrue("أخبار المنح" in res_comm.text or "آخر الأخبار" in res_comm.text)
-        self.assertIn("bg-[#F4F1EA] dark:bg-[#0B1724]", res_comm.text)
+        self.assertTrue("ea-topographic-bg" in res_comm.text or "bg-[#F4F1EA]" in res_comm.text)
 
         # 3. News page
         res_news = self.client.get("/news")
         self.assertEqual(res_news.status_code, 200)
         self.assertTrue("مجتمع الطلاب" in res_news.text or "المجتمع الطلابي" in res_news.text)
         self.assertTrue("أخبار المنح" in res_news.text or "آخر الأخبار" in res_news.text)
-        self.assertIn("bg-[#F4F1EA] dark:bg-[#0B1724]", res_news.text)
+        self.assertTrue("ea-topographic-bg" in res_news.text or "bg-[#F4F1EA]" in res_news.text)
 
         # 4. Dashboard page
         res_dash = self.client.get("/dashboard")
         self.assertEqual(res_dash.status_code, 200)
         self.assertTrue("مجتمع الطلاب" in res_dash.text or "المجتمع الطلابي" in res_dash.text)
         self.assertTrue("أخبار المنح" in res_dash.text or "آخر الأخبار" in res_dash.text)
-        self.assertIn("bg-[#F4F1EA] dark:bg-[#0B1724]", res_dash.text)
+        self.assertTrue("ea-topographic-bg" in res_dash.text or "bg-[#F4F1EA]" in res_dash.text)
         self.assertIn("avatarFileInput", res_dash.text)
         self.assertIn("coverFileInput", res_dash.text)
 

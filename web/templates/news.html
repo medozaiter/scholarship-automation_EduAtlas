@@ -68,6 +68,7 @@
     <!-- Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
     <script src="/static/js/warm-scholar.js" defer></script>
+    <script src="/static/js/saas-engine.js" defer></script>
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -112,6 +113,7 @@
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
+    <script src="/static/js/validation_engine.js"></script>
 </head>
 <body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white flex flex-col relative bg-[#F8F9FD] dark:bg-[#0C0A17] text-[#0C0A17] dark:text-[#F8F9FD] font-sans transition-colors duration-200 overflow-x-hidden max-w-full w-full ea-topographic-bg">
 
@@ -163,44 +165,44 @@
             <!-- Primary Navigation Links (Desktop RTL) -->
             <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
                 <!-- 1. الرئيسية -->
-                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                     <span>الرئيسية</span>
                 </a>
 
                 <!-- 2. رادار المنح -->
-                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح</span>
                     <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
                 </a>
 
                 <!-- 3. المساعد الذكي -->
-                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                     <span>المساعد الذكي</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
 
                 <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
-                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
                     <span>مجتمع الطلبة</span>
                 </a>
 
                 <!-- 5. أخبار المنح -->
-                <a href="/news" class="px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 font-bold transition flex items-center gap-1.5 border border-blue-500/20 shadow-xs">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                <a href="/news" class="px-3 py-2 rounded-xl text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold transition flex items-center gap-1.5 border border-emerald-500/20 shadow-xs">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <span>أخبار المنح</span>
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
             </nav>
 
             <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Notifications Center Link -->
-                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
-                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                     <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
                 </a>
 
@@ -212,7 +214,7 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-blue-500 transition shadow-xs">
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-emerald-500 transition shadow-xs">
                     <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
@@ -246,7 +248,7 @@
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>مجتمع الطلبة</span>
             </a>
-            <a href="/news" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500">
+            <a href="/news" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-emerald-600 text-white flex items-center gap-2 shadow-xs border border-emerald-500">
                 <i data-lucide="newspaper" class="w-4 h-4"></i>
                 <span>أخبار المنح</span>
             </a>
@@ -258,9 +260,9 @@
     </div>
 
     <!-- Breaking News Ticker Bar -->
-    <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 border-b border-slate-800/80 py-2.5 px-4 overflow-hidden">
+    <div class="bg-gradient-to-r from-slate-950 via-emerald-950/40 to-slate-950 border-b border-slate-800/80 py-2.5 px-4 overflow-hidden">
         <div class="max-w-7xl mx-auto flex items-center gap-3">
-            <div class="flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-md bg-blue-600 text-white shrink-0 shadow-sm shadow-blue-500/20">
+            <div class="flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-md bg-emerald-600 text-white shrink-0 shadow-sm shadow-blue-500/20">
                 <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-300"></i>
                 <span>عاجل المنح</span>
             </div>
@@ -270,8 +272,8 @@
                     <span>جاري تحميل أحدث المستجدات المعتمدة...</span>
                 </span>
             </div>
-            <button type="button" onclick="triggerManualSync()" id="manualSyncBtn" class="text-slate-300 hover:text-blue-400 text-xs flex items-center gap-1.5 transition shrink-0 bg-slate-800/80 hover:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700" title="تحديث مستمر للأخبار وجلب المستجدات الحية">
-                <i data-lucide="refresh-cw" id="syncIcon" class="w-3 h-3 text-blue-400"></i>
+            <button type="button" onclick="triggerManualSync()" id="manualSyncBtn" class="text-slate-300 hover:text-emerald-400 text-xs flex items-center gap-1.5 transition shrink-0 bg-slate-800/80 hover:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700" title="تحديث مستمر للأخبار وجلب المستجدات الحية">
+                <i data-lucide="refresh-cw" id="syncIcon" class="w-3 h-3 text-emerald-400"></i>
                 <span class="hidden sm:inline font-bold">تحديث مستمر</span>
             </button>
         </div>
@@ -347,7 +349,7 @@
                 <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>✈️ التأشيرات وتنسيق السفر</span>
                 </button>
-                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>📋 إجراءات المعابر واستئناف الدراسة</span>
                 </button>
                 <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
@@ -384,14 +386,14 @@
                     <!-- Deadline Protection Filter Toggle -->
                     <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-300">
                         <label class="flex items-center gap-1.5 cursor-pointer text-slate-300">
-                            <input type="checkbox" id="onlyActiveCheckbox" checked onchange="applyFilters()" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0">
+                            <input type="checkbox" id="onlyActiveCheckbox" checked onchange="applyFilters()" class="rounded bg-slate-800 border-slate-700 text-emerald-700 dark:text-emerald-400 focus:ring-0">
                             <span>الفرص النشطة فقط</span>
                         </label>
                     </div>
 
                     <!-- Saved Items Filter -->
                     <button type="button" id="savedFilterBtn" onclick="toggleSavedFilter()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-950/80 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition flex items-center gap-1.5">
-                        <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-400"></i>
+                        <i data-lucide="bookmark" class="w-3.5 h-3.5 text-emerald-400"></i>
                         <span>محفوظاتي</span>
                     </button>
                 </div>
@@ -404,7 +406,7 @@
                     <span>كافة الأخبار</span>
                 </button>
                 <button type="button" onclick="selectCategory('scholarships')" data-cat="scholarships" class="category-tab px-3.5 py-2 text-xs font-medium rounded-xl transition flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
-                    <i data-lucide="award" class="w-3.5 h-3.5 text-blue-400"></i>
+                    <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>منح دراسية</span>
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-latin">0</span>
                 </button>
@@ -414,7 +416,7 @@
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-latin">0</span>
                 </button>
                 <button type="button" onclick="selectCategory('study_abroad')" data-cat="study_abroad" class="category-tab px-3.5 py-2 text-xs font-medium rounded-xl transition flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
-                    <i data-lucide="plane-takeoff" class="w-3.5 h-3.5 text-cyan-400"></i>
+                    <i data-lucide="plane-takeoff" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>دراسة بالخارج</span>
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-latin">0</span>
                 </button>
@@ -434,7 +436,7 @@
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-latin">0</span>
                 </button>
                 <button type="button" onclick="selectCategory('international_programs')" data-cat="international_programs" class="category-tab px-3.5 py-2 text-xs font-medium rounded-xl transition flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
-                    <i data-lucide="globe" class="w-3.5 h-3.5 text-sky-400"></i>
+                    <i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>
                     <span>برامج دولية</span>
                     <span class="count-badge text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-latin">0</span>
                 </button>
@@ -454,7 +456,7 @@
                 <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>✈️ التأشيرات وتنسيق السفر</span>
                 </button>
-                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>📋 إجراءات المعابر واستئناف الدراسة</span>
                 </button>
                 <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
@@ -470,7 +472,7 @@
         <section class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <h2 class="text-base font-black text-white" id="sectionHeading">أحدث المستجدات والإعلانات الرسمية</h2>
                 </div>
                 <span id="resultsCountBadge" class="text-xs text-slate-400 font-medium">8 أخبار متاحة</span>
@@ -483,7 +485,7 @@
 
             <!-- Loading Spinner -->
             <div id="loadingState" class="hidden py-16 flex flex-col items-center justify-center gap-3 text-slate-400">
-                <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-blue-500"></i>
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-emerald-600"></i>
                 <span class="text-xs font-medium">جاري فحص وتحديث الأخبار والمواعيد الرسمية...</span>
             </div>
 
@@ -507,7 +509,7 @@
                 <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>✈️ التأشيرات وتنسيق السفر</span>
                 </button>
-                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>📋 إجراءات المعابر واستئناف الدراسة</span>
                 </button>
                 <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
@@ -522,7 +524,7 @@
         <!-- Automated Protection Notice Footer Card -->
         <section class="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-blue-400 shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-emerald-400 shrink-0">
                     <i data-lucide="shield-check" class="w-5 h-5"></i>
                 </div>
                 <div>
@@ -544,7 +546,7 @@
                 <button type="button" onclick="triggerNewsPrompt('تأشير')" class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-[#10E599] border border-emerald-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>✈️ التأشيرات وتنسيق السفر</span>
                 </button>
-                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/20 shrink-0 transition flex items-center gap-1.5">
+                <button type="button" onclick="triggerNewsPrompt('إجلاء')" class="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-800 dark:text-purple-300 border border-purple-500/20 shrink-0 transition flex items-center gap-1.5">
                     <span>📋 إجراءات المعابر واستئناف الدراسة</span>
                 </button>
                 <button type="button" onclick="triggerNewsPrompt('الملاذ')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/20 shrink-0 transition flex items-center gap-1.5">
@@ -564,14 +566,14 @@
             <!-- Modal Header -->
             <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 bg-slate-50/90 dark:bg-slate-950/50 sticky top-0 z-10">
                 <div class="flex items-center gap-2">
-                    <span id="modalCategoryBadge" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white">منح دراسية</span>
+                    <span id="modalCategoryBadge" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-600 text-white">منح دراسية</span>
                     <span id="modalDateBadge" class="text-xs text-slate-400">قبل يومين</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" id="modalSaveBtn" onclick="toggleModalArticleSave()" class="p-2 rounded-xl text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition" title="حفظ المقال">
+                    <button type="button" id="modalSaveBtn" onclick="toggleModalArticleSave()" class="p-2 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition" title="حفظ المقال">
                         <i data-lucide="bookmark" class="w-4 h-4"></i>
                     </button>
-                    <button type="button" id="modalShareBtn" onclick="shareCurrentArticle()" class="p-2 rounded-xl text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition" title="مشاركة الرابط">
+                    <button type="button" id="modalShareBtn" onclick="shareCurrentArticle()" class="p-2 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition" title="مشاركة الرابط">
                         <i data-lucide="share-2" class="w-4 h-4"></i>
                     </button>
                     <button type="button" onclick="closeArticleModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" title="إغلاق">
@@ -614,17 +616,17 @@
 
                 <!-- Full Article Content -->
                 <div class="prose prose-invert max-w-none text-xs sm:text-sm text-slate-300 leading-relaxed space-y-4 border-b border-slate-800 pb-6">
-                    <p id="modalSummary" class="font-bold text-slate-200 bg-blue-950/30 border-r-4 border-blue-500 p-3.5 rounded-lg"></p>
+                    <p id="modalSummary" class="font-bold text-slate-200 bg-emerald-950/30 border-r-4 border-emerald-500 p-3.5 rounded-lg"></p>
                     <div id="modalContent" class="whitespace-pre-line"></div>
                 </div>
 
                 <!-- Official Link Action Banner -->
-                <div class="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-500/20 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="bg-gradient-to-r from-emerald-950/30 to-purple-950/30 border border-emerald-500/20 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="text-right">
                         <span class="text-xs font-bold text-white block">للتقديم الرسمي ومعاينة بوابة البرنامج:</span>
                         <span class="text-[11px] text-slate-300">يتم التقديم حصراً عبر الرابط الرسمي المعتمد من قبل الجهة المانحة.</span>
                     </div>
-                    <a id="modalOfficialLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-1.5 shrink-0 shadow">
+                    <a id="modalOfficialLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shrink-0 shadow">
                         <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                         <span>الانتقال للبوابة الرسمية</span>
                     </a>
@@ -634,7 +636,7 @@
                 <div class="space-y-4 pt-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="message-square" class="w-4 h-4 text-blue-400"></i>
+                            <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
                             <h3 class="text-sm font-black text-white">النقاش الأكاديمي واستفسارات الطلاب</h3>
                         </div>
                         <span id="modalCommentsCount" class="text-xs text-slate-400">0 تعليقات</span>
@@ -762,8 +764,8 @@
             if (!navArea) return;
             if (u) {
                 const avatar = u.avatar_url
-                    ? `<img src="${escapeHTML(u.avatar_url)}" alt="${escapeHTML(u.full_name)}" class="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/40">`
-                    : `<div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">${escapeHTML((u.full_name || u.username || 'ط').charAt(0))}</div>`;
+                    ? `<img src="${escapeHTML(u.avatar_url)}" alt="${escapeHTML(u.full_name)}" class="w-7 h-7 rounded-lg object-cover ring-1 ring-emerald-500/40">`
+                    : `<div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">${escapeHTML((u.full_name || u.username || 'ط').charAt(0))}</div>`;
                 navArea.innerHTML = `
                     <a href="/profile/${encodeURIComponent(u.username || '')}" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-800/60 transition border border-slate-800" title="الملف الأكاديمي">
                         ${avatar}
@@ -772,7 +774,7 @@
                 `;
             } else {
                 navArea.innerHTML = `
-                    <a href="/#matchSection" class="px-3.5 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition flex items-center gap-1.5">
+                    <a href="/#matchSection" class="px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition flex items-center gap-1.5">
                         <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
                         <span>تسجيل الدخول</span>
                     </a>
@@ -787,13 +789,13 @@
             if (isAuth) {
                 box.innerHTML = `
                     <div class="space-y-2 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800">
-                        <textarea id="commentInput" rows="2" placeholder="أضف استفسارك أو تجربتك حول هذا الخبر..." class="w-full text-xs rounded-xl bg-slate-900 border border-slate-800 p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition resize-none"></textarea>
+                        <textarea id="commentInput" rows="2" placeholder="أضف استفسارك أو تجربتك حول هذا الخبر..." class="w-full text-xs rounded-xl bg-slate-900 border border-slate-800 p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition resize-none"></textarea>
                         <div class="flex items-center justify-between pt-1">
-                            <span id="replyingToIndicator" class="text-[11px] text-blue-400 hidden flex items-center gap-1">
+                            <span id="replyingToIndicator" class="text-[11px] text-emerald-400 hidden flex items-center gap-1">
                                 <span>الرد على تعليق محدد</span>
                                 <button type="button" onclick="cancelReply()" class="text-slate-400 hover:text-rose-400"><i data-lucide="x" class="w-3 h-3"></i></button>
                             </span>
-                            <button type="button" onclick="submitComment()" class="mr-auto px-3.5 py-1.5 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-1.5 shadow">
+                            <button type="button" onclick="submitComment()" class="mr-auto px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shadow">
                                 <i data-lucide="send" class="w-3 h-3"></i>
                                 <span>إرسال التعليق</span>
                             </button>
@@ -806,7 +808,7 @@
                         <p class="text-xs text-slate-400">
                             سجل دخولك إلى حسابك الأكاديمي للمشاركة في النقاش وطرح استفساراتك على زملائك الطلاب.
                         </p>
-                        <a href="/#matchSection" class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-blue-400 hover:underline">
+                        <a href="/#matchSection" class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:underline">
                             <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
                             <span>تسجيل الدخول الآن</span>
                         </a>
@@ -1196,7 +1198,7 @@
                     <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <img src="${c.author_avatar || '/static/img/covers/default.svg'}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(c.author_name || 'U') + '&background=16324F&color=F4F1EA';" class="w-6 h-6 rounded-full object-cover ring-1 ring-blue-500/30">
+                                <img src="${c.author_avatar || '/static/img/covers/default.svg'}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(c.author_name || 'U') + '&background=16324F&color=F4F1EA';" class="w-6 h-6 rounded-full object-cover ring-1 ring-emerald-500/30">
                                 <div>
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-xs font-bold text-slate-100">${c.author_name}</span>
@@ -1210,11 +1212,11 @@
                         <p class="text-xs text-slate-300 pr-8 leading-relaxed">${c.content}</p>
                         
                         <div class="flex items-center gap-4 pr-8 pt-1 text-[11px] text-slate-400">
-                            <button type="button" onclick="likeComment('${c.id}', this)" class="flex items-center gap-1 hover:text-blue-400 transition">
+                            <button type="button" onclick="likeComment('${c.id}', this)" class="flex items-center gap-1 hover:text-emerald-400 transition">
                                 <i data-lucide="thumbs-up" class="w-3 h-3"></i>
                                 <span class="likes-counter">${c.likes_count || 0}</span>
                             </button>
-                            <button type="button" onclick="startReply('${c.id}', '${c.author_name}')" class="flex items-center gap-1 hover:text-blue-400 transition">
+                            <button type="button" onclick="startReply('${c.id}', '${c.author_name}')" class="flex items-center gap-1 hover:text-emerald-400 transition">
                                 <i data-lucide="message-square" class="w-3 h-3"></i>
                                 <span>رد</span>
                             </button>
@@ -1312,10 +1314,10 @@
                 if (json.success) {
                     const icon = btn.querySelector('svg') || btn.querySelector('i');
                     if (json.is_saved) {
-                        btn.classList.add('text-blue-500');
+                        btn.classList.add('text-emerald-600');
                         showToast("تم حفظ المقال في قائمتك الأكاديمية.", "success");
                     } else {
-                        btn.classList.remove('text-blue-500');
+                        btn.classList.remove('text-emerald-600');
                         showToast("تمت إزالة المقال من قائمتك.", "info");
                     }
                 }

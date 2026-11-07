@@ -185,7 +185,7 @@
             }
             if (auditPane) auditPane.classList.toggle('hidden', tab !== 'audit');
 
-            const activeClass = 'bg-blue-600 text-white shadow-xs';
+            const activeClass = 'bg-emerald-600 text-white shadow-xs';
             const inactiveClass = 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
 
             if (btnEdit) btnEdit.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${tab === 'edit' ? activeClass : inactiveClass}`;
@@ -281,8 +281,8 @@
                     iconHtml = `<div class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3"></i></div>`;
                     textClass = 'text-emerald-600 dark:text-emerald-400 font-bold';
                 } else if (isCurrent) {
-                    iconHtml = `<div class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 animate-pulse"><i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i></div>`;
-                    textClass = 'text-blue-600 dark:text-blue-400 font-bold';
+                    iconHtml = `<div class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 animate-pulse"><i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i></div>`;
+                    textClass = 'text-emerald-700 dark:text-emerald-400 font-bold';
                 } else {
                     iconHtml = `<div class="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-700 text-slate-400 flex items-center justify-center shrink-0 text-[10px] font-latin">${step.id}</div>`;
                 }
@@ -358,7 +358,7 @@
                     <!-- Modal Header -->
                     <header class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between shrink-0">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-md shadow-blue-500/20 shrink-0">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-blue-500/20 shrink-0">
                                 <i data-lucide="file-pen" class="w-5 h-5"></i>
                             </div>
                             <div>
@@ -367,7 +367,7 @@
                                         استوديو صياغة الوثائق الأكاديمية (SOP Studio)
                                     </h3>
                                     ${this.currentScholarshipName ? `
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-emerald-700 dark:text-emerald-400 border border-purple-500/20">
                                             <i data-lucide="target" class="w-3 h-3"></i>
                                             <span>${escapeHtml(this.currentScholarshipName)}</span>
                                         </span>
@@ -386,10 +386,10 @@
                     </header>
 
                     <!-- Multi-Step AI Progress Indicator (Toggled during generation) -->
-                    <div id="sopAiProgressContainer" class="hidden p-4 border-b border-blue-500/30 bg-blue-500/5 space-y-2.5 transition-all">
-                        <div class="flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
+                    <div id="sopAiProgressContainer" class="hidden p-4 border-b border-purple-500/30 bg-purple-500/5 space-y-2.5 transition-all">
+                        <div class="flex items-center justify-between text-xs font-bold text-emerald-700 dark:text-emerald-400">
                             <span class="flex items-center gap-2">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-blue-500 animate-spin"></i>
+                                <i data-lucide="sparkles" class="w-4 h-4 text-purple-600 animate-spin"></i>
                                 <span>محرك Gemini AI يقوم بهندسة خطابك الأكاديمي...</span>
                             </span>
                             <span class="font-latin text-[11px]">EduAtlas Synthesis Engine</span>
@@ -406,7 +406,7 @@
                             <button type="button" 
                                     id="sopBtnTabEdit"
                                     onclick="DocumentEditorModal.switchTab('edit')" 
-                                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-xs">
+                                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-xs">
                                 <span class="flex items-center gap-1.5">
                                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                     <span>المحرر</span>
@@ -444,7 +444,7 @@
                                 id="sopGenerateAiBtn"
                                 onclick="DocumentEditorModal.triggerAiGeneration()" 
                                 class="sp-btn-primary px-4 py-2 text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-500/20">
-                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-300"></i>
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
                             <span>توليد وتخصيص عبر Gemini</span>
                         </button>
                     </div>
@@ -457,7 +457,7 @@
                             <textarea id="sopTextarea" 
                                       oninput="DocumentEditorModal.updateCounters()" 
                                       placeholder="اكتب أو انسخ مسودة خطابك هنا..."
-                                      class="w-full h-80 sm:h-96 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-sans leading-relaxed focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">${escapeHtml(this.editorContent)}</textarea>
+                                      class="w-full h-80 sm:h-96 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-sans leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-y">${escapeHtml(this.editorContent)}</textarea>
                         </div>
 
                         <!-- Tab 2: Live Formatted Preview -->
@@ -475,7 +475,7 @@
                                     onclick="DocumentEditorModal.copyToClipboard()" 
                                     class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5"
                                     title="نسخ النص للحافظة">
-                                <i data-lucide="copy" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-600"></i>
                                 <span>نسخ للحافظة</span>
                             </button>
                             <button type="button" 

@@ -1,0 +1,481 @@
+/**
+ * EduAtlas & ScholarPilot AI — saas-modern.css
+ * World-Class SaaS Design & Motion System
+ * Inspired by Linear, Stripe, Framer, Notion & Apple
+ *
+ * Core Principles:
+ * - Ultra-smooth 60fps/120fps GPU-accelerated motion (transform, opacity only)
+ * - Restrained, elegant micro-interactions (2px - 4px lifts, subtle glows)
+ * - Frosted glassmorphism with specular border reflections
+ * - Full accessibility compliance (@media prefers-reduced-motion)
+ */
+
+/* ===================================================================
+ * 1. GLOBAL SMOOTH SCROLLING & AMBIENT DEPTH
+ * =================================================================== */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Top Scroll Progress Indicator */
+#saasScrollProgress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, #10E599 0%, #059669 35%, #7C3AED 75%, #10E599 100%);
+  background-size: 200% 100%;
+  transform-origin: right center; /* RTL default */
+  transform: scaleX(0);
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(16, 229, 153, 0.5), 0 0 3px rgba(124, 58, 237, 0.4);
+}
+
+[dir="ltr"] #saasScrollProgress {
+  transform-origin: left center;
+}
+
+/* ===================================================================
+ * 2. GLASSMORPHISM NAVBAR (APPLE & LINEAR STYLE)
+ * =================================================================== */
+.sp-sticky-nav, header.sp-sticky-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(214, 211, 235, 0.5) !important;
+  box-shadow: 0 1px 2px 0 rgba(12, 10, 23, 0.02) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html.dark .sp-sticky-nav, html.dark header.sp-sticky-nav {
+  background: rgba(12, 10, 23, 0.82) !important;
+  border-bottom: 1px solid rgba(56, 47, 100, 0.45) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Scrolled state: elevated, refined border and soft depth */
+.sp-sticky-nav.scrolled, header.sp-sticky-nav.scrolled {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom-color: rgba(203, 213, 225, 0.85) !important;
+  box-shadow: 
+    0 10px 30px -10px rgba(12, 10, 23, 0.08),
+    0 1px 3px 0 rgba(12, 10, 23, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+html.dark .sp-sticky-nav.scrolled, html.dark header.sp-sticky-nav.scrolled {
+  background: rgba(12, 10, 23, 0.92) !important;
+  border-bottom-color: rgba(109, 40, 217, 0.25) !important;
+  box-shadow: 
+    0 12px 35px -10px rgba(0, 0, 0, 0.6),
+    0 1px 3px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ===================================================================
+ * 3. PARALLAX BACKGROUND & FLOATING ORBS
+ * =================================================================== */
+.saas-parallax-bg {
+  transform: translateY(calc(var(--scroll-y, 0) * 0.06px));
+  will-change: transform;
+}
+
+.saas-parallax-hero {
+  transform: translateY(calc(var(--scroll-y, 0) * 0.12px));
+  will-change: transform;
+}
+
+.saas-ambient-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+html.dark .saas-ambient-orb {
+  mix-blend-mode: screen;
+  opacity: 0.25;
+}
+
+/* ===================================================================
+ * 4. SCROLL-TRIGGERED REVEAL & FADE-UP ANIMATIONS
+ * =================================================================== */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(26px) scale(0.985);
+  transition: 
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Stagger Delays for Grid Children */
+.stagger-group > *:nth-child(1) { transition-delay: 50ms; }
+.stagger-group > *:nth-child(2) { transition-delay: 100ms; }
+.stagger-group > *:nth-child(3) { transition-delay: 150ms; }
+.stagger-group > *:nth-child(4) { transition-delay: 200ms; }
+.stagger-group > *:nth-child(5) { transition-delay: 250ms; }
+.stagger-group > *:nth-child(6) { transition-delay: 300ms; }
+
+.delay-100 { transition-delay: 100ms !important; }
+.delay-150 { transition-delay: 150ms !important; }
+.delay-200 { transition-delay: 200ms !important; }
+.delay-300 { transition-delay: 300ms !important; }
+.delay-400 { transition-delay: 400ms !important; }
+
+/* ===================================================================
+ * 5. CARD LIFT & SPOTLIGHT SHADOW (LINEAR / STRIPE PATTERN)
+ * =================================================================== */
+.sp-card, .ea-card, .saas-card {
+  position: relative;
+  overflow: hidden;
+  transition: 
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+/* Interactive Mouse-Follow Spotlight */
+@media (hover: hover) and (pointer: fine) {
+  .sp-card::before, .ea-card::before, .saas-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(16, 185, 129, 0.08) 0%,
+      rgba(109, 40, 217, 0.04) 40%,
+      transparent 80%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  html.dark .sp-card::before, html.dark .ea-card::before, html.dark .saas-card::before {
+    background: radial-gradient(
+      450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(16, 229, 153, 0.12) 0%,
+      rgba(124, 58, 237, 0.08) 45%,
+      transparent 80%
+    );
+  }
+
+  .sp-card:hover::before, .ea-card:hover::before, .saas-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Premium Card Lift on Hover */
+.sp-card:hover, .ea-card:hover, .saas-card:hover {
+  transform: translateY(-4px) scale(1.006);
+  border-color: rgba(5, 150, 105, 0.42);
+  box-shadow: 
+    0 16px 36px -10px rgba(12, 10, 23, 0.09),
+    0 6px 14px -4px rgba(5, 150, 105, 0.12),
+    0 0 0 1px rgba(16, 185, 129, 0.22);
+}
+
+html.dark .sp-card:hover, html.dark .ea-card:hover, html.dark .saas-card:hover {
+  transform: translateY(-4px) scale(1.006);
+  border-color: rgba(16, 229, 153, 0.45);
+  box-shadow: 
+    0 20px 42px -12px rgba(0, 0, 0, 0.7),
+    0 8px 18px -4px rgba(16, 229, 153, 0.18),
+    0 0 0 1px rgba(16, 229, 153, 0.32);
+}
+
+/* Subcards Micro Lift */
+.sp-subcard, .ea-subcard {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sp-subcard:hover, .ea-subcard:hover {
+  transform: translateY(-1.5px);
+  border-color: rgba(109, 40, 217, 0.35);
+}
+
+/* ===================================================================
+ * 6. INTERACTIVE BUTTON HOVER & SHIMMER (LINEAR STYLE)
+ * =================================================================== */
+.sp-btn-primary, .ea-btn-primary {
+  position: relative;
+  overflow: hidden;
+  transition: 
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.22s ease !important;
+}
+
+/* Shimmer Light Sweep on Hover */
+.sp-btn-primary::after, .ea-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -80%;
+  bottom: -50%;
+  width: 45%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.28) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.sp-btn-primary:hover::after, .ea-btn-primary:hover::after {
+  opacity: 1;
+  animation: saasButtonShimmer 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes saasButtonShimmer {
+  0% {
+    right: -80%;
+  }
+  100% {
+    right: 140%;
+  }
+}
+
+.sp-btn-primary:hover, .ea-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 24px -4px rgba(5, 150, 105, 0.45),
+    0 2px 6px 0 rgba(5, 150, 105, 0.25) !important;
+}
+
+.sp-btn-primary:active, .ea-btn-primary:active {
+  transform: translateY(0) scale(0.975) !important;
+}
+
+/* Secondary Button Hover Lift & Border Shimmer */
+.sp-btn-secondary, .ea-btn-secondary {
+  position: relative;
+  transition: 
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease !important;
+}
+
+.sp-btn-secondary:hover, .ea-btn-secondary:hover {
+  transform: translateY(-1.5px);
+  border-color: rgba(109, 40, 217, 0.4) !important;
+}
+
+.sp-btn-secondary:active, .ea-btn-secondary:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* ===================================================================
+ * 7. FLOATING MICRO-INTERACTIONS & ICON SPRING
+ * =================================================================== */
+@keyframes saasFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes saasFloatDelayed {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes saasFloatSlow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+
+.saas-float {
+  animation: saasFloat 5s ease-in-out infinite;
+}
+
+.saas-float-delayed {
+  animation: saasFloatDelayed 6s ease-in-out infinite 1.5s;
+}
+
+.saas-float-slow {
+  animation: saasFloatSlow 8s ease-in-out infinite;
+}
+
+/* Micro-interaction for Lucide icons inside interactive cards/buttons */
+.sp-card [data-lucide],
+.ea-card [data-lucide],
+.sp-btn-primary [data-lucide],
+.sp-btn-secondary [data-lucide],
+.saas-interactive [data-lucide] {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.sp-card:hover [data-lucide],
+.ea-card:hover [data-lucide] {
+  transform: scale(1.12) rotate(3deg);
+}
+
+.sp-btn-primary:hover [data-lucide],
+.sp-btn-secondary:hover [data-lucide] {
+  transform: scale(1.15);
+}
+
+/* Badge pulse micro-glow */
+@keyframes saasPillGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 229, 153, 0); }
+  50% { box-shadow: 0 0 12px 2px rgba(16, 229, 153, 0.25); }
+}
+
+.saas-pill-glow {
+  animation: saasPillGlow 3.5s ease-in-out infinite;
+}
+
+/* ===================================================================
+ * 8. ANIMATED COUNTERS STYLING
+ * =================================================================== */
+.saas-stat-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  display: inline-block;
+  will-change: contents;
+}
+
+/* ===================================================================
+ * 9. STICKY SECTIONS & SIDEBARS
+ * =================================================================== */
+.ea-sticky-sidebar {
+  position: sticky !important;
+  top: 5.5rem !important;
+  max-height: calc(100vh - 6.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* ===================================================================
+ * 10. HORIZONTAL SCROLLING SHOWCASE SECTION (APPLE / STRIPE SHOWCASE)
+ * =================================================================== */
+.saas-horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide default scrollbar */
+  padding-bottom: 0.75rem;
+  padding-top: 0.5rem;
+  cursor: grab;
+  user-select: none;
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+}
+
+.saas-horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.saas-horizontal-scroll:active {
+  cursor: grabbing;
+}
+
+.saas-horizontal-scroll > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Showcase Controls */
+.saas-scroll-control-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(214, 211, 235, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ea-text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+html.dark .saas-scroll-control-btn {
+  background: rgba(24, 20, 44, 0.85);
+  border-color: rgba(56, 47, 100, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.saas-scroll-control-btn:hover {
+  transform: scale(1.08);
+  border-color: #059669;
+  color: #059669;
+}
+
+html.dark .saas-scroll-control-btn:hover {
+  border-color: #10E599;
+  color: #10E599;
+}
+
+/* ===================================================================
+ * 11. SMOOTH PAGE ENTRANCE TRANSITION
+ * =================================================================== */
+body {
+  opacity: 1;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===================================================================
+ * 12. ACCESSIBILITY OVERRIDES (PREFERS-REDUCED-MOTION)
+ * =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .saas-parallax-bg, .saas-parallax-hero {
+    transform: none !important;
+  }
+
+  #saasScrollProgress {
+    display: none !important;
+  }
+
+  .sp-card::before, .ea-card::before {
+    display: none !important;
+  }
+}

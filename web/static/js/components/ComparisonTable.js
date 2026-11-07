@@ -36,7 +36,7 @@
             if (!scholarships || scholarships.length === 0) {
                 return `
                     <div class="sp-card p-10 text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto">
                             <i data-lucide="layers" class="w-6 h-6"></i>
                         </div>
                         <h4 class="text-sm font-bold text-slate-900 dark:text-white">لا توجد منح للمقارنة حالياً</h4>
@@ -50,20 +50,20 @@
                     <!-- Mobile View Switcher (Visible on Mobile 360px-768px only) -->
                     <div class="flex lg:hidden items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs">
                         <span class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-blue-500"></i>
+                            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-emerald-600"></i>
                             <span>طريقة العرض في الجوال:</span>
                         </span>
                         <div class="flex items-center gap-1">
                             <button type="button" 
                                     onclick="ComparisonTable.switchMobileMode('accordion')" 
                                     id="compModeAccordionBtn"
-                                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${this.currentMobileMode === 'accordion' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">
+                                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${this.currentMobileMode === 'accordion' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">
                                 قائمة أكورديون
                             </button>
                             <button type="button" 
                                     onclick="ComparisonTable.switchMobileMode('swipeable')" 
                                     id="compModeSwipeBtn"
-                                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${this.currentMobileMode === 'swipeable' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">
+                                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${this.currentMobileMode === 'swipeable' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">
                                 بطاقات سحب
                             </button>
                         </div>
@@ -129,7 +129,7 @@
                         <!-- 2. Country -->
                         <td class="p-3.5 whitespace-nowrap text-slate-700 dark:text-slate-300">
                             <span class="inline-flex items-center gap-1 font-medium">
-                                <i data-lucide="map-pin" class="w-3 h-3 text-blue-500"></i>
+                                <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600"></i>
                                 <span>${escapeHtml(s.country)}</span>
                             </span>
                         </td>
@@ -185,7 +185,7 @@
                             <div class="flex items-center justify-center gap-1.5">
                                 <button type="button" 
                                         onclick="DashboardApp.openSopStudio('${escapeHtml(s.id)}', '${escapeHtml(s.name)}')" 
-                                        class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition" 
+                                        class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition" 
                                         title="صياغة خطاب الدافع (SOP)">
                                     <i data-lucide="file-pen" class="w-3.5 h-3.5"></i>
                                 </button>
@@ -228,7 +228,7 @@
                             <details class="sp-card border border-slate-200 dark:border-slate-800 rounded-2xl group transition-all" ${idx === 0 ? 'open' : ''}>
                                 <summary class="p-4 list-none cursor-pointer flex items-center justify-between gap-3 select-none">
                                     <div class="flex items-center gap-2.5 min-w-0">
-                                        <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-latin font-black flex items-center justify-center shrink-0">
+                                        <span class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 text-xs font-latin font-black flex items-center justify-center shrink-0">
                                             ${idx + 1}
                                         </span>
                                         <div class="min-w-0">
@@ -287,14 +287,14 @@
                                     <div class="pt-2 flex items-center gap-2">
                                         <button type="button" 
                                                 onclick="DashboardApp.openSopStudio('${escapeHtml(s.id)}', '${escapeHtml(s.name)}')" 
-                                                class="sp-btn-secondary flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1 text-blue-600 dark:text-blue-400">
+                                                class="sp-btn-secondary flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1 text-purple-700 dark:text-purple-400">
                                             <i data-lucide="file-pen" class="w-3.5 h-3.5"></i>
                                             <span>صياغة خطاب الدافع</span>
                                         </button>
                                         <button type="button" 
                                                 onclick="DashboardApp.toggleBookmark('${escapeHtml(s.id)}', '${escapeHtml(s.name)}', this)" 
                                                 class="sp-btn-secondary p-2 text-xs font-bold" title="حفظ وتنبيه">
-                                            <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-500"></i>
+                                            <i data-lucide="bookmark" class="w-3.5 h-3.5 text-emerald-600"></i>
                                         </button>
                                         <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary px-4 py-2 text-xs font-bold flex items-center gap-1">
                                             <span>قدّم الآن</span>
@@ -326,12 +326,12 @@
                             <div class="snap-center shrink-0 w-[85vw] max-w-[340px] sp-card p-5 border border-slate-200 dark:border-slate-800 rounded-3xl space-y-3 shadow-md flex flex-col justify-between">
                                 <div>
                                     <div class="flex items-center justify-between text-xs font-bold mb-2">
-                                        <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-latin flex items-center justify-center">${idx + 1}/${scholarships.length}</span>
+                                        <span class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 font-latin flex items-center justify-center">${idx + 1}/${scholarships.length}</span>
                                         ${window.MatchScoreGauge ? window.MatchScoreGauge.renderBadge(scoreNum) : `<span class="sp-badge sp-badge-info">${scoreNum}%</span>`}
                                     </div>
                                     <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-1 line-clamp-2">${escapeHtml(s.name)}</h4>
                                     <p class="text-[11px] text-slate-400 flex items-center gap-1 mb-2">
-                                        <i data-lucide="map-pin" class="w-3 h-3 text-blue-500"></i>
+                                        <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600"></i>
                                         <span>${escapeHtml(s.country)} · ${escapeHtml(institution)}</span>
                                     </p>
 
@@ -355,7 +355,7 @@
                                     <div class="grid grid-cols-2 gap-2">
                                         <button type="button" 
                                                 onclick="DashboardApp.openSopStudio('${escapeHtml(s.id)}', '${escapeHtml(s.name)}')" 
-                                                class="sp-btn-secondary py-2 text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                class="sp-btn-secondary py-2 text-xs font-bold text-purple-700 dark:text-purple-400">
                                             خطاب الدافع
                                         </button>
                                         <button type="button" 
@@ -392,10 +392,10 @@
             const btnSwipe = document.getElementById('compModeSwipeBtn');
             if (btnAcc && btnSwipe) {
                 if (mode === 'accordion') {
-                    btnAcc.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition bg-blue-600 text-white shadow-xs';
+                    btnAcc.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition bg-emerald-600 text-white shadow-xs';
                     btnSwipe.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-900';
                 } else {
-                    btnSwipe.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition bg-blue-600 text-white shadow-xs';
+                    btnSwipe.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition bg-emerald-600 text-white shadow-xs';
                     btnAcc.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-900';
                 }
             }

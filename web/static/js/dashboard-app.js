@@ -275,7 +275,7 @@
             if (scholarships.length === 0) {
                 container.innerHTML = `
                     <div class="sp-card p-12 text-center space-y-3">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-2">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto mb-2">
                             <i data-lucide="layers" class="w-7 h-7"></i>
                         </div>
                         <h3 class="text-base font-bold text-slate-900 dark:text-white">لم يتم العثور على منح تطابق معايير التصفية</h3>
@@ -354,8 +354,8 @@
 
             if (saved.length === 0) {
                 list.innerHTML = `
-                    <div class="p-6 rounded-2xl sp-subcard border border-blue-500/20 bg-blue-500/5 text-center space-y-3">
-                        <i data-lucide="bookmark" class="w-8 h-8 text-blue-500 mx-auto"></i>
+                    <div class="p-6 rounded-2xl sp-subcard border border-emerald-500/20 bg-emerald-500/5 text-center space-y-3">
+                        <i data-lucide="bookmark" class="w-8 h-8 text-emerald-600 mx-auto"></i>
                         <h4 class="text-sm font-bold text-slate-900 dark:text-white">قائمة المتابعة فارغة حالياً</h4>
                         <p class="text-xs text-slate-400 max-w-sm mx-auto">
                             اضغط على زر "حفظ وتنبيه" في أي بطاقة منحة برادار الفرص لتفعيل إرسال تذكيرات المواعيد الرسمية إلى بريدك.
@@ -372,7 +372,7 @@
                 list.innerHTML = saved.map((sName, idx) => `
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl sp-subcard text-xs gap-3">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold font-latin">#${idx + 1}</span>
+                            <span class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold font-latin">#${idx + 1}</span>
                             <div>
                                 <span class="font-bold text-slate-900 dark:text-white text-sm block">${escapeHtml(sName)}</span>
                                 <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">تذكيرات المواعيد نشطة بريدياً</span>
@@ -382,7 +382,7 @@
                         <div class="flex items-center gap-2 self-end sm:self-auto">
                             <button type="button" 
                                     onclick="DashboardApp.openSopStudio('', '${escapeHtml(sName)}')" 
-                                    class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                                    class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1 text-purple-700 dark:text-purple-400">
                                 <i data-lucide="file-pen" class="w-3 h-3"></i>
                                 <span>خطاب الدافع</span>
                             </button>
@@ -423,7 +423,7 @@
         updateViewModeUI(mode) {
             const btnGrid = document.getElementById('viewModeGridBtn');
             const btnTable = document.getElementById('viewModeTableBtn');
-            const activeClass = 'bg-blue-600 text-white shadow-xs';
+            const activeClass = 'bg-emerald-600 text-white shadow-xs';
             const inactiveClass = 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
 
             if (btnGrid) btnGrid.className = `p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${mode === 'grid' ? activeClass : inactiveClass}`;
@@ -563,7 +563,7 @@
                 }
                 if (navBtn) {
                     if (t === tab) {
-                        navBtn.className = 'tab-btn px-4 py-2.5 rounded-xl border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center gap-2';
+                        navBtn.className = 'tab-btn px-4 py-2.5 rounded-xl border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 flex items-center gap-2';
                     } else {
                         navBtn.className = 'tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 flex items-center gap-2';
                     }

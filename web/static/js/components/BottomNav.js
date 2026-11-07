@@ -56,10 +56,10 @@
                         ${tabs.map(t => {
                             const isActive = this.currentTab === t.id;
                             const activeClass = isActive
-                                ? 'text-blue-600 dark:text-blue-400 font-black'
+                                ? 'text-emerald-700 dark:text-emerald-400 font-black'
                                 : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white';
                             const activePill = isActive
-                                ? '<span class="absolute top-0.5 inset-x-3 h-0.5 rounded-full bg-blue-600 dark:bg-blue-400"></span>'
+                                ? '<span class="absolute top-0.5 inset-x-3 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>'
                                 : '';
 
                             return `
@@ -68,7 +68,7 @@
                                         id="bottomNavBtn_${t.id}"
                                         class="relative flex-1 py-1 px-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-150 active:scale-95 ${activeClass}">
                                     ${activePill}
-                                    <div class="relative flex items-center justify-center w-7 h-7 rounded-lg ${isActive ? 'bg-blue-500/10' : ''}">
+                                    <div class="relative flex items-center justify-center w-7 h-7 rounded-lg ${isActive ? 'bg-emerald-500/10' : ''}">
                                         <i data-lucide="${t.icon}" class="w-4 h-4"></i>
                                     </div>
                                     <span class="text-[10px] leading-none tracking-tight">${t.label}</span>
@@ -92,7 +92,7 @@
                 if (!btn) return;
                 const isActive = id === tab;
                 if (isActive) {
-                    btn.className = 'relative flex-1 py-1 px-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-150 active:scale-95 text-blue-600 dark:text-blue-400 font-black';
+                    btn.className = 'relative flex-1 py-1 px-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-150 active:scale-95 text-emerald-700 dark:text-emerald-400 font-black';
                 } else {
                     btn.className = 'relative flex-1 py-1 px-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white';
                 }

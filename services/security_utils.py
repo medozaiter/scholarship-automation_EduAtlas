@@ -99,6 +99,103 @@ def atomic_json_write(filepath: str, data: Any):
 
 # ==============================================================================
 # 1. REGEX PATTERNS & SANITIZATION FILTERS
+
+# ==============================================================================
+# OFFICIAL RECOGNIZED COUNTRIES CATALOGUE & GIBBERISH/SPAM DEFENSE
+# ==============================================================================
+
+OFFICIAL_COUNTRIES_MAP = {
+    # Palestine & Levant
+    "palestine": "Palestine", "فلسطين": "Palestine", "دولة فلسطين": "Palestine",
+    "jordan": "Jordan", "الأردن": "Jordan", "المملكة الأردنية الهاشمية": "Jordan",
+    "lebanon": "Lebanon", "لبنان": "Lebanon",
+    "syria": "Syria", "سوريا": "Syria",
+    # Gulf & Arabian Peninsula
+    "saudi arabia": "Saudi Arabia", "السعودية": "Saudi Arabia", "المملكة العربية السعودية": "Saudi Arabia",
+    "united arab emirates": "United Arab Emirates", "الإمارات": "United Arab Emirates", "uae": "United Arab Emirates",
+    "qatar": "Qatar", "قطر": "Qatar",
+    "kuwait": "Kuwait", "الكويت": "Kuwait",
+    "oman": "Oman", "عمان": "Oman", "سلطنة عمان": "Oman",
+    "bahrain": "Bahrain", "البحرين": "Bahrain",
+    "yemen": "Yemen", "اليمن": "Yemen",
+    "iraq": "Iraq", "العراق": "Iraq",
+    # North Africa
+    "egypt": "Egypt", "مصر": "Egypt", "جمهورية مصر العربية": "Egypt",
+    "morocco": "Morocco", "المغرب": "Morocco",
+    "algeria": "Algeria", "الجزائر": "Algeria",
+    "tunisia": "Tunisia", "تونس": "Tunisia",
+    "libya": "Libya", "ليبيا": "Libya",
+    "sudan": "Sudan", "السودان": "Sudan",
+    "mauritania": "Mauritania", "موريتانيا": "Mauritania",
+    "somalia": "Somalia", "الصومال": "Somalia",
+    "djibouti": "Djibouti", "جيبوتي": "Djibouti",
+    "comoros": "Comoros", "جزر القمر": "Comoros",
+    # Europe
+    "united kingdom": "United Kingdom", "uk": "United Kingdom", "بريطانيا": "United Kingdom", "المملكة المتحدة": "United Kingdom",
+    "germany": "Germany", "ألمانيا": "Germany",
+    "france": "France", "فرنسا": "France",
+    "italy": "Italy", "إيطاليا": "Italy",
+    "spain": "Spain", "إسبانيا": "Spain",
+    "turkey": "Turkey", "تركيا": "Turkey",
+    "hungary": "Hungary", "المجر": "Hungary", "هنغاريا": "Hungary",
+    "netherlands": "Netherlands", "هولندا": "Netherlands",
+    "sweden": "Sweden", "السويد": "Sweden",
+    "switzerland": "Switzerland", "سويسرا": "Switzerland",
+    "norway": "Norway", "النرويج": "Norway",
+    "poland": "Poland", "بولندا": "Poland",
+    "belgium": "Belgium", "بلجيكا": "Belgium",
+    "austria": "Austria", "النمسا": "Austria",
+    "ireland": "Ireland", "أيرلندا": "Ireland", "ايرلندا": "Ireland",
+    "czech republic": "Czech Republic", "التشيك": "Czech Republic",
+    "portugal": "Portugal", "البرتغال": "Portugal",
+    "greece": "Greece", "اليونان": "Greece",
+    "cyprus": "Cyprus", "قبرص": "Cyprus",
+    "romania": "Romania", "رومانيا": "Romania",
+    "russia": "Russia", "روسيا": "Russia",
+    # Americas
+    "united states": "United States", "usa": "United States", "us": "United States", "أمريكا": "United States", "الولايات المتحدة": "United States",
+    "canada": "Canada", "كندا": "Canada",
+    "brazil": "Brazil", "البرازيل": "Brazil",
+    "argentina": "Argentina", "الأرجنتين": "Argentina",
+    # Asia & Oceania
+    "japan": "Japan", "اليابان": "Japan",
+    "south korea": "South Korea", "korea": "South Korea", "كوريا الجنوبية": "South Korea", "كوريا": "South Korea",
+    "china": "China", "الصين": "China",
+    "malaysia": "Malaysia", "ماليزيا": "Malaysia",
+    "singapore": "Singapore", "سنغافورة": "Singapore",
+    "indonesia": "Indonesia", "إندونيسيا": "Indonesia",
+    "india": "India", "الهند": "India",
+    "pakistan": "Pakistan", "باكستان": "Pakistan",
+    "australia": "Australia", "أستراليا": "Australia",
+    "new zealand": "New Zealand", "نيوزيلندا": "New Zealand",
+    "south africa": "South Africa", "جنوب أفريقيا": "South Africa",
+    # Generic accepted categories
+    "international": "International", "دولي": "International", "دولة أخرى": "International", "any": "International"
+}
+
+def detect_gibberish_and_spam(val: Any) -> bool:
+    """
+    Detects keyboard smashing, repetitive character spam, and symbol flooding.
+    Rejects strings like '@@@@@', '!!!!!!', 'testtesttesttesttesttest', 'aaaaaa', etc.
+    """
+    if not val:
+        return False
+    clean = str(val).strip()
+
+    # 1. 4 or more identical consecutive characters (e.g. aaaa, 9999, !!!)
+    if re.search(r'(.)\1{3,}', clean):
+        return True
+
+    # 2. Short repeated patterns (2-6 chars) repeated 3+ times (e.g. testtesttest, abcabcabc)
+    if re.search(r'(.{2,6})\1{2,}', clean, re.IGNORECASE):
+        return True
+
+    # 3. Excessive consecutive punctuation (3 or more)
+    if re.search(r'([!@#$%^&*()_+=\[\]{};:\'"\\|,.<>/?~`\u060C\u061F\u061B\-])\1{2,}', clean):
+        return True
+
+    return False
+
 # ==============================================================================
 
 EMAIL_REGEX = re.compile(
@@ -189,12 +286,17 @@ def validate_email(email_str: str) -> str:
     return clean
 
 
-def validate_name(name_str: str) -> str:
-    """Validates real Arabic/English name without script injection or control chars."""
-    if not name_str:
+def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
+    """
+    Validates real Arabic/English name without script injection, control chars, or spam.
+    2 to 100 characters. Rejects @@@@@, !!!!!!, 123456, testtesttesttesttesttest, <svg>, <script>.
+    """
+    if not name_str or not str(name_str).strip():
+        if is_required:
+            raise ValueError("الاسم الكامل مطلوب ولا يمكن تركه فارغاً.")
         return "Student"
 
-    clean = BIDI_AND_INVISIBLE_CHARS.sub("", name_str).strip()
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(name_str)).strip()
 
     if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
         raise ValueError("الاسم يحتوي على رموز أو مدخلات غير مسموح بها أمنياً.")
@@ -204,13 +306,139 @@ def validate_name(name_str: str) -> str:
     if len(clean) < 2:
         raise ValueError("الاسم قصير جداً (يجب أن يتكون من حرفين على الأقل).")
 
-    if len(clean) > 60:
-        clean = clean[:60]
+    if len(clean) > 100:
+        clean = clean[:100]
 
-    if not NAME_REGEX.match(clean):
-        raise ValueError("يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون رموز خاصة.")
+    if not re.match(r"^[\u0600-\u06FFa-zA-Z\s\.\-']{2,100}$", clean):
+        raise ValueError("يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون رموز خاصة أو أرقام.")
+
+    letter_count = len(re.findall(r"[\u0600-\u06FFa-zA-Z]", clean))
+    if letter_count < 2:
+        raise ValueError("الاسم يجب أن يتضمن حرفين حقيقيين على الأقل.")
+
+    if detect_gibberish_and_spam(clean):
+        raise ValueError("الاسم المدخل يحتوي على تكرار عشوائي أو أحرف غير مفهومة. يرجى إدخال اسم حقيقي.")
 
     return html.escape(clean, quote=True)
+
+validate_full_name = validate_name
+
+
+def validate_university(univ_str: Optional[str], is_required: bool = False) -> str:
+    """
+    Validates university or institution name (2 to 150 chars).
+    Letters, numbers, common punctuation. Rejects symbol spam like %%%%%%, @@@@@@@, 99999999999999999999999, ,,,,,,,,,,,,,,,
+    """
+    if not univ_str or not str(univ_str).strip():
+        if is_required:
+            raise ValueError("اسم الجامعة أو المؤسسة التعليمية مطلوب.")
+        return ""
+
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(univ_str)).strip()
+
+    if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
+        raise ValueError("اسم الجامعة يحتوي على رموز أو وسوم غير مسموح بها أمنياً.")
+
+    clean = re.sub(r"\s+", " ", clean)
+
+    if len(clean) < 2:
+        raise ValueError("اسم الجامعة قصير جداً (حرفان على الأقل).")
+
+    if len(clean) > 150:
+        clean = clean[:150]
+
+    if not re.match(r"^[\u0600-\u06FFa-zA-Z0-9\s\.\-/,()&\u060C]{2,150}$", clean):
+        raise ValueError("اسم الجامعة يحتوي على رموز غير مقبولة.")
+
+    letter_count = len(re.findall(r"[\u0600-\u06FFa-zA-Z]", clean))
+    if letter_count < 2:
+        raise ValueError("اسم الجامعة يجب أن يحتوي على أحرف نصية حقيقية وليس أرقاماً أو رموزاً فقط.")
+
+    if detect_gibberish_and_spam(clean):
+        raise ValueError("اسم الجامعة يحتوي على تكرار عشوائي للرموز أو الأحرف.")
+
+    return html.escape(clean, quote=True)
+
+
+def validate_field_of_study(major_str: Optional[str], is_required: bool = False) -> str:
+    """
+    Validates academic field of study / major (2 to 100 chars).
+    """
+    if not major_str or not str(major_str).strip():
+        if is_required:
+            raise ValueError("التخصص الدراسي مطلوب.")
+        return ""
+
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(major_str)).strip()
+
+    if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
+        raise ValueError("اسم التخصص يحتوي على رموز غير مسموح بها أمنياً.")
+
+    clean = re.sub(r"\s+", " ", clean)
+
+    if len(clean) < 2:
+        raise ValueError("اسم التخصص قصير جداً (حرفان على الأقل).")
+
+    if len(clean) > 100:
+        clean = clean[:100]
+
+    if not re.match(r"^[\u0600-\u06FFa-zA-Z0-9\s\.\-/,()&\u060C]{2,100}$", clean):
+        raise ValueError("اسم التخصص يحتوي على رموز غير مقبولة.")
+
+    letter_count = len(re.findall(r"[\u0600-\u06FFa-zA-Z]", clean))
+    if letter_count < 2:
+        raise ValueError("اسم التخصص يجب أن يحتوي على أحرف حقيقية.")
+
+    if detect_gibberish_and_spam(clean):
+        raise ValueError("اسم التخصص يحتوي على تكرار عشوائي.")
+
+    return html.escape(clean, quote=True)
+
+
+def validate_country(country_str: Optional[str], is_required: bool = True) -> str:
+    """
+    Validates country against the official recognized country catalogue.
+    Rejects fake or unlisted countries.
+    """
+    if not country_str or not str(country_str).strip():
+        if is_required:
+            raise ValueError("يرجى اختيار دولة إقامتك أو جنسيتك.")
+        return "Palestine"
+
+    raw = str(country_str).strip()
+    clean = raw.lower()
+    clean = re.sub(r"\s*\(.*?\)", "", clean).strip()
+    clean = clean.split("-")[0].strip()
+
+    if clean in OFFICIAL_COUNTRIES_MAP:
+        return OFFICIAL_COUNTRIES_MAP[clean]
+
+    raise ValueError(f"الدولة المدخلة ({raw}) غير معتمدة أو غير موجودة في قائمة الدول الرسمية.")
+
+
+def validate_bio(bio_str: Optional[str], max_length: int = 600) -> str:
+    """
+    Validates and sanitizes student biography (max 600 chars).
+    Strips script tags, invisible characters, and escapes HTML to prevent XSS.
+    """
+    if not bio_str or not str(bio_str).strip():
+        return ""
+    return sanitize_text(bio_str, max_length=max_length)
+
+
+def validate_search_query(q_str: Optional[str], max_length: int = 120) -> str:
+    """
+    Validates and sanitizes search queries across radar, community, news, and notifications.
+    Defuses SQL injection, XSS, and caps length to prevent ReDoS.
+    """
+    if not q_str:
+        return ""
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(q_str)).strip()
+    clean = SCRIPT_TAG_PATTERN.sub("", clean)
+    clean = re.sub(r'[;"\'<>`]', "", clean)
+    clean = re.sub(r"\s+", " ", clean).strip()
+    return clean[:max_length]
+
 
 
 RESERVED_USERNAMES = {
@@ -290,9 +518,11 @@ def validate_gpa(gpa_str: str) -> str:
     if slash_match:
         val = float(slash_match.group(1))
         scale = float(slash_match.group(2))
-        if 0.0 <= val <= scale:
+        if 0.5 <= val <= scale:
             formatted = f"{val:.2f}".rstrip("0").rstrip(".")
             return f"{formatted}/{int(scale)}"
+        if val < 0.5:
+            raise ValueError(f"المعدل ({val}/{int(scale)}) منخفض جداً وغير واقعي.")
         raise ValueError(f"المعدل ({val}/{int(scale)}) غير منطقي. يجب ألا يتجاوز {int(scale)}.")
 
     # 2. Explicit percentage with '%'
@@ -300,24 +530,25 @@ def validate_gpa(gpa_str: str) -> str:
         pct_match = re.search(r"^(\d{1,3}(?:\.\d{1,2})?)\s*%$", clean)
         if pct_match:
             val = float(pct_match.group(1))
-            if 0.0 <= val <= 100.0:
+            if 40.0 <= val <= 100.0:
                 formatted = f"{val:.2f}".rstrip("0").rstrip(".")
                 return f"{formatted}%"
-            raise ValueError(f"المعدل المئوي ({val}%) غير منطقي. يجب أن يكون بين 0% و 100%.")
+            raise ValueError(f"المعدل المئوي ({val}%) خارج النطاق المقبول. يجب أن يكون بين 40% و 100%.")
+        raise ValueError("صيغة النسبة المئوية غير صحيحة (مثال: 88.5%).")
 
     # 3. Numeric value without explicit sign
     num_match = re.search(r"^(\d{1,3}(?:\.\d{1,2})?)$", clean)
     if num_match:
         val = float(num_match.group(1))
-        if 0.0 <= val <= 5.0:
+        if 0.5 <= val <= 5.0:
             scale = 5.0 if val > 4.0 else 4.0
             formatted = f"{val:.2f}".rstrip("0").rstrip(".")
             return f"{formatted}/{int(scale)}"
-        elif 5.0 < val <= 100.0:
+        elif 40.0 <= val <= 100.0:
             formatted = f"{val:.2f}".rstrip("0").rstrip(".")
             return f"{formatted}%"
         else:
-            raise ValueError(f"المعدل المدخل ({val}) غير منطقي. يجب أن يكون بين 0 و 100 أو بين 0 و 4.")
+            raise ValueError(f"المعدل المدخل ({val}) خارج النطاق المقبول (0.5 إلى 4.0 بنظام النقاط، أو 40% إلى 100% بالنسبة المئوية).")
 
     raise ValueError("صيغة المعدل غير صحيحة. يرجى إدخال رقم بين 0 و 100 أو بين 0 و 4 بحد أقصى منزلتين عشريتين (مثال: 3.75 أو 88.5).")
 
@@ -846,6 +1077,15 @@ class SecurityRateLimiter:
         self.DAILY_ADVISOR_LIMIT: int = 10
         self._hourly_generations: Dict[str, List[float]] = {}
         self.HOURLY_GENERATION_LIMIT: int = 10
+
+    def reset(self):
+        """Resets all in-memory rate limiting state (useful for tests)."""
+        with self._lock:
+            self._requests.clear()
+            self._failed_logins.clear()
+            self._email_cooldowns.clear()
+            self._daily_advisor_quotas.clear()
+            self._hourly_generations.clear()
 
     def _prune_expired_entries(self, now: float):
         """Sweeps stale buckets to prevent memory accumulation / Slowloris memory leaks."""

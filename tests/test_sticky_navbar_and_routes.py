@@ -99,14 +99,14 @@ class TestStickyNavbarAndRoutingModifications(unittest.TestCase):
             # Verify active state
             if path in ("/dashboard", "/account"):
                 btn = header.find(id='navMyAccountBtn')
-                self.assertTrue(any('blue' in c for c in btn.get('class', [])))
+                self.assertTrue(any(('emerald' in c or 'blue' in c) for c in btn.get('class', [])))
             else:
                 nav = header.find('nav')
                 self.assertIsNotNone(nav, f"<nav> not found in header on {path}")
                 active_link = nav.find('a', href=path)
                 self.assertIsNotNone(active_link, f"Nav link for {path} not found in <nav>")
                 classes_str = " ".join(active_link.get('class', []))
-                self.assertIn('text-blue-600', classes_str, f"Active blue class missing on link {path}")
+                self.assertTrue(('text-emerald-700' in classes_str or 'text-blue-600' in classes_str), f"Active primary class missing on link {path}")
 
         print(" -> PASSED: [REQ 4] Persistent Sticky Navbar and Active Highlights Verified Across Pages.")
 

@@ -17,10 +17,10 @@
         error: `<div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>`,
-        info: `<div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+        info: `<div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         </div>`,
-        loading: `<div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-500 dark:text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/30">
+        loading: `<div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
             <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         </div>`
     };
@@ -72,8 +72,8 @@
             const borderColors = {
                 success: 'border-emerald-500/40 shadow-emerald-500/10',
                 error: 'border-rose-500/40 shadow-rose-500/10',
-                info: 'border-blue-500/40 shadow-blue-500/10',
-                loading: 'border-cyan-500/40 shadow-cyan-500/10'
+                info: 'border-purple-500/40 shadow-purple-500/10',
+                loading: 'border-emerald-500/40 shadow-emerald-500/10'
             };
 
             const borderClass = borderColors[type] || borderColors.info;
@@ -88,7 +88,7 @@
                     <h4 class="text-xs sm:text-sm font-extrabold text-white mb-0.5 truncate">${this.escapeHtml(title)}</h4>
                     <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed font-medium break-words">${this.escapeHtml(message)}</p>
                 </div>
-                <button type="button" aria-label="إغلاق التنبيه" class="text-slate-400 hover:text-white transition text-xs p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <button type="button" aria-label="إغلاق التنبيه" class="text-slate-400 hover:text-white transition text-xs p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400">
                     ✕
                 </button>
             `;

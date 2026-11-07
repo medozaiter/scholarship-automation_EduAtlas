@@ -66,6 +66,7 @@
     <!-- Unified Academic Horizon CSS tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
     <script src="/static/js/warm-scholar.js" defer></script>
+    <script src="/static/js/saas-engine.js" defer></script>
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -110,6 +111,7 @@
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
+    <script src="/static/js/validation_engine.js"></script>
 </head>
 <body class="min-h-screen flex flex-col bg-[#F8F9FD] dark:bg-[#0C0A17] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200 overflow-x-hidden max-w-full w-full ea-topographic-bg">
 
@@ -158,44 +160,44 @@
             <!-- Primary Navigation Links (Desktop RTL) -->
             <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
                 <!-- 1. الرئيسية -->
-                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                     <span>الرئيسية</span>
                 </a>
 
                 <!-- 2. رادار المنح -->
-                <a href="/radar" class="px-3 py-2 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 font-bold transition flex items-center gap-1.5 border border-blue-500/20 shadow-xs">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                <a href="/radar" class="px-3 py-2 rounded-xl text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold transition flex items-center gap-1.5 border border-emerald-500/20 shadow-xs">
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح</span>
                     <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
                 </a>
 
                 <!-- 3. المساعد الذكي -->
-                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                     <span>المساعد الذكي</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
 
                 <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
-                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
                     <span>مجتمع الطلبة</span>
                 </a>
 
                 <!-- 5. أخبار المنح -->
-                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <span>أخبار المنح</span>
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
             </nav>
 
             <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Notifications Center Link -->
-                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
-                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                     <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
                 </a>
 
@@ -207,7 +209,7 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-blue-500 transition shadow-xs">
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="sp-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-[#334155] rounded-xl hover:border-emerald-500 transition shadow-xs">
                     <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
@@ -229,7 +231,7 @@
                 <i data-lucide="home" class="w-4 h-4"></i>
                 <span>الرئيسية</span>
             </a>
-            <a href="/radar" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500">
+            <a href="/radar" onclick="toggleMobileNavDrawer(false)" class="p-3 rounded-xl bg-emerald-600 text-white flex items-center gap-2 shadow-xs border border-emerald-500">
                 <i data-lucide="radar" class="w-4 h-4"></i>
                 <span>رادار المنح</span>
             </a>
@@ -257,10 +259,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- Radar Header Banner -->
-            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-violet-600/10 border border-blue-500/20 flex flex-col md:flex-row md:items-end justify-between gap-6 shadow-sm">
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-600/10 via-purple-600/10 to-violet-600/10 border border-emerald-500/20 flex flex-col md:flex-row md:items-end justify-between gap-6 shadow-sm">
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 dark:text-purple-400">
-                        <i data-lucide="radar" class="w-4 h-4 animate-spin text-blue-500" style="animation-duration: 6s;"></i>
+                        <i data-lucide="radar" class="w-4 h-4 animate-spin text-emerald-600" style="animation-duration: 6s;"></i>
                         <span>رادار الفرص المعتمدة • تحديث مستمر 24/7 مع استبعاد المواعيد المنتهية</span>
                     </div>
                     <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -286,7 +288,7 @@
             <!-- SEARCH, FILTERS & DEGREE TABS -->
             <div class="space-y-4">
                 <!-- Search & Country Bar -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] shadow-xs">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-2xl bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-xl border border-slate-200 dark:border-[#334155] shadow-xs sticky top-20 z-30 transition-all">
                     <div class="md:col-span-6 relative">
                         <i data-lucide="search" class="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input type="text" id="radarSearchInput" oninput="onRadarSearch(this.value)" placeholder="ابحث باسم المنحة، الجامعة، أو الدولة المستضيفة..."
@@ -308,7 +310,7 @@
 
                     <div class="md:col-span-3 flex items-center justify-between gap-2">
                         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-                            <input type="checkbox" id="fullyFundedOnlyCheck" onchange="onFullyFundedToggle(this.checked)" class="w-4 h-4 text-blue-600 rounded">
+                            <input type="checkbox" id="fullyFundedOnlyCheck" onchange="onFullyFundedToggle(this.checked)" class="w-4 h-4 text-emerald-700 dark:text-emerald-400 rounded">
                             <span>ممولة 100% فقط</span>
                         </label>
 
@@ -323,7 +325,7 @@
                 <!-- Degree Category Filter Tabs -->
                 <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155]">
                     <button type="button" id="degreeFilterAll" onclick="setRadarDegreeFilter('all')"
-                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-xs">
+                        class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-emerald-600 text-white shadow-xs">
                         <i data-lucide="layers" class="w-4 h-4"></i>
                         <span>كافة المنح المفتوحة</span>
                         <span id="badgeCountAll" class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold">31</span>
@@ -338,9 +340,9 @@
 
                     <button type="button" id="degreeFilterMaster" onclick="setRadarDegreeFilter('master')"
                         class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <i data-lucide="scroll" class="w-4 h-4 text-indigo-500"></i>
+                        <i data-lucide="scroll" class="w-4 h-4 text-purple-600"></i>
                         <span>ماجستير (Master's)</span>
-                        <span id="badgeCountMaster" class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-indigo-800 dark:text-indigo-400 font-mono font-bold">11</span>
+                        <span id="badgeCountMaster" class="px-2 py-0.5 rounded-full text-[10px] bg-indigo-500/10 text-purple-800 dark:text-indigo-400 font-mono font-bold">11</span>
                     </button>
 
                     <button type="button" id="degreeFilterPhd" onclick="setRadarDegreeFilter('phd')"
@@ -375,7 +377,7 @@
         <div class="relative w-full max-w-4xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-[#334155] flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold">
                         <i data-lucide="list-filter" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -511,7 +513,7 @@
                 textColor = 'text-amber-500';
             } else if (numScore < 85) {
                 strokeColor = '#2563EB';
-                textColor = 'text-blue-500';
+                textColor = 'text-emerald-600';
             }
 
             return `
@@ -729,7 +731,7 @@
                 phd: 'degreeFilterPhd'
             };
 
-            const activeClasses = 'bg-blue-600 text-white shadow-xs';
+            const activeClasses = 'bg-emerald-600 text-white shadow-xs';
             const inactiveClasses = 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
 
             Object.entries(filterIds).forEach(([key, btnId]) => {
@@ -843,7 +845,7 @@
                     const countdown = calculateDeadlineCountdown(item.deadline);
                     const matchRing = createCircularMatchScoreRing(item.matchScore);
                     return `
-                        <div class="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-blue-500/50 transition">
+                        <div class="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-emerald-500/50 transition">
                             <div class="flex items-center gap-3 min-w-0">
                                 ${matchRing}
                                 <div class="min-w-0">
@@ -865,7 +867,7 @@
                                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                                 </a>
                                 <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="sp-btn-secondary px-3 py-1.5 text-xs font-bold flex items-center gap-1">
-                                    <i data-lucide="bot" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-600"></i>
                                     <span>استشارة</span>
                                 </a>
                             </div>
@@ -880,7 +882,7 @@
                     const coverageBadges = getCoverageBadges(item.coverage);
 
                     return `
-                        <div class="sp-card p-6 flex flex-col justify-between group hover:border-blue-500/60 transition-all duration-300">
+                        <div class="sp-card p-6 flex flex-col justify-between group hover:border-emerald-500/60 transition-all duration-300">
                             <div class="space-y-4">
                                 <!-- Card Header -->
                                 <div class="flex items-start justify-between gap-3">
@@ -948,14 +950,14 @@
                             <!-- Card Action Buttons -->
                             <div class="pt-4 border-t border-slate-200 dark:border-[#334155] flex items-center gap-2 mt-4">
                                 <button type="button" onclick="openScholarshipDetailsModal('${item.id}')" class="sp-btn-secondary px-3 py-2 text-xs font-bold flex items-center justify-center gap-1.5" title="عرض كافة التفاصيل">
-                                    <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <i data-lucide="eye" class="w-3.5 h-3.5 text-emerald-600"></i>
                                     <span>التفاصيل</span>
                                 </button>
                                 <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="sp-btn-primary flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs">
                                     <span>التقديم الرسمي</span>
                                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                                 </a>
-                                <button type="button" onclick="saveScholarshipToDashboard('${item.id}', '${escapeHTML(item.name)}')" class="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-[#111827] border border-slate-200 dark:border-[#334155] transition" title="حفظ في لوحة التحكم">
+                                <button type="button" onclick="saveScholarshipToDashboard('${item.id}', '${escapeHTML(item.name)}')" class="p-2 rounded-xl text-slate-500 hover:text-purple-600 hover:bg-slate-100 dark:hover:bg-[#111827] border border-slate-200 dark:border-[#334155] transition" title="حفظ في لوحة التحكم">
                                     <i data-lucide="bookmark" class="w-4 h-4"></i>
                                 </button>
                                 <a href="/assistant?scholarship=${encodeURIComponent(item.id)}" class="p-2 rounded-xl text-slate-500 hover:text-violet-600 hover:bg-slate-100 dark:hover:bg-[#111827] border border-slate-200 dark:border-[#334155] transition" title="استشارة المساعد الذكي حول هذه المنحة">
@@ -1107,7 +1109,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <span id="detailBadgeStatus" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-[#10E599] border border-emerald-500/30">مفتوح للتقديم</span>
                         <span id="detailBadgeDegree" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30">بكالوريوس</span>
-                        <span id="detailBadgeCountry" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30">دولي</span>
+                        <span id="detailBadgeCountry" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">دولي</span>
                     </div>
                     <h3 id="detailTitle" class="text-lg sm:text-xl font-black text-[#0C0A17] dark:text-white leading-tight">اسم المنحة الدراسية</h3>
                     <p id="detailInstitution" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium truncate">الجامعة أو الهيئة المانحة</p>
@@ -1156,7 +1158,7 @@
                 <!-- Requirements & Application Guidelines -->
                 <div>
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                        <i data-lucide="file-text" class="w-4 h-4 text-emerald-600"></i>
                         <span>شروط القبول والوثائق الأساسية</span>
                     </h4>
                     <div id="detailRequirements" class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5 p-3.5 rounded-xl bg-slate-50 dark:bg-[#130E26]/60 border border-slate-200 dark:border-[#382F64]">

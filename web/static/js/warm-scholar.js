@@ -169,5 +169,13 @@
   // Auto-init on DOM loaded
   document.addEventListener('DOMContentLoaded', () => {
     updateThemeToggleIcons();
+
+    // Ensure World-Class SaaS Engine is loaded and active
+    if (!window.SaaSEngine && !document.querySelector('script[src*="saas-engine.js"]')) {
+      const s = document.createElement('script');
+      s.src = '/static/js/saas-engine.js';
+      s.defer = true;
+      document.head.appendChild(s);
+    }
   });
 })();

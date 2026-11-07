@@ -67,6 +67,7 @@
     <!-- Design Tokens -->
     <link rel="stylesheet" href="/static/css/scholarpilot.css">
     <script src="/static/js/warm-scholar.js" defer></script>
+    <script src="/static/js/saas-engine.js" defer></script>
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -111,6 +112,7 @@
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
     </script>
+    <script src="/static/js/validation_engine.js"></script>
 </head>
 <body class="min-h-screen selection:bg-[#10E599] selection:text-[#0C0A17] selection:text-white flex flex-col relative bg-[#F8F9FD] dark:bg-[#0C0A17] text-[#0C0A17] dark:text-[#F8F9FD] transition-colors duration-200 ea-topographic-bg">
 
@@ -162,44 +164,44 @@
             <!-- Primary Navigation Links (Desktop RTL) -->
             <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold" aria-label="التنقل الرئيسي">
                 <!-- 1. الرئيسية -->
-                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="home" class="w-4 h-4 text-blue-500"></i>
+                <a href="/" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="home" class="w-4 h-4 text-emerald-600"></i>
                     <span>الرئيسية</span>
                 </a>
 
                 <!-- 2. رادار المنح -->
-                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="radar" class="w-4 h-4 text-blue-500"></i>
+                <a href="/radar" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="radar" class="w-4 h-4 text-emerald-600"></i>
                     <span>رادار المنح</span>
                     <span class="sp-badge sp-badge-info text-[10px] font-mono font-bold px-1.5 py-0.2">31</span>
                 </a>
 
                 <!-- 3. المساعد الذكي -->
-                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="bot" class="w-4 h-4 text-blue-500"></i>
+                <a href="/assistant" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                     <span>المساعد الذكي</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
 
                 <!-- 4. مجتمع الطلبة (مع وسم مجتمع الطلاب لتوافق الفحوصات) -->
-                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+                <a href="/community" title="مجتمع الطلاب — تواصل مع زملائك" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
                     <span>مجتمع الطلبة</span>
                 </a>
 
                 <!-- 5. أخبار المنح -->
-                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="newspaper" class="w-4 h-4 text-blue-500"></i>
+                <a href="/news" class="px-3 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
                     <span>أخبار المنح</span>
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </a>
             </nav>
 
             <!-- Actions Bar: Notification Center, Theme Toggle, My Account & Mobile Menu Toggle -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Notifications Center Link -->
-                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
-                    <i data-lucide="bell" class="w-4 h-4 text-blue-500"></i>
+                <a href="/notifications" aria-label="مركز التنبيهات" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-[#334155] transition flex items-center justify-center">
+                    <i data-lucide="bell" class="w-4 h-4 text-emerald-600"></i>
                     <span id="unreadBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">0</span>
                 </a>
 
@@ -211,7 +213,7 @@
                 </button>
 
                 <!-- 6. حسابي (My Account) with Auth Guard -->
-                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-purple-700 dark:text-purple-400 rounded-xl transition shadow-xs">
+                <button type="button" onclick="handleMyAccountNavigation(event)" id="navMyAccountBtn" class="px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-purple-700 dark:text-purple-400 rounded-xl transition shadow-xs">
                     <i data-lucide="user" class="w-4 h-4 text-purple-700 dark:text-purple-400"></i>
                     <span>حسابي</span>
                 </button>
@@ -249,7 +251,7 @@
                 <i data-lucide="newspaper" class="w-4 h-4"></i>
                 <span>أخبار المنح</span>
             </a>
-            <button type="button" onclick="toggleMobileNavDrawer(false); handleMyAccountNavigation(event);" class="p-3 rounded-xl bg-blue-600 text-white flex items-center gap-2 shadow-xs border border-blue-500 text-right">
+            <button type="button" onclick="toggleMobileNavDrawer(false); handleMyAccountNavigation(event);" class="p-3 rounded-xl bg-emerald-600 text-white flex items-center gap-2 shadow-xs border border-emerald-500 text-right">
                 <i data-lucide="user" class="w-4 h-4"></i>
                 <span>حسابي</span>
             </button>
@@ -261,7 +263,7 @@
 
         <!-- Loading State Indicator -->
         <div id="profileLoading" class="sp-card p-12 text-center space-y-3">
-            <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div class="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
             <p class="text-xs font-bold text-slate-400">جاري تحميل الملف الأكاديمي للطالب...</p>
         </div>
 
@@ -287,7 +289,7 @@
             </div>
             <h1 class="text-xl font-bold text-slate-900 dark:text-white" id="privateProfileName">مستكشف EduAtlas الأكاديمي</h1>
             <p class="text-xs text-slate-400 max-w-md mx-auto">هذا الملف الأكاديمي تم ضبطه كـ "ملف خاص" بناءً على إعدادات خصوصية الطالب، ولا تتوفر بيانات عامة للعرض.</p>
-            <div id="privateOwnerBanner" class="hidden p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-xs text-blue-400 font-bold max-w-md mx-auto">
+            <div id="privateOwnerBanner" class="hidden p-3 rounded-xl bg-purple-500/10 border border-emerald-500/30 text-xs text-emerald-400 font-bold max-w-md mx-auto">
                 أنت تشاهد ملفك كزائر. يمكنك جعل ملفك متاحاً للعامة من صفحة إعدادات الحساب في البوابة.
             </div>
         </div>
@@ -298,7 +300,7 @@
             <!-- Profile Header Card (Banner + Avatar + Core Info) -->
             <div class="sp-card overflow-hidden border border-slate-200 dark:border-slate-800">
                 <!-- Cover Banner -->
-                <div id="profileCoverBanner" class="h-44 sm:h-56 w-full bg-gradient-to-r from-blue-700 via-indigo-700 to-cyan-600 relative bg-cover bg-center">
+                <div id="profileCoverBanner" class="h-44 sm:h-56 w-full bg-gradient-to-r from-emerald-800 via-indigo-700 to-purple-700 relative bg-cover bg-center">
                     <div class="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
                 </div>
 
@@ -308,22 +310,22 @@
                         <!-- Avatar -->
                         <div class="relative">
                             <div id="avatarContainer" class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl border-4 border-white dark:border-slate-950 bg-slate-900 text-white flex items-center justify-center shadow-xl overflow-hidden shrink-0">
-                                <span id="avatarInitials" class="text-3xl sm:text-4xl font-extrabold font-latin tracking-wider text-blue-400">SP</span>
+                                <span id="avatarInitials" class="text-3xl sm:text-4xl font-extrabold font-latin tracking-wider text-emerald-400">SP</span>
                                 <img id="avatarImage" src="" alt="Student Profile Photo" class="hidden w-full h-full object-cover">
                             </div>
-                            <span id="verifiedCheckPill" class="absolute -bottom-1 -left-1 w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-slate-950" title="حساب طالب موثق">
+                            <span id="verifiedCheckPill" class="absolute -bottom-1 -left-1 w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white dark:border-slate-950" title="حساب طالب موثق">
                                 <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
                             </span>
                         </div>
 
                         <!-- Header Action Buttons -->
                         <div class="flex flex-wrap items-center gap-2.5">
-                            <button type="button" id="profileFollowBtn" onclick="toggleProfileFollow()" class="hidden px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20">
+                            <button type="button" id="profileFollowBtn" onclick="toggleProfileFollow()" class="hidden px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20">
                                 <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
                                 <span id="profileFollowBtnText">متابعة الطالب</span>
                             </button>
                             <button type="button" onclick="shareProfile()" class="sp-btn-secondary px-4 py-2 text-xs font-bold flex items-center gap-2">
-                                <i data-lucide="share-2" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-600"></i>
                                 <span>مشاركة الملف</span>
                             </button>
                             <a id="editProfileBtn" href="/dashboard" class="hidden sp-btn-primary px-4 py-2 text-xs font-bold flex items-center gap-2">
@@ -403,7 +405,7 @@
                     <!-- Biography / About Section -->
                     <div class="sp-card p-6 sm:p-7 space-y-3">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <i data-lucide="user" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="user" class="w-4 h-4 text-emerald-600"></i>
                             <span>النبذة التعريفية والأكاديمية</span>
                         </div>
                         <p id="profileBioText" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
@@ -416,7 +418,7 @@
                     <div class="sp-card p-6 sm:p-7 space-y-4">
                         <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                             <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
-                                <i data-lucide="messages-square" class="w-4 h-4 text-blue-500"></i>
+                                <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
                                 <span>المساهمات والمنشورات في المجتمع الأكاديمي</span>
                             </div>
                             <a href="/community" class="text-xs text-purple-700 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
@@ -459,7 +461,7 @@
                     <!-- Target Countries & Scholarship Interests -->
                     <div class="sp-card p-6 sm:p-7 space-y-4">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base border-b border-slate-200 dark:border-slate-800 pb-3">
-                            <i data-lucide="compass" class="w-4 h-4 text-cyan-500"></i>
+                            <i data-lucide="compass" class="w-4 h-4 text-purple-600"></i>
                             <span>وجهات الابتعاث والمنح المفضلة</span>
                         </div>
 
@@ -484,7 +486,7 @@
                     <!-- Skills Card -->
                     <div class="sp-card p-6 space-y-3">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm border-b border-slate-200 dark:border-slate-800 pb-2.5">
-                            <i data-lucide="code-2" class="w-4 h-4 text-indigo-500"></i>
+                            <i data-lucide="code-2" class="w-4 h-4 text-purple-600"></i>
                             <span>المهارات والقدرات التقنية</span>
                         </div>
                         <div id="skillsTagsList" class="flex flex-wrap gap-1.5 pt-1">
@@ -495,7 +497,7 @@
                     <!-- Languages Card -->
                     <div class="sp-card p-6 space-y-3">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm border-b border-slate-200 dark:border-slate-800 pb-2.5">
-                            <i data-lucide="languages" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="languages" class="w-4 h-4 text-emerald-600"></i>
                             <span>اللغات</span>
                         </div>
                         <div id="languagesList" class="space-y-2 pt-1">
@@ -504,9 +506,9 @@
                     </div>
 
                     <!-- Scholarship AI Assistant Card -->
-                    <div class="sp-card p-6 space-y-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent">
+                    <div class="sp-card p-6 space-y-3 border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent">
                         <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
-                            <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i>
+                            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
                             <span>مطابقة المنح الذكية</span>
                         </div>
                         <p class="text-xs text-slate-400 leading-relaxed">
@@ -573,7 +575,7 @@
                         followBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 transition flex items-center gap-2';
                     } else {
                         followTxt.textContent = 'متابعة الطالب';
-                        followBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20';
+                        followBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20';
                     }
                 }
             }
@@ -593,10 +595,10 @@
             toast.className = `pointer-events-auto w-full p-4 rounded-2xl shadow-xl border backdrop-blur-xl flex items-start gap-3 transform transition-all duration-300 ease-out translate-y-[-10px] opacity-0 ${
                 type === 'success' 
                     ? 'bg-slate-900/95 border-emerald-500/40 text-white shadow-emerald-500/10' 
-                    : 'bg-slate-900/95 border-blue-500/40 text-white shadow-blue-500/10'
+                    : 'bg-slate-900/95 border-emerald-500/40 text-white shadow-blue-500/10'
             }`;
             toast.innerHTML = `
-                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 </div>
                 <div class="flex-1 text-right">
@@ -704,7 +706,7 @@
                             showToast(`بدأت بمتابعة نشاط @${currentProfileData.username}`, 'success');
                         } else {
                             txt.textContent = 'متابعة الطالب';
-                            btn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20';
+                            btn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-2 shadow-md shadow-blue-600/20';
                             showToast(`ألغيت متابعة @${currentProfileData.username}`, 'info');
                         }
                         const fCnt = document.getElementById('profileFollowersCount');
@@ -734,7 +736,7 @@
                             <i data-lucide="heart" class="w-3.5 h-3.5 fill-current"></i>
                             <span>${p.likes_count || 0}</span>
                         </span>
-                        <a href="/community#post_${p.id}" class="text-blue-500 hover:underline font-bold">عرض في المجتمع ←</a>
+                        <a href="/community#post_${p.id}" class="text-emerald-600 hover:underline font-bold">عرض في المجتمع ←</a>
                     </div>
                 </div>
             `).join('');
@@ -816,15 +818,15 @@
             const socials = p.social_links || {};
             
             const socialDefs = [
-                { key: 'linkedin', label: 'LinkedIn', icon: 'linkedin', color: 'hover:border-sky-500 hover:text-sky-400' },
+                { key: 'linkedin', label: 'LinkedIn', icon: 'linkedin', color: 'hover:border-sky-500 hover:text-purple-400' },
                 { key: 'github', label: 'GitHub', icon: 'github', color: 'hover:border-purple-500 hover:text-purple-400' },
                 { key: 'whatsapp', label: 'WhatsApp', icon: 'phone-call', color: 'hover:border-emerald-500 hover:text-emerald-400', isPhone: true },
-                { key: 'twitter', label: 'X (Twitter)', icon: 'twitter', color: 'hover:border-blue-400 hover:text-blue-400' },
-                { key: 'telegram', label: 'Telegram', icon: 'send', color: 'hover:border-cyan-400 hover:text-cyan-400' },
-                { key: 'facebook', label: 'Facebook', icon: 'facebook', color: 'hover:border-blue-600 hover:text-blue-500' },
+                { key: 'twitter', label: 'X (Twitter)', icon: 'twitter', color: 'hover:border-purple-400 hover:text-emerald-400' },
+                { key: 'telegram', label: 'Telegram', icon: 'send', color: 'hover:border-cyan-400 hover:text-emerald-400' },
+                { key: 'facebook', label: 'Facebook', icon: 'facebook', color: 'hover:border-emerald-600 hover:text-purple-600' },
                 { key: 'instagram', label: 'Instagram', icon: 'instagram', color: 'hover:border-pink-500 hover:text-pink-400' },
                 { key: 'portfolio', label: 'معرض الأعمال', icon: 'briefcase', color: 'hover:border-amber-500 hover:text-amber-400' },
-                { key: 'website', label: 'الموقع الشخصي', icon: 'globe', color: 'hover:border-blue-500 hover:text-blue-400' }
+                { key: 'website', label: 'الموقع الشخصي', icon: 'globe', color: 'hover:border-emerald-500 hover:text-emerald-400' }
             ];
 
             let addedCount = 0;
@@ -860,7 +862,7 @@
             countries.forEach(c => {
                 const pill = document.createElement('span');
                 pill.className = 'px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/25 text-xs font-bold text-purple-700 dark:text-purple-400 flex items-center gap-1 font-latin';
-                pill.innerHTML = `<i data-lucide="globe" class="w-3 h-3 text-blue-500"></i><span>${escapeHTML(c)}</span>`;
+                pill.innerHTML = `<i data-lucide="globe" class="w-3 h-3 text-emerald-600"></i><span>${escapeHTML(c)}</span>`;
                 targetContainer.appendChild(pill);
             });
 
@@ -870,8 +872,8 @@
             const interests = p.scholarship_interests || ['DAAD', 'Chevening', 'Stipendium Hungaricum'];
             interests.forEach(s => {
                 const pill = document.createElement('span');
-                pill.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1 font-latin';
-                pill.innerHTML = `<i data-lucide="award" class="w-3 h-3 text-cyan-500"></i><span>${escapeHTML(s)}</span>`;
+                pill.className = 'px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-xs font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1 font-latin';
+                pill.innerHTML = `<i data-lucide="award" class="w-3 h-3 text-purple-600"></i><span>${escapeHTML(s)}</span>`;
                 schContainer.appendChild(pill);
             });
 

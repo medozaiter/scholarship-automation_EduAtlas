@@ -49,7 +49,7 @@
                                       (state.query ? 1 : 0);
 
             return `
-                <aside class="sp-card p-5 border border-slate-200/80 dark:border-slate-800/80 space-y-5" aria-label="فلاتر تصفية وفرز المنح">
+                <aside class="sp-card ea-sticky-sidebar p-5 border border-slate-200/80 dark:border-slate-800/80 space-y-5" aria-label="فلاتر تصفية وفرز المنح">
                     <!-- Header with Filter Counter & Reset -->
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
                         <div class="flex items-center gap-2">
