@@ -1,7 +1,9 @@
 /**
  * EduAtlas Design System — components.css
- * Theme: «رسام الخرائط الحديث — Modern Cartographer» (Direction B)
- * Core UI Components: Cards, Badges, Buttons, Inputs, Laser Compass Gauge & AI Chat
+ * Unified Refined Academic SaaS Design System (Linear, Notion, Stripe inspired)
+ * Primary: Emerald Green (#059669 / #10E599)
+ * Secondary: Purple (#6D28D9 / #7C3AED)
+ * Warnings/Deadlines ONLY: Amber (#D97706 / #F59E0B)
  */
 
 /* ===================================================================
@@ -11,16 +13,16 @@
   position: sticky !important;
   top: 0 !important;
   z-index: 1000 !important;
-  background-color: rgba(248, 249, 253, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--ea-surface-muted);
+  background-color: rgba(248, 251, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--ea-border);
   transition: background-color var(--ea-transition-base), border-color var(--ea-transition-base);
 }
 
 html.dark .sp-sticky-nav, html.dark .ea-navbar {
   background-color: rgba(12, 10, 23, 0.92);
-  border-bottom: 1px solid var(--ea-surface-muted);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.15);
 }
 
 .ea-nav-link {
@@ -28,95 +30,101 @@ html.dark .sp-sticky-nav, html.dark .ea-navbar {
   font-size: var(--ea-space-3);
   font-weight: 600;
   color: var(--ea-text-secondary);
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--ea-radius-sm);
-  transition: color var(--ea-transition-fast), background-color var(--ea-transition-fast);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--ea-radius-md);
+  transition: color var(--ea-transition-fast), background-color var(--ea-transition-fast), border-color var(--ea-transition-fast);
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.4rem;
   text-decoration: none;
 }
 
 .ea-nav-link:hover {
-  color: var(--ea-purple-500);
-  background-color: var(--ea-surface-subtle);
+  color: var(--ea-purple-600);
+  background-color: var(--ea-purple-50);
 }
 
 html.dark .ea-nav-link:hover {
-  color: var(--ea-mint-400);
+  color: var(--ea-mint-500);
   background-color: var(--ea-surface-subtle);
 }
 
 .ea-nav-link.active {
-  color: var(--ea-purple-600);
+  color: var(--ea-emerald-700);
+  background-color: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.20);
   font-weight: 700;
 }
 
 html.dark .ea-nav-link.active {
   color: var(--ea-mint-500);
-}
-
-.ea-nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  right: 0.75rem;
-  left: 0.75rem;
-  height: 2.5px;
-  background-color: var(--ea-brand-accent);
-  border-radius: var(--ea-radius-full);
+  background-color: rgba(16, 229, 153, 0.10);
+  border: 1px solid rgba(16, 229, 153, 0.25);
 }
 
 /* ===================================================================
- * 2. CARDS & CYBER SURFACES
+ * 2. CARDS & SAAS SURFACES (LINEAR / NOTION / STRIPE DEPTH)
  * =================================================================== */
 .sp-card, .ea-card {
   background: var(--ea-surface);
   border: 1px solid var(--ea-border);
   border-radius: var(--ea-radius-xl);
-  box-shadow: var(--ea-shadow-sm);
+  box-shadow: var(--ea-card-shadow);
   transition: border-color var(--ea-transition-base), box-shadow var(--ea-transition-base), transform var(--ea-transition-base);
   position: relative;
 }
 
 .sp-card-hover:hover, .ea-card:hover {
-  border-color: var(--ea-brand-accent);
-  box-shadow: var(--ea-shadow-lg), 0 0 15px -2px rgba(16, 229, 153, 0.25);
+  border-color: rgba(5, 150, 105, 0.40);
+  box-shadow: var(--ea-card-shadow-hover);
   transform: translateY(-2px);
 }
 
+html.dark .sp-card-hover:hover, html.dark .ea-card:hover {
+  border-color: rgba(16, 229, 153, 0.40);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(16, 229, 153, 0.30);
+  transform: translateY(-2px);
+}
+
+/* Layered Subcards with subtle frosted purple tint */
 .sp-subcard, .ea-subcard {
-  background: var(--ea-surface-subtle);
-  border: 1px solid var(--ea-surface-muted);
+  background: rgba(243, 238, 255, 0.42);
+  border: 1px solid rgba(214, 211, 235, 0.65);
   border-radius: var(--ea-radius-lg);
   transition: background-color var(--ea-transition-fast), border-color var(--ea-transition-fast);
 }
 
+html.dark .sp-subcard, html.dark .ea-subcard {
+  background: rgba(30, 25, 53, 0.60);
+  border: 1px solid rgba(167, 139, 250, 0.15);
+}
+
 /* ===================================================================
- * 3. BUTTONS (MODERN CARTOGRAPHER)
+ * 3. ACTION BUTTONS & VISUAL HIERARCHY (CTAs COMMAND ATTENTION FIRST)
  * =================================================================== */
+
+/* Primary Action CTA — High prominence Emerald Green */
 .ea-btn-primary, .sp-btn-primary {
-  background: linear-gradient(135deg, #10E599 0%, #059669 100%) !important;
-  color: #0C0A17 !important;
-  font-weight: 800 !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
   border-radius: var(--ea-radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 16px rgba(16, 229, 153, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: var(--ea-shadow-cta) !important;
   transition: all var(--ea-transition-base);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0.625rem 1.25rem;
-  gap: 0.5rem;
+  gap: 0.45rem;
   text-decoration: none;
 }
 
 .ea-btn-primary:hover, .sp-btn-primary:hover {
-  background: linear-gradient(135deg, #2BF5AC 0%, #047857 100%) !important;
-  color: #0C0A17 !important;
-  filter: brightness(1.05);
-  box-shadow: 0 6px 22px rgba(16, 229, 153, 0.50) !important;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--ea-shadow-cta-hover) !important;
   transform: translateY(-1.5px);
 }
 
@@ -124,6 +132,14 @@ html.dark .ea-nav-link.active {
   transform: scale(0.98);
 }
 
+html.dark .ea-btn-primary, html.dark .sp-btn-primary {
+  background: linear-gradient(135deg, #10E599 0%, #059669 100%) !important;
+  color: #0C0A17 !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 18px rgba(16, 229, 153, 0.35) !important;
+}
+
+/* Secondary Button — Minimalist, Clean surface */
 .ea-btn-secondary, .sp-btn-secondary {
   background-color: var(--ea-surface);
   color: var(--ea-text-primary);
@@ -143,83 +159,105 @@ html.dark .ea-nav-link.active {
 
 .ea-btn-secondary:hover, .sp-btn-secondary:hover {
   background-color: var(--ea-surface-subtle);
-  border-color: var(--ea-purple-400);
+  border-color: rgba(109, 40, 217, 0.35);
+  color: var(--ea-purple-600);
   transform: translateY(-1px);
 }
 
+html.dark .ea-btn-secondary:hover, html.dark .sp-btn-secondary:hover {
+  background-color: var(--ea-surface-subtle);
+  border-color: rgba(16, 229, 153, 0.35);
+  color: var(--ea-mint-500);
+}
+
+/* Secondary Action Purple Button */
 .ea-btn-purple, .sp-btn-violet {
   background: linear-gradient(135deg, var(--ea-purple-600), var(--ea-purple-700));
   color: #FFFFFF !important;
   font-weight: 700;
   border-radius: var(--ea-radius-md);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.32);
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.28);
   transition: all var(--ea-transition-base);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0.625rem 1.25rem;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  text-decoration: none;
 }
 
 .ea-btn-purple:hover, .sp-btn-violet:hover {
   background: linear-gradient(135deg, var(--ea-purple-500), var(--ea-purple-600));
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.40);
   transform: translateY(-1.5px);
 }
 
 /* ===================================================================
- * 4. BADGES & STATUS PILLS
+ * 4. UNIFIED BADGES & FILTERS (REDUCED COLOR DIVERSITY)
+ * Rule: Green = Active states / full match
+ * Rule: Purple = Categories / degrees / fields
+ * Rule: Amber = Deadlines / alerts ONLY
  * =================================================================== */
 .sp-badge, .ea-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.35rem;
   font-size: 0.725rem;
-  font-weight: 700;
-  padding: 0.25rem 0.65rem;
+  font-weight: 600;
+  padding: 0.225rem 0.65rem;
   border-radius: var(--ea-radius-full);
-  line-height: 1.2;
+  line-height: 1.25;
+  transition: all var(--ea-transition-fast);
 }
 
-.sp-badge-success, .sp-badge-emerald, .ea-badge-success {
+/* Active State & Match Success — Green Shades */
+.sp-badge-success, .sp-badge-emerald, .ea-badge-success, .sp-badge-active {
   background-color: var(--ea-success-bg);
   border: 1px solid var(--ea-success-border);
   color: var(--ea-success-text);
+  font-weight: 700;
 }
 
+/* Categories, Degree Levels, Study Fields & General Info — Purple Shades */
+.sp-badge-info, .sp-badge-blue, .ea-badge-info, 
+.sp-badge-ai, .sp-badge-violet, .ea-badge-ai,
+.sp-badge-category, .sp-badge-degree {
+  background-color: var(--ea-category-bg);
+  border: 1px solid var(--ea-category-border);
+  color: var(--ea-category-text);
+}
+
+/* Warnings & Deadlines ONLY — Amber Shades */
 .sp-badge-warning, .sp-badge-amber, .ea-badge-warning {
   background-color: var(--ea-warning-bg);
   border: 1px solid var(--ea-warning-border);
   color: var(--ea-warning-text);
+  font-weight: 700;
 }
 
+/* Expiry Danger — Subtle Soft Crimson */
 .sp-badge-danger, .sp-badge-rose, .ea-badge-danger {
   background-color: var(--ea-danger-bg);
   border: 1px solid var(--ea-danger-border);
   color: var(--ea-danger-text);
-}
-
-.sp-badge-info, .sp-badge-blue, .ea-badge-info {
-  background-color: var(--ea-info-bg);
-  border: 1px solid var(--ea-info-border);
-  color: var(--ea-info-text);
-}
-
-.sp-badge-ai, .sp-badge-violet, .ea-badge-ai {
-  background-color: var(--ea-ai-bg);
-  border: 1px solid var(--ea-ai-border);
-  color: var(--ea-ai-text);
+  font-weight: 700;
 }
 
 .sp-badge-neutral {
-  background-color: var(--ea-surface-subtle);
+  background-color: rgba(12, 10, 23, 0.04);
   border: 1px solid var(--ea-border);
   color: var(--ea-text-secondary);
 }
 
-/* Deadline threshold awareness */
+html.dark .sp-badge-neutral {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--ea-text-secondary);
+}
+
+/* Deadline badge with explicit amber prominence */
 .sp-deadline-badge {
   display: inline-flex;
   align-items: center;
@@ -228,7 +266,7 @@ html.dark .ea-nav-link.active {
   border-radius: var(--ea-radius-md);
   font-size: 0.725rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .sp-deadline-badge.urgent {
@@ -237,16 +275,39 @@ html.dark .ea-nav-link.active {
   color: var(--ea-danger-text);
 }
 
-.sp-deadline-badge.approaching {
+.sp-deadline-badge.approaching, .sp-deadline-badge.normal {
   background-color: var(--ea-warning-bg);
   border: 1px solid var(--ea-warning-border);
   color: var(--ea-warning-text);
 }
 
-.sp-deadline-badge.normal {
-  background-color: var(--ea-info-bg);
-  border: 1px solid var(--ea-info-border);
-  color: var(--ea-info-text);
+/* Unified Filter Chips */
+.ea-filter-chip, .major-chip {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--ea-radius-md);
+  font-size: 0.775rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all var(--ea-transition-fast);
+  background-color: var(--ea-surface);
+  border: 1px solid var(--ea-border);
+  color: var(--ea-text-secondary);
+}
+
+.ea-filter-chip:hover, .major-chip:hover {
+  border-color: rgba(109, 40, 217, 0.35);
+  background-color: var(--ea-purple-50);
+  color: var(--ea-purple-700);
+}
+
+.ea-filter-chip.active, .major-chip.active {
+  background-color: var(--ea-emerald-600) !important;
+  border-color: var(--ea-emerald-600) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
 }
 
 /* Coverage Badges */
@@ -258,15 +319,9 @@ html.dark .ea-nav-link.active {
   border-radius: var(--ea-radius-sm);
   font-size: 0.725rem;
   font-weight: 600;
-  background-color: rgba(124, 58, 237, 0.08);
-  border: 1px solid rgba(124, 58, 237, 0.22);
-  color: var(--ea-text-secondary);
-}
-
-html.dark .sp-coverage-badge {
-  background-color: rgba(34, 28, 62, 0.85);
-  border: 1px solid rgba(56, 47, 100, 0.8);
-  color: #C4B5FD;
+  background-color: var(--ea-category-bg);
+  border: 1px solid var(--ea-category-border);
+  color: var(--ea-category-text);
 }
 
 /* ===================================================================
@@ -296,11 +351,11 @@ html.dark .sp-coverage-badge {
   transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.3s ease;
 }
 
-.match-ring-score-emerald { stroke: var(--ea-mint-500); }
-.match-ring-score-violet  { stroke: var(--ea-purple-400); }
-.match-ring-score-blue    { stroke: var(--ea-indigo-400); }
-.match-ring-score-amber   { stroke: #FBBF24; }
-.match-ring-score-rose    { stroke: #EF4444; }
+.match-ring-score-emerald { stroke: var(--ea-emerald-600); }
+.match-ring-score-violet  { stroke: var(--ea-purple-600); }
+.match-ring-score-blue    { stroke: var(--ea-purple-600); }
+.match-ring-score-amber   { stroke: var(--ea-amber-600); }
+.match-ring-score-rose    { stroke: #DC2626; }
 
 /* ===================================================================
  * 6. FORMS & SEARCH INPUTS
@@ -319,13 +374,13 @@ html.dark .sp-coverage-badge {
 
 .ea-input:focus, input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--ea-mint-500);
-  box-shadow: 0 0 0 3px rgba(16, 229, 153, 0.20);
+  border-color: var(--ea-emerald-600);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.18);
 }
 
-:root:not(.dark) .ea-input:focus, :root:not(.dark) input:focus, :root:not(.dark) select:focus, :root:not(.dark) textarea:focus {
-  border-color: var(--ea-purple-500);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+html.dark .ea-input:focus, html.dark input:focus, html.dark select:focus, html.dark textarea:focus {
+  border-color: var(--ea-mint-500);
+  box-shadow: 0 0 0 3px rgba(16, 229, 153, 0.20);
 }
 
 /* ===================================================================
@@ -340,10 +395,11 @@ html.dark .sp-coverage-badge {
 }
 
 .ea-chat-ai {
-  background-color: var(--ea-surface-subtle);
-  border: 1px solid var(--ea-surface-muted);
+  background-color: var(--ea-surface);
+  border: 1px solid var(--ea-border);
   color: var(--ea-text-primary);
   border-top-right-radius: 4px;
+  box-shadow: var(--ea-shadow-xs);
 }
 
 .ea-chat-user {
@@ -351,4 +407,5 @@ html.dark .sp-coverage-badge {
   color: #FFFFFF;
   border-top-left-radius: 4px;
   margin-right: auto;
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.25);
 }

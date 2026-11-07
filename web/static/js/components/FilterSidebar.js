@@ -1,5 +1,6 @@
 /**
  * EduAtlas - FilterSidebar Component
+ * Refined Visual Design: Emerald Green Primary (Active States), Purple Secondary (Categories), Amber (Warnings)
  * Instant, accessible client-side filtering and sorting controller without page reloads.
  */
 
@@ -52,15 +53,15 @@
                     <!-- Header with Filter Counter & Reset -->
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="filter" class="w-4 h-4 text-blue-500"></i>
+                            <i data-lucide="filter" class="w-4 h-4 text-emerald-600"></i>
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">تصفية وفرز الفرص</h3>
-                            ${activeFiltersCount > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white font-latin">${activeFiltersCount}</span>` : ''}
+                            ${activeFiltersCount > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white font-latin">${activeFiltersCount}</span>` : ''}
                         </div>
 
                         ${activeFiltersCount > 0 ? `
                             <button type="button" 
                                     onclick="DashboardApp.resetFilters()" 
-                                    class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-bold flex items-center gap-1">
+                                    class="text-[11px] text-purple-600 dark:text-purple-400 hover:text-purple-700 font-bold flex items-center gap-1 transition">
                                 <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
                                 <span>إعادة ضبط</span>
                             </button>
@@ -81,30 +82,30 @@
                         </div>
                     </div>
 
-                    <!-- 1. Degree Level Filter -->
+                    <!-- 1. Degree Level Filter (Green for active states, Purple accents) -->
                     <div class="space-y-2">
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">المرحلة الدراسية</label>
                         <div class="grid grid-cols-2 gap-1.5 text-xs font-bold">
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('degree', 'all')" 
-                                    class="p-2 rounded-xl border text-center transition ${state.degree === 'all' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-center transition ${state.degree === 'all' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-50/50 dark:hover:bg-slate-800'}">
                                 كافة المراحل
                             </button>
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('degree', 'bachelor')" 
-                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'bachelor' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'bachelor' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-50/50 dark:hover:bg-slate-800'}">
                                 <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
                                 <span>بكالوريوس</span>
                             </button>
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('degree', 'master')" 
-                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'master' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'master' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-50/50 dark:hover:bg-slate-800'}">
                                 <i data-lucide="scroll" class="w-3.5 h-3.5"></i>
                                 <span>ماجستير</span>
                             </button>
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('degree', 'phd')" 
-                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'phd' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-center transition flex items-center justify-center gap-1 ${state.degree === 'phd' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-50/50 dark:hover:bg-slate-800'}">
                                 <i data-lucide="microscope" class="w-3.5 h-3.5"></i>
                                 <span>دكتوراه</span>
                             </button>
@@ -117,21 +118,21 @@
                         <div class="flex flex-col gap-1.5 text-xs font-bold">
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('funding', 'all')" 
-                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'all' ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-500' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'all' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-500 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
                                 <span>كافة أنواع التمويل</span>
-                                <span class="w-2 h-2 rounded-full ${state.funding === 'all' ? 'bg-blue-500' : 'bg-transparent'}"></span>
+                                <span class="w-2 h-2 rounded-full ${state.funding === 'all' ? 'bg-emerald-500' : 'bg-transparent'}"></span>
                             </button>
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('funding', 'fully')" 
-                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'fully' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-500' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'fully' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-500 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
                                 <span>تمويل كامل 100% (Fully Funded)</span>
                                 <span class="w-2 h-2 rounded-full ${state.funding === 'fully' ? 'bg-emerald-500' : 'bg-transparent'}"></span>
                             </button>
                             <button type="button" 
                                     onclick="DashboardApp.setFilter('funding', 'partial')" 
-                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'partial' ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-500' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                                    class="p-2 rounded-xl border text-right transition flex items-center justify-between ${state.funding === 'partial' ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-500 shadow-xs' : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
                                 <span>إعفاء دراسي جزئي / رسوم</span>
-                                <span class="w-2 h-2 rounded-full ${state.funding === 'partial' ? 'bg-amber-500' : 'bg-transparent'}"></span>
+                                <span class="w-2 h-2 rounded-full ${state.funding === 'partial' ? 'bg-purple-500' : 'bg-transparent'}"></span>
                             </button>
                         </div>
                     </div>
@@ -165,7 +166,7 @@
                     <!-- 5. Sort By Option -->
                     <div class="space-y-1.5 pt-2 border-t border-slate-200/80 dark:border-slate-800/80">
                         <label for="filterSortSelect" class="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                            <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-blue-500"></i>
+                            <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-purple-600"></i>
                             <span>ترتيب النتائج حسب:</span>
                         </label>
                         <select id="filterSortSelect" 
@@ -178,9 +179,9 @@
                     </div>
 
                     <!-- Results Count Badge -->
-                    <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-between">
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center justify-between">
                         <span>النتائج المطابقة:</span>
-                        <span class="font-latin text-sm">${filteredCount} / ${totalCount}</span>
+                        <span class="font-latin text-sm font-black">${filteredCount} / ${totalCount}</span>
                     </div>
                 </aside>
             `;

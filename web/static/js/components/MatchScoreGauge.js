@@ -1,5 +1,6 @@
 /**
  * EduAtlas - MatchScoreGauge Component
+ * Refined Palette: Emerald Green (Exceptional Match), Purple (High Match), Amber (Moderate / Caution)
  * Accessible circular SVG match score gauge with dynamic color tiering.
  */
 
@@ -32,35 +33,27 @@
          * @returns {{ color: string, stroke: string, bg: string, label: string }}
          */
         getColorTier(scoreNum) {
-            if (scoreNum >= 90) {
+            if (scoreNum >= 88) {
                 return {
-                    color: 'text-emerald-600 dark:text-emerald-400',
-                    stroke: '#10b981',
-                    bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                    color: 'text-emerald-700 dark:text-emerald-300 font-bold',
+                    stroke: '#059669',
+                    bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
                     label: 'توافق استثنائي'
                 };
             }
-            if (scoreNum >= 80) {
+            if (scoreNum >= 75) {
                 return {
-                    color: 'text-blue-600 dark:text-blue-400',
-                    stroke: '#3b82f6',
-                    bg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                    color: 'text-purple-700 dark:text-purple-300 font-bold',
+                    stroke: '#7C3AED',
+                    bg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20',
                     label: 'توافق مرتفع'
                 };
             }
-            if (scoreNum >= 70) {
-                return {
-                    color: 'text-amber-600 dark:text-amber-400',
-                    stroke: '#f59e0b',
-                    bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-                    label: 'توافق جيد'
-                };
-            }
             return {
-                color: 'text-[#C86446]',
-                stroke: '#c86446',
-                bg: 'bg-[#C86446]/10 text-[#C86446] border-[#C86446]/20',
-                label: 'توافق متوسط'
+                color: 'text-amber-800 dark:text-amber-300 font-bold',
+                stroke: '#D97706',
+                bg: 'bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20',
+                label: 'بحاجة لمستندات'
             };
         },
 
@@ -100,45 +93,23 @@
                                 fill="transparent" 
                                 stroke="currentColor" 
                                 stroke-width="${cfg.stroke}" 
-                                class="text-slate-200 dark:text-slate-800/80" />
-                            <!-- Active Progress -->
+                                class="text-purple-100 dark:text-slate-800" />
+                            <!-- Progress Ring -->
                             <circle cx="${cfg.size / 2}" cy="${cfg.size / 2}" r="${cfg.radius}" 
                                 fill="transparent" 
                                 stroke="${tier.stroke}" 
                                 stroke-width="${cfg.stroke}" 
-                                stroke-linecap="round" 
                                 stroke-dasharray="${circumference}" 
                                 stroke-dashoffset="${strokeDashoffset}" 
+                                stroke-linecap="round" 
                                 class="transition-all duration-700 ease-out" />
                         </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center font-latin">
-                            <span class="${cfg.text} ${tier.color} leading-none tabular-nums font-black">${scoreNum}%</span>
-                            <span class="${cfg.sub} text-slate-400 font-sans mt-0.5 hidden sm:block">توافق</span>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <span class="${cfg.text} ${tier.color} font-latin font-black leading-none">${scoreNum}%</span>
                         </div>
                     </div>
-                    ${size !== 'sm' ? `<span class="mt-1 text-[11px] font-bold ${tier.color} truncate max-w-[90px] text-center">${labelText}</span>` : ''}
+                    <span class="${cfg.sub} font-bold text-slate-500 dark:text-slate-400 mt-1">${labelText}</span>
                 </div>
-            `;
-        },
-
-        /**
-         * Renders an accessible compact inline pill badge with score.
-         * @param {number|string} score
-         * @param {string} [customLabel]
-         * @returns {string} HTML string
-         */
-        renderBadge(score, customLabel = '') {
-            const scoreNum = this.parseScore(score);
-            const tier = this.getColorTier(scoreNum);
-            const labelText = customLabel || tier.label;
-
-            return `
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${tier.bg}"
-                      role="meter" aria-valuenow="${scoreNum}" aria-valuemin="0" aria-valuemax="100" aria-label="توافق الشروط ${scoreNum}%">
-                    <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${tier.stroke}"></span>
-                    <span class="font-latin font-black">${scoreNum}%</span>
-                    <span>${labelText}</span>
-                </span>
             `;
         }
     };

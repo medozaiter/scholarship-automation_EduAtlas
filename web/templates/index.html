@@ -740,9 +740,11 @@
                                         <i data-lucide="user" class="w-4 h-4"></i>
                                     </span>
                                     <input type="text" id="fullName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
-                                        oninput="updateCompletenessMeter();"
+                                        oninput="sanitizeFullNameInput(this);"
+                                        onblur="validateField('fullName');"
                                         class="sp-input pr-9">
                                 </div>
+                                <p id="fullNameError" class="text-[11px] text-rose-500 font-bold mt-1.5 hidden"></p>
                             </div>
 
                             <div>
@@ -754,11 +756,12 @@
                                         <i data-lucide="award" class="w-4 h-4 text-emerald-500"></i>
                                     </span>
                                     <input type="text" id="gpaInput" required maxlength="8" placeholder="3.75 أو 85.5%"
-                                        onkeypress="return /[0-9.%/]/.test(event.key)"
-                                        oninput="updateCompletenessMeter();"
+                                        oninput="sanitizeGpaInput(this);"
+                                        onblur="validateField('gpaInput');"
                                         class="sp-input pr-9 font-mono tabular-nums">
                                 </div>
                                 <span class="text-[11px] text-slate-400 mt-1 block">أدخل المعدل (نظام 4.0 أو نسبة مئوية 0-100%)</span>
+                                <p id="gpaError" class="text-[11px] text-rose-500 font-bold mt-1 hidden"></p>
                             </div>
                         </div>
 
@@ -792,9 +795,11 @@
                                         <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                                     </span>
                                     <input type="text" id="institutionInput" placeholder="مثال: جامعة القدس / ثانوية عامة"
-                                        oninput="updateCompletenessMeter()"
+                                        oninput="sanitizeInstitutionInput(this);"
+                                        onblur="validateField('institutionInput');"
                                         class="sp-input pr-9">
                                 </div>
+                                <p id="institutionError" class="text-[11px] text-rose-500 font-bold mt-1.5 hidden"></p>
                             </div>
                         </div>
 
@@ -883,8 +888,10 @@
                             </div>
 
                             <input type="text" id="customMajor" maxlength="100" placeholder="أو اكتب تخصصك هنا..."
-                                oninput="updateCompletenessMeter();"
+                                oninput="sanitizeCustomMajorInput(this);"
+                                onblur="validateField('customMajor');"
                                 class="sp-input text-xs">
+                            <p id="customMajorError" class="text-[11px] text-rose-500 font-bold mt-1 hidden"></p>
                         </div>
 
                         <div class="pt-4 flex items-center justify-between">
@@ -1003,9 +1010,11 @@
                                 </span>
                                 <input type="email" id="email" required maxlength="100" placeholder="name@example.com"
                                     oninput="updateCompletenessMeter();"
+                                    onblur="validateField('email');"
                                     class="sp-input pr-9 font-latin">
                             </div>
                             <span class="text-[11px] text-slate-400 mt-1 block">ستصلك المنح المطابقة وتقارير المواعيد المباشرة إلى هذا البريد</span>
+                            <p id="emailError" class="text-[11px] text-rose-500 font-bold mt-1 hidden"></p>
                         </div>
 
                         <!-- Preferences Checkboxes Grid -->
@@ -1253,6 +1262,262 @@
         // =====================================================================
         let currentWizardStep = 1;
 
+        // --- STRICT REAL-TIME VALIDATION & SANITIZATION SUITE ---
+        function isValidFullName(name) {
+            if (!name) return false;
+            const clean = name.trim();
+            if (clean.length < 3 || clean.length > 60) return false;
+            const regex = /^[\u0600-\u06FFa-zA-Z\s\.\-']{3,60}$/;
+            if (!regex.test(clean)) return false;
+            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
+            return letterCount >= 3;
+        }
+
+        function isValidGpa(gpaStr) {
+            if (!gpaStr) return false;
+            const clean = gpaStr.trim();
+            if (clean.length > 8) return false;
+
+            // 1. Explicit slash scale e.g. 3.75/4 or 4.5/5
+            const slashMatch = clean.match(/^([0-5](?:\.\d{1,2})?)\s*\/\s*([45](?:\.0)?)$/);
+            if (slashMatch) {
+                const val = parseFloat(slashMatch[1]);
+                const scale = parseFloat(slashMatch[2]);
+                return val >= 0.5 && val <= scale;
+            }
+
+            // 2. Percentage with '%' e.g. 85.5% or 95%
+            if (clean.includes('%')) {
+                const pctMatch = clean.match(/^(\d{1,3}(?:\.\d{1,2})?)\s*%$/);
+                if (pctMatch) {
+                    const val = parseFloat(pctMatch[1]);
+                    return val >= 40.0 && val <= 100.0;
+                }
+                return false;
+            }
+
+            // 3. Numeric value without symbol
+            const numMatch = clean.match(/^(\d{1,3}(?:\.\d{1,2})?)$/);
+            if (numMatch) {
+                const val = parseFloat(numMatch[1]);
+                // Out of 4.0/5.0 scale (0.5 to 5.0) or percentage (40 to 100)
+                if (val >= 0.5 && val <= 5.0) return true;
+                if (val >= 40.0 && val <= 100.0) return true;
+            }
+
+            return false;
+        }
+
+        function isValidInstitution(inst) {
+            if (!inst) return true; // Optional field
+            const clean = inst.trim();
+            if (clean.length === 0) return true;
+            if (clean.length < 3 || clean.length > 80) return false;
+            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
+            if (letterCount < 3) return false;
+            // Reject repeated garbage characters
+            if (/([!@#$%^&*()_+=\[\]{};':"\\|<>?~`,.\-\/])\1{2,}/.test(clean)) return false;
+            return true;
+        }
+
+        function isValidEmail(email) {
+            if (!email) return false;
+            return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
+        }
+
+        function showFieldError(fieldId, msg) {
+            const el = document.getElementById(fieldId);
+            const errEl = document.getElementById(fieldId + 'Error');
+            if (el) {
+                el.classList.add('border-rose-500', 'focus:border-rose-500', 'ring-1', 'ring-rose-500/50');
+                el.classList.remove('border-slate-200', 'dark:border-slate-800');
+            }
+            if (errEl) {
+                errEl.textContent = msg;
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function clearFieldError(fieldId) {
+            const el = document.getElementById(fieldId);
+            const errEl = document.getElementById(fieldId + 'Error');
+            if (el) {
+                el.classList.remove('border-rose-500', 'focus:border-rose-500', 'ring-1', 'ring-rose-500/50');
+                el.classList.add('border-slate-200', 'dark:border-slate-800');
+            }
+            if (errEl) {
+                errEl.textContent = '';
+                errEl.classList.add('hidden');
+            }
+        }
+
+        function sanitizeFullNameInput(inputEl) {
+            const original = inputEl.value;
+            // Filter strictly: Arabic/English letters, spaces, dots, hyphens, and single quotes
+            const filtered = original.replace(/[^\u0600-\u06FFa-zA-Z\s\.\-']/g, '');
+            if (original !== filtered) {
+                inputEl.value = filtered;
+            }
+            if (inputEl.value.trim().length >= 3) {
+                validateField('fullName');
+            } else {
+                clearFieldError('fullName');
+            }
+            updateCompletenessMeter();
+        }
+
+        function sanitizeGpaInput(inputEl) {
+            const original = inputEl.value;
+            // Allowed characters: digits, '.', '%', '/'
+            let filtered = original.replace(/[^0-9.%/]/g, '');
+            if (filtered.length > 8) {
+                filtered = filtered.substring(0, 8);
+            }
+            if (original !== filtered) {
+                inputEl.value = filtered;
+            }
+            if (inputEl.value.trim().length >= 2) {
+                validateField('gpaInput');
+            } else {
+                clearFieldError('gpaInput');
+            }
+            updateCompletenessMeter();
+        }
+
+        function sanitizeInstitutionInput(inputEl) {
+            const original = inputEl.value;
+            // Allowed: Arabic/English letters, digits, spaces, dots, hyphens, slashes, commas
+            let filtered = original.replace(/[^\u0600-\u06FFa-zA-Z0-9\s\.\-/,\u060C]/g, '');
+            if (filtered.length > 80) {
+                filtered = filtered.substring(0, 80);
+            }
+            if (original !== filtered) {
+                inputEl.value = filtered;
+            }
+            if (inputEl.value.trim().length >= 2) {
+                validateField('institutionInput');
+            } else {
+                clearFieldError('institutionInput');
+            }
+            updateCompletenessMeter();
+        }
+
+        function sanitizeCustomMajorInput(inputEl) {
+            const original = inputEl.value;
+            let filtered = original.replace(/[^\u0600-\u06FFa-zA-Z0-9\s\.\-&,/\u060C]/g, '');
+            if (filtered.length > 80) {
+                filtered = filtered.substring(0, 80);
+            }
+            if (original !== filtered) {
+                inputEl.value = filtered;
+            }
+            clearFieldError('customMajor');
+            updateCompletenessMeter();
+        }
+
+        function validateField(fieldId) {
+            const el = document.getElementById(fieldId);
+            if (!el) return true;
+            const val = el.value.trim();
+
+            if (fieldId === 'fullName') {
+                if (!val) {
+                    showFieldError(fieldId, 'الاسم الكامل مطلوب.');
+                    return false;
+                }
+                if (val.length < 3) {
+                    showFieldError(fieldId, 'الاسم قصير جداً (3 أحرف على الأقل).');
+                    return false;
+                }
+                if (!isValidFullName(val)) {
+                    showFieldError(fieldId, 'يرجى إدخال اسم حقيقي (أحرف عربية أو إنجليزية فقط دون رموز خاصة).');
+                    return false;
+                }
+                clearFieldError(fieldId);
+                return true;
+            }
+
+            if (fieldId === 'gpaInput') {
+                if (!val) {
+                    showFieldError(fieldId, 'حقل المعدل التراكمي مطلوب.');
+                    return false;
+                }
+                if (!isValidGpa(val)) {
+                    showFieldError(fieldId, 'المعدل غير صحيح. أدخل قيمة بنظام 4.0 (مثال: 3.75) أو نسبة مئوية (مثال: 85%).');
+                    return false;
+                }
+                clearFieldError(fieldId);
+                return true;
+            }
+
+            if (fieldId === 'institutionInput') {
+                if (val && !isValidInstitution(val)) {
+                    showFieldError(fieldId, 'يرجى إدخال اسم مدرسة أو جامعة صالح بدون رموز عشوائية.');
+                    return false;
+                }
+                clearFieldError(fieldId);
+                return true;
+            }
+
+            if (fieldId === 'customMajor') {
+                clearFieldError('customMajor');
+                return true;
+            }
+
+            if (fieldId === 'email') {
+                if (!val) {
+                    showFieldError(fieldId, 'البريد الإلكتروني مطلوب.');
+                    return false;
+                }
+                if (!isValidEmail(val)) {
+                    showFieldError(fieldId, 'يرجى إدخال عنوان بريد إلكتروني صالح (مثال: name@example.com).');
+                    return false;
+                }
+                clearFieldError(fieldId);
+                return true;
+            }
+
+            return true;
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            let firstFailedEl = null;
+
+            if (step === 1) {
+                const nameOk = validateField('fullName');
+                if (!nameOk && !firstFailedEl) firstFailedEl = document.getElementById('fullName');
+
+                const gpaOk = validateField('gpaInput');
+                if (!gpaOk && !firstFailedEl) firstFailedEl = document.getElementById('gpaInput');
+
+                const instOk = validateField('institutionInput');
+                if (!instOk && !firstFailedEl) firstFailedEl = document.getElementById('institutionInput');
+
+                isValid = nameOk && gpaOk && instOk;
+            } else if (step === 2) {
+                const customVal = (document.getElementById('customMajor')?.value || '').trim();
+                if ((!selectedMajors || selectedMajors.length === 0) && !customVal) {
+                    showFieldError('customMajor', 'يرجى اختيار أو كتابة تخصص دراسي واحد على الأقل للمتابعة.');
+                    firstFailedEl = document.getElementById('customMajor');
+                    isValid = false;
+                } else {
+                    clearFieldError('customMajor');
+                }
+            } else if (step === 4) {
+                const emailOk = validateField('email');
+                if (!emailOk) {
+                    firstFailedEl = document.getElementById('email');
+                    isValid = false;
+                }
+            }
+
+            if (!isValid && firstFailedEl) {
+                firstFailedEl.focus();
+            }
+            return isValid;
+        }
+
         function updateCompletenessMeter() {
             let score = 0;
             const name = (document.getElementById('fullName')?.value || '').trim();
@@ -1261,14 +1526,15 @@
             const email = (document.getElementById('email')?.value || '').trim();
             const eng = document.getElementById('englishLevelSelect')?.value || '';
 
-            if (name.length >= 2) score += 20;
-            if (gpa.length >= 2) score += 25;
-            if (inst.length >= 2) score += 15;
-            if (selectedMajors && selectedMajors.length > 0) score += 20;
+            // Strictly award points only when fields pass validation
+            if (isValidFullName(name)) score += 25;
+            if (isValidGpa(gpa)) score += 25;
+            if (inst && isValidInstitution(inst)) score += 15;
+            if (selectedMajors && selectedMajors.length > 0) score += 15;
             if (eng && eng !== 'None Yet') score += 10;
-            if (email.includes('@') && email.includes('.')) score += 10;
+            if (isValidEmail(email)) score += 10;
 
-            const finalScore = Math.min(100, Math.max(15, score));
+            const finalScore = Math.min(100, score);
             const pBar = document.getElementById('completenessProgressBar');
             const badge = document.getElementById('completenessScoreBadge');
             if (pBar) pBar.style.width = finalScore + '%';
@@ -1276,6 +1542,18 @@
         }
 
         function goToWizardStep(step) {
+            if (step > currentWizardStep) {
+                // Validate all steps from currentWizardStep up to step - 1
+                for (let s = currentWizardStep; s < step; s++) {
+                    if (!validateStep(s)) {
+                        if (typeof showToast === 'function') {
+                            showToast('error', 'بيانات غير مكتملة', 'يرجى تصحيح الأخطاء في الخطوة الحالية قبل المتابعة.');
+                        }
+                        return false;
+                    }
+                }
+            }
+
             currentWizardStep = step;
             for (let i = 1; i <= 4; i++) {
                 const pane = document.getElementById(`wizardStep-${i}`);
@@ -1295,6 +1573,7 @@
             }
             updateCompletenessMeter();
             if (window.lucide) lucide.createIcons();
+            return true;
         }
 
         function createCircularMatchScoreRing(scoreVal) {
@@ -1464,7 +1743,17 @@
 
         // --- INSTANT ADMISSION PROBABILITY CALCULATOR ---
         async function calculateInstantProbability() {
-            const gpa = document.getElementById('gpaInput').value.trim() || "85%";
+            const gpaEl = document.getElementById('gpaInput');
+            const gpa = (gpaEl?.value || '').trim();
+            if (!isValidGpa(gpa)) {
+                if (typeof showToast === 'function') {
+                    showToast('error', 'المعدل غير صالح', 'يرجى إدخال معدل دراسي صحيح أولاً لحساب نسبة القبول بدقة.');
+                }
+                goToWizardStep(1);
+                showFieldError('gpaInput', 'يرجى إدخال معدل صحيح (نظام 4.0 أو نسبة مئوية 50%-100%) لحساب فرصة القبول.');
+                gpaEl?.focus();
+                return;
+            }
             const talents = document.getElementById('talentsInput').value.trim();
             const country = document.getElementById('country').value;
             const probBox = document.getElementById('probabilityBox');
@@ -1512,6 +1801,17 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Guard all steps with rigorous multi-step validation
+            for (let step = 1; step <= 4; step++) {
+                if (!validateStep(step)) {
+                    goToWizardStep(step);
+                    if (typeof showToast === 'function') {
+                        showToast('error', 'بيانات غير مكتملة', 'يرجى مراجعة الحقول المطلوبة وتصحيح الأخطاء قبل تفعيل الرادار.');
+                    }
+                    return;
+                }
+            }
 
             const customVal = document.getElementById('customMajor').value.trim();
             let finalMajors = [...selectedMajors];

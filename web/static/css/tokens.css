@@ -1,111 +1,135 @@
 /**
  * EduAtlas Design System — tokens.css
- * Theme: «رسام الخرائط الحديث — Modern Cartographer» (Direction B)
- * Combines Neo-Obsidian, Cyber Violet, Laser Mint, and Pure Frost
- * Fully compatible with legacy ScholarPilot tokens (--sp-*) and EduAtlas tokens (--ea-*)
+ * Unified Refined Design System
+ * Primary: Emerald Green (#059669 / #10E599)
+ * Secondary: Purple (#6D28D9 / #7C3AED)
+ * Warnings / Deadlines: Amber (#D97706 / #F59E0B)
+ * Background Gradient: #E6FFF7 -> #F3EEFF -> #F8FBFF
+ * Minimalist, Modern SaaS aesthetic (Linear, Notion, Stripe inspired)
  */
 
 :root {
   /* ===================================================================
-   * 1. BRAND COLOR PALETTE (MODERN CARTOGRAPHER) — LIGHT MODE (PURE FROST)
+   * 1. BRAND CORE PALETTE
    * =================================================================== */
   
-  /* Primary: Cyber Violet & Neo Purple (الهوية الرقمية المتقدمة) */
+  /* Primary: Emerald Green (الأخضر الزمردي - اللون الأساسي للمنصة والأزرار الفعالة والتوافق) */
+  --ea-emerald-950: #022C22;
+  --ea-emerald-900: #064E3B;
+  --ea-emerald-800: #065F46;
+  --ea-emerald-700: #047857;        /* Accessible text on light (WCAG AAA) */
+  --ea-emerald-600: #059669;        /* Main Brand Primary & Primary CTAs */
+  --ea-emerald-500: #10B981;        /* Interactive & Hover Accent */
+  --ea-emerald-400: #34D399;        /* Light mode accents */
+  --ea-emerald-300: #6EE7B7;
+  --ea-emerald-200: #A7F3D0;
+  --ea-emerald-100: #D1FAE5;        /* Soft Badge & Chip Backgrounds */
+  --ea-emerald-50:  #ECFDF5;        /* Ultra Subtle Active Tints */
+  --ea-mint-500:    #10E599;        /* Laser Mint Compass Glow */
+
+  /* Secondary: Elegant Purple (البنفسجي الملكي - اللون الثانوي للتصنيفات والذكاء الاصطناعي) */
   --ea-purple-950: #0C0A17;
   --ea-purple-900: #18142C;
-  --ea-purple-800: #221C3E;
-  --ea-purple-700: #4C1D95;
-  --ea-purple-600: #6D28D9;        /* Main Brand Core */
-  --ea-purple-500: #7C3AED;        /* Interactive Accent */
+  --ea-purple-800: #2E1065;
+  --ea-purple-700: #4C1D95;        /* High Contrast Text on Light */
+  --ea-purple-600: #6D28D9;        /* Main Secondary Brand Core */
+  --ea-purple-500: #7C3AED;        /* Secondary Hover & Accents */
   --ea-purple-400: #8B5CF6;
   --ea-purple-300: #A78BFA;
   --ea-purple-200: #C4B5FD;
-  --ea-purple-100: #EDE9FE;
-  --ea-purple-50:  #F5F3FF;
+  --ea-purple-100: #EDE9FE;        /* Soft Category Pill Background */
+  --ea-purple-50:  #F3EEFF;        /* Subtle Canvas Gradient Step */
 
-  /* Accent: Laser Cyber Mint (البوصلة التفاعلية ونقاط التحفيز والرادار) */
-  --ea-mint-950: #022C22;
-  --ea-mint-900: #064E3B;
-  --ea-mint-800: #065F46;
-  --ea-mint-700: #047857;
-  --ea-mint-600: #059669;          /* High contrast text on light */
-  --ea-mint-500: #10E599;          /* Glowing Laser Mint Accent */
-  --ea-mint-400: #34D399;
-  --ea-mint-300: #6EE7B7;
-  --ea-mint-200: #A7F3D0;
-  --ea-mint-100: #D1FAE5;
-  --ea-mint-50:  #ECFDF5;
+  /* Warning & Deadlines ONLY: Amber / Warm Gold (التنبيهات والمواعيد النهائية حصراً) */
+  --ea-amber-900: #78350F;
+  --ea-amber-800: #92400E;
+  --ea-amber-700: #B45309;        /* Contrast Deadline Text (7.2:1 AAA) */
+  --ea-amber-600: #D97706;        /* Main Warning Core */
+  --ea-amber-500: #F59E0B;        /* Badge Borders */
+  --ea-amber-100: #FEF3C7;        /* Soft Amber Background */
+  --ea-amber-50:  #FFFBEB;
 
-  /* AI Copilot & Guidance: Electric Indigo & Future Blue (مستشار الذكاء الاصطناعي) */
-  --ea-indigo-700: #4338CA;
-  --ea-indigo-600: #4F46E5;
-  --ea-indigo-500: #6366F1;
-  --ea-indigo-400: #818CF8;
-  --ea-indigo-100: #E0E7FF;
-  --ea-indigo-50:  #EEF2FF;
-
-  /* Neutrals: Pure Frost & Clean Architecture (الأسطح العصرية) */
-  --ea-canvas:         #F8F9FD;    /* Ultra Clean Pure Frost */
-  --ea-surface:        #FFFFFF;    /* Crisp White Card Surface */
-  --ea-surface-subtle: #EDEBF8;    /* Soft Lavender Mist Sub-surface */
-  --ea-surface-muted:  #E2E0F0;    /* Dividers and borders */
-  --ea-border:         #D6D3EB;    /* Structural Border */
-
-  /* Text Contrast System (Light Mode - WCAG AAA Compliant) */
-  --ea-text-primary:   #0C0A17;    /* Deep Cyber Obsidian Ink */
-  --ea-text-secondary: #1E293B;    /* High Contrast Slate (14.5:1) */
-  --ea-text-muted:     #475569;    /* Clean Subtext (7.2:1) */
-  --ea-text-dim:       #64748B;
-  --ea-text-inverse:   #FFFFFF;
-
-  /* Brand Roles */
-  --ea-brand-primary: var(--ea-purple-600);
-  --ea-brand-accent:  var(--ea-mint-600);
+  /* Functional Roles */
+  --ea-brand-primary: var(--ea-emerald-600);
+  --ea-brand-secondary: var(--ea-purple-600);
+  --ea-brand-accent: var(--ea-emerald-600);
   --ea-brand-accent-text: #FFFFFF;
-  --ea-brand-ai:      var(--ea-indigo-500);
+  --ea-brand-ai: var(--ea-purple-600);
 
-  /* Semantic Status Colors */
-  --ea-success-bg: rgba(16, 229, 153, 0.12);
-  --ea-success-border: rgba(16, 229, 153, 0.35);
+  /* Background Canvas Gradient Steps */
+  --ea-bg-gradient-emerald: #E6FFF7;
+  --ea-bg-gradient-purple:  #F3EEFF;
+  --ea-bg-gradient-frost:   #F8FBFF;
+  --ea-canvas: #F8FBFF;
+
+  /* Neutrals: Clean Architecture & Glassmorphism Surfaces */
+  --ea-surface:         #FFFFFF;
+  --ea-surface-subtle:  #F5F3FF;   /* Soft Purple/Mist Tint for Inner Boxes */
+  --ea-surface-muted:   #E2E0F0;   /* Borders & Dividers */
+  --ea-border:          rgba(214, 211, 235, 0.75);
+
+  /* Text Contrast Hierarchy (WCAG AAA Compliant) */
+  --ea-text-primary:    #0C0A17;   /* Deep Cyber Obsidian (18.5:1) */
+  --ea-text-secondary:  #1E293B;   /* Slate Deep Text (14.5:1) */
+  --ea-text-muted:      #475569;   /* Subtle Metadata (7.2:1) */
+  --ea-text-dim:        #64748B;
+  --ea-text-inverse:    #FFFFFF;
+
+  /* ===================================================================
+   * 2. UNIFIED STATUS & BADGE TOKENS
+   * =================================================================== */
+  /* Active & Match Success (Emerald) */
+  --ea-success-bg: rgba(5, 150, 105, 0.08);
+  --ea-success-border: rgba(5, 150, 105, 0.25);
   --ea-success-text: #047857;
 
-  --ea-warning-bg: rgba(245, 158, 11, 0.12);
-  --ea-warning-border: rgba(245, 158, 11, 0.35);
-  --ea-warning-text: #B45309;
+  /* Categories & Info (Purple) */
+  --ea-category-bg: rgba(109, 40, 217, 0.07);
+  --ea-category-border: rgba(109, 40, 217, 0.20);
+  --ea-category-text: #5B21B6;
 
-  --ea-danger-bg: rgba(239, 68, 68, 0.12);
-  --ea-danger-border: rgba(239, 68, 68, 0.35);
-  --ea-danger-text: #DC2626;
+  /* Deadlines & Warnings (Amber) */
+  --ea-warning-bg: rgba(217, 119, 6, 0.09);
+  --ea-warning-border: rgba(217, 119, 6, 0.25);
+  --ea-warning-text: #92400E;
 
-  --ea-info-bg: rgba(99, 102, 241, 0.10);
-  --ea-info-border: rgba(99, 102, 241, 0.28);
-  --ea-info-text: #4F46E5;
+  /* Critical Danger / Expiry (Soft Crimson) */
+  --ea-danger-bg: rgba(239, 68, 68, 0.08);
+  --ea-danger-border: rgba(239, 68, 68, 0.25);
+  --ea-danger-text: #B91C1C;
 
-  --ea-ai-bg: rgba(124, 58, 237, 0.10);
-  --ea-ai-border: rgba(124, 58, 237, 0.30);
+  /* AI Assistant (Purple) */
+  --ea-ai-bg: rgba(109, 40, 217, 0.08);
+  --ea-ai-border: rgba(109, 40, 217, 0.22);
   --ea-ai-text: #6D28D9;
 
-  /* Topographic Contour Strokes (Modern Cartographer) */
-  --ea-contour-stroke: rgba(109, 40, 217, 0.08);
-  --ea-contour-glow: rgba(16, 229, 153, 0.05);
+  /* ===================================================================
+   * 3. ELEVATION, SHADOWS & MODERN SAAS DEPTH
+   * =================================================================== */
+  --ea-shadow-xs: 0 1px 2px 0 rgba(12, 10, 23, 0.04);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(12, 10, 23, 0.05), 0 1px 2px 0 rgba(12, 10, 23, 0.03);
+  --ea-shadow-md: 0 4px 12px -2px rgba(12, 10, 23, 0.06), 0 2px 4px -1px rgba(12, 10, 23, 0.03);
+  --ea-shadow-lg: 0 12px 28px -4px rgba(12, 10, 23, 0.09), 0 4px 10px -2px rgba(12, 10, 23, 0.04);
+  --ea-shadow-xl: 0 24px 44px -8px rgba(12, 10, 23, 0.12), 0 8px 16px -4px rgba(12, 10, 23, 0.05);
+  
+  /* Primary CTA Glow */
+  --ea-shadow-cta: 0 4px 16px rgba(5, 150, 105, 0.28), 0 1px 3px rgba(5, 150, 105, 0.15);
+  --ea-shadow-cta-hover: 0 8px 24px rgba(5, 150, 105, 0.38), 0 2px 6px rgba(5, 150, 105, 0.20);
 
-  /* Elevation & Shadows */
-  --ea-shadow-xs: 0 1px 2px 0 rgba(19, 14, 38, 0.04);
-  --ea-shadow-sm: 0 2px 4px 0 rgba(19, 14, 38, 0.06);
-  --ea-shadow-md: 0 6px 14px -2px rgba(19, 14, 38, 0.08), 0 2px 6px -1px rgba(19, 14, 38, 0.04);
-  --ea-shadow-lg: 0 12px 24px -4px rgba(19, 14, 38, 0.12), 0 4px 8px -2px rgba(19, 14, 38, 0.06);
-  --ea-shadow-xl: 0 22px 35px -6px rgba(19, 14, 38, 0.15), 0 8px 12px -4px rgba(19, 14, 38, 0.08);
+  /* Card Hover Elevation */
+  --ea-card-shadow: 0 2px 6px rgba(12, 10, 23, 0.04), 0 1px 2px rgba(12, 10, 23, 0.02);
+  --ea-card-shadow-hover: 0 12px 28px -4px rgba(12, 10, 23, 0.08), 0 0 0 1px rgba(5, 150, 105, 0.22);
 
   /* Border Radius */
   --ea-radius-xs: 4px;
   --ea-radius-sm: 8px;
   --ea-radius-md: 12px;
   --ea-radius-lg: 16px;
-  --ea-radius-xl: 22px;
-  --ea-radius-2xl: 28px;
+  --ea-radius-xl: 20px;
+  --ea-radius-2xl: 26px;
   --ea-radius-full: 9999px;
 
-  /* Spacing Grid (8pt System) */
+  /* Spacing (8pt Modular Scale) */
   --ea-space-1: 0.25rem;  /* 4px */
   --ea-space-2: 0.5rem;   /* 8px */
   --ea-space-3: 0.75rem;  /* 12px */
@@ -115,17 +139,15 @@
   --ea-space-8: 2rem;     /* 32px */
   --ea-space-10: 2.5rem;  /* 40px */
   --ea-space-12: 3rem;    /* 48px */
-  --ea-space-16: 4rem;    /* 64px */
 
-  /* Motion & Easing */
+  /* Transitions */
   --ea-transition-fast: 150ms ease-out;
-  --ea-transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ea-transition-base: 220ms cubic-bezier(0.16, 1, 0.3, 1);
   --ea-transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
-  --ea-transition-spring: 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* ===================================================================
-   * LEGACY COMPATIBILITY MAPPINGS (--sp-*)
-   * Ensures 100% backward compatibility with all existing templates
+   * 4. BACKWARD COMPATIBILITY MAPPINGS (--sp-*)
+   * Seamlessly unifies legacy code to Emerald Primary + Purple Secondary
    * =================================================================== */
   --sp-canvas: var(--ea-canvas);
   --sp-surface: var(--ea-surface);
@@ -135,8 +157,8 @@
 
   --sp-border-subtle: var(--ea-surface-muted);
   --sp-border-default: var(--ea-border);
-  --sp-border-strong: #A78BFA;
-  --sp-border-focus: var(--ea-mint-500);
+  --sp-border-strong: var(--ea-purple-300);
+  --sp-border-focus: var(--ea-emerald-500);
 
   --sp-text-primary: var(--ea-text-primary);
   --sp-text-secondary: var(--ea-text-secondary);
@@ -144,22 +166,25 @@
   --sp-text-disabled: var(--ea-text-dim);
   --sp-text-inverse: var(--ea-text-inverse);
 
-  --sp-royal-blue: var(--ea-purple-600);
-  --sp-royal-blue-hover: var(--ea-purple-700);
-  --sp-royal-blue-subtle: rgba(109, 40, 217, 0.12);
+  /* Blue aliased to Emerald Primary for consistency */
+  --sp-royal-blue: var(--ea-emerald-600);
+  --sp-royal-blue-hover: var(--ea-emerald-700);
+  --sp-royal-blue-subtle: rgba(5, 150, 105, 0.10);
 
-  --sp-ai-violet: var(--ea-indigo-500);
-  --sp-ai-violet-hover: var(--ea-indigo-600);
-  --sp-ai-violet-subtle: rgba(99, 102, 241, 0.14);
+  /* Violet aliased to Purple Secondary */
+  --sp-ai-violet: var(--ea-purple-600);
+  --sp-ai-violet-hover: var(--ea-purple-700);
+  --sp-ai-violet-subtle: rgba(109, 40, 217, 0.10);
 
-  --sp-emerald-match: var(--ea-mint-600);
-  --sp-emerald-subtle: rgba(16, 229, 153, 0.14);
+  --sp-emerald-match: var(--ea-emerald-600);
+  --sp-emerald-subtle: rgba(5, 150, 105, 0.10);
 
-  --sp-amber-warning: #F59E0B;
-  --sp-amber-subtle: rgba(245, 158, 11, 0.14);
+  /* Warnings & Deadlines */
+  --sp-amber-warning: var(--ea-amber-600);
+  --sp-amber-subtle: rgba(217, 119, 6, 0.10);
 
-  --sp-rose-danger: #EF4444;
-  --sp-rose-subtle: rgba(239, 68, 68, 0.14);
+  --sp-rose-danger: #DC2626;
+  --sp-rose-subtle: rgba(220, 38, 38, 0.10);
 
   --sp-success-bg: var(--ea-success-bg);
   --sp-success-border: var(--ea-success-border);
@@ -173,9 +198,10 @@
   --sp-danger-border: var(--ea-danger-border);
   --sp-danger-text: var(--ea-danger-text);
 
-  --sp-info-bg: var(--ea-info-bg);
-  --sp-info-border: var(--ea-info-border);
-  --sp-info-text: var(--ea-info-text);
+  /* Unified info to Purple Category */
+  --sp-info-bg: var(--ea-category-bg);
+  --sp-info-border: var(--ea-category-border);
+  --sp-info-text: var(--ea-category-text);
 
   --sp-ai-bg: var(--ea-ai-bg);
   --sp-ai-border: var(--ea-ai-border);
@@ -196,112 +222,54 @@
 }
 
 /* ===================================================================
- * 2. DARK MODE — «NEO OBSIDIAN & CYBER LASER MINT»
+ * 5. DARK MODE PALETTE — BALANCED OBSIDIAN & EMERALD
  * =================================================================== */
 html.dark {
-  /* Surfaces */
-  --ea-canvas:         #0C0A17;    /* Deep Neo Obsidian */
-  --ea-surface:        #18142C;    /* Cyber Violet Raised Card */
-  --ea-surface-subtle: #221C3E;    /* Secondary Sub-surface */
-  --ea-surface-muted:  #29224A;    /* Inner Dividers */
-  --ea-border:         #382F64;    /* Tech Contours */
+  --ea-canvas: #0C0A17;
+  --ea-surface: #151226;
+  --ea-surface-subtle: #1E1935;
+  --ea-surface-muted: #2A2447;
+  --ea-border: rgba(167, 139, 250, 0.18);
 
-  /* Text (Dark Mode - Contrast 16:1 AAA) */
-  --ea-text-primary:   #FFFFFF;    /* Crisp Starlight White */
-  --ea-text-secondary: #A5B4FC;    /* Soft Lavender Indigo */
-  --ea-text-muted:     #818CF8;    /* Electric Subtext */
-  --ea-text-dim:       #6B7280;
-  --ea-text-inverse:   #0C0A17;
+  --ea-text-primary: #F8F9FD;
+  --ea-text-secondary: #CBD5E1;
+  --ea-text-muted: #94A3B8;
+  --ea-text-dim: #64748B;
+  --ea-text-inverse: #0C0A17;
 
-  /* Accents in Dark Mode */
-  --ea-brand-primary: var(--ea-purple-500);
-  --ea-brand-accent:  var(--ea-mint-500);    /* Laser Mint Glowing CTA */
-  --ea-brand-accent-text: #0C0A17;          /* High contrast on neon mint */
-  --ea-brand-ai:      var(--ea-indigo-400);
+  --ea-brand-primary: var(--ea-mint-500);
+  --ea-brand-secondary: var(--ea-purple-400);
+  --ea-brand-accent: var(--ea-mint-500);
+  --ea-brand-accent-text: #0C0A17;
 
-  /* Status Colors */
-  --ea-success-bg: rgba(16, 229, 153, 0.16);
-  --ea-success-border: rgba(16, 229, 153, 0.40);
-  --ea-success-text: #10E599;
+  /* Status Tokens (Dark Mode) */
+  --ea-success-bg: rgba(16, 229, 153, 0.14);
+  --ea-success-border: rgba(16, 229, 153, 0.35);
+  --ea-success-text: #34D399;
 
-  --ea-warning-bg: rgba(251, 191, 36, 0.16);
-  --ea-warning-border: rgba(251, 191, 36, 0.40);
-  --ea-warning-text: #FDE047;
+  --ea-category-bg: rgba(139, 92, 246, 0.14);
+  --ea-category-border: rgba(139, 92, 246, 0.32);
+  --ea-category-text: #C4B5FD;
 
-  --ea-danger-bg: rgba(239, 68, 68, 0.20);
-  --ea-danger-border: rgba(239, 68, 68, 0.42);
+  --ea-warning-bg: rgba(245, 158, 11, 0.14);
+  --ea-warning-border: rgba(245, 158, 11, 0.35);
+  --ea-warning-text: #FBBF24;
+
+  --ea-danger-bg: rgba(239, 68, 68, 0.14);
+  --ea-danger-border: rgba(239, 68, 68, 0.35);
   --ea-danger-text: #F87171;
 
-  --ea-info-bg: rgba(99, 102, 241, 0.18);
-  --ea-info-border: rgba(99, 102, 241, 0.38);
-  --ea-info-text: #A5B4FC;
+  --ea-ai-bg: rgba(124, 58, 237, 0.15);
+  --ea-ai-border: rgba(124, 58, 237, 0.35);
+  --ea-ai-text: #A78BFA;
 
-  --ea-ai-bg: rgba(124, 58, 237, 0.18);
-  --ea-ai-border: rgba(124, 58, 237, 0.40);
-  --ea-ai-text: #C4B5FD;
+  /* Elevation Shadows */
+  --ea-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --ea-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+  --ea-shadow-md: 0 6px 14px -2px rgba(0, 0, 0, 0.5);
+  --ea-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+  --ea-shadow-xl: 0 22px 35px -6px rgba(0, 0, 0, 0.7);
 
-  --ea-contour-stroke: rgba(16, 229, 153, 0.16);
-  --ea-contour-glow: rgba(16, 229, 153, 0.24);
-
-  /* Shadows for Dark Mode */
-  --ea-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --ea-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.6);
-  --ea-shadow-md: 0 6px 14px -2px rgba(0, 0, 0, 0.7), 0 2px 6px -1px rgba(0, 0, 0, 0.4);
-  --ea-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.75), 0 4px 8px -2px rgba(0, 0, 0, 0.45);
-  --ea-shadow-xl: 0 22px 35px -6px rgba(0, 0, 0, 0.85), 0 8px 12px -4px rgba(0, 0, 0, 0.5);
-
-  /* Legacy dark mappings */
-  --sp-canvas: var(--ea-canvas);
-  --sp-surface: var(--ea-surface);
-  --sp-surface-raised: var(--ea-surface);
-  --sp-surface-subtle: var(--ea-surface-subtle);
-  --sp-surface-hover: #231B40;
-
-  --sp-border-subtle: var(--ea-surface-muted);
-  --sp-border-default: var(--ea-border);
-  --sp-border-strong: #4F46E5;
-  --sp-border-focus: var(--ea-mint-500);
-
-  --sp-text-primary: var(--ea-text-primary);
-  --sp-text-secondary: var(--ea-text-secondary);
-  --sp-text-muted: var(--ea-text-muted);
-  --sp-text-disabled: var(--ea-text-dim);
-  --sp-text-inverse: var(--ea-text-inverse);
-
-  --sp-royal-blue: var(--ea-mint-500);
-  --sp-royal-blue-hover: var(--ea-mint-400);
-  --sp-royal-blue-subtle: rgba(16, 229, 153, 0.20);
-
-  --sp-ai-violet: var(--ea-purple-400);
-  --sp-ai-violet-hover: var(--ea-purple-300);
-  --sp-ai-violet-subtle: rgba(124, 58, 237, 0.25);
-
-  --sp-emerald-match: var(--ea-mint-500);
-  --sp-emerald-subtle: rgba(16, 229, 153, 0.20);
-
-  --sp-amber-warning: #FBBF24;
-  --sp-amber-subtle: rgba(251, 191, 36, 0.20);
-
-  --sp-rose-danger: #EF4444;
-  --sp-rose-subtle: rgba(239, 68, 68, 0.22);
-
-  --sp-success-bg: var(--ea-success-bg);
-  --sp-success-border: var(--ea-success-border);
-  --sp-success-text: var(--ea-success-text);
-
-  --sp-warning-bg: var(--ea-warning-bg);
-  --sp-warning-border: var(--ea-warning-border);
-  --sp-warning-text: var(--ea-warning-text);
-
-  --sp-danger-bg: var(--ea-danger-bg);
-  --sp-danger-border: var(--ea-danger-border);
-  --sp-danger-text: var(--ea-danger-text);
-
-  --sp-info-bg: var(--ea-info-bg);
-  --sp-info-border: var(--ea-info-border);
-  --sp-info-text: var(--ea-info-text);
-
-  --sp-ai-bg: var(--ea-ai-bg);
-  --sp-ai-border: var(--ea-ai-border);
-  --sp-ai-text: var(--ea-ai-text);
+  --ea-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --ea-card-shadow-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(16, 229, 153, 0.3);
 }

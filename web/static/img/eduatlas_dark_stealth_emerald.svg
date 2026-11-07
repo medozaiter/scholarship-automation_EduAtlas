@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <radialGradient id="darkGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#047857" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#064E3B" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#06050C" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Deep Obsidian Canvas Background -->
+  <rect width="1080" height="1080" fill="#06050C"/>
+
+  <!-- Main Circular Badge (Radius=495) -->
+  <circle cx="540" cy="540" r="495" fill="#0A0912"/>
+  <circle cx="540" cy="540" r="420" fill="url(#darkGlow)"/>
+
+  <!-- Subtle Outer Dark Emerald Border -->
+  <circle cx="540" cy="540" r="492" fill="none" stroke="#047857" stroke-opacity="0.4" stroke-width="12"/>
+  <circle cx="540" cy="540" r="492" fill="none" stroke="#059669" stroke-opacity="0.7" stroke-width="5"/>
+  <circle cx="540" cy="540" r="462" fill="none" stroke="#047857" stroke-opacity="0.2" stroke-width="2"/>
+
+  <!-- Radar Rings in Dark Emerald -->
+  <circle cx="540" cy="540" r="370" stroke="#047857" stroke-width="3.5" stroke-opacity="0.25" fill="none"/>
+  <circle cx="540" cy="540" r="330" stroke="#059669" stroke-width="11" stroke-dasharray="32 24" stroke-opacity="0.55" fill="none"/>
+
+  <!-- Cardinal Ticks -->
+  <line x1="540" y1="160" x2="540" y2="215" stroke="#10B981" stroke-width="16" stroke-linecap="round"/>
+  <line x1="540" y1="865" x2="540" y2="920" stroke="#059669" stroke-width="14" stroke-opacity="0.6" stroke-linecap="round"/>
+  <line x1="160" y1="540" x2="215" y2="540" stroke="#059669" stroke-width="14" stroke-opacity="0.6" stroke-linecap="round"/>
+  <line x1="865" y1="540" x2="920" y2="540" stroke="#059669" stroke-width="14" stroke-opacity="0.6" stroke-linecap="round"/>
+
+  <!-- Diagonal Ticks -->
+  <line x1="295" y1="295" x2="330" y2="330" stroke="#047857" stroke-width="10" stroke-opacity="0.5"/>
+  <line x1="785" y1="295" x2="750" y2="330" stroke="#047857" stroke-width="10" stroke-opacity="0.5"/>
+  <line x1="295" y1="785" x2="330" y2="750" stroke="#047857" stroke-width="10" stroke-opacity="0.5"/>
+  <line x1="785" y1="785" x2="750" y2="750" stroke="#047857" stroke-width="10" stroke-opacity="0.5"/>
+
+  <!-- Latitude Ellipse in Muted Emerald -->
+  <ellipse cx="540" cy="540" rx="210" ry="300" stroke="#047857" stroke-width="7" stroke-opacity="0.25" fill="none"/>
+  <line x1="215" y1="540" x2="865" y2="540" stroke="#047857" stroke-width="5" stroke-opacity="0.2"/>
+
+  <!-- Horizontal Stabilizer Wings (Dark Tones) -->
+  <polygon points="540,540 680,540 540,515" fill="#059669" fill-opacity="0.65"/>
+  <polygon points="540,540 680,540 540,565" fill="#064E3B" fill-opacity="0.7"/>
+  <polygon points="540,540 400,540 540,515" fill="#64748B" fill-opacity="0.5"/>
+  <polygon points="540,540 400,540 540,565" fill="#1E293B" fill-opacity="0.5"/>
+
+  <!-- South Needle (Dark Steel Slate & Deep Charcoal) -->
+  <polygon points="540,855 540,540 465,540" fill="#64748B"/>
+  <polygon points="540,855 615,540 540,540" fill="#1E293B"/>
+
+  <!-- North Needle (Deep Forest Emerald & Dark Jade) -->
+  <polygon points="540,225 540,540 465,540" fill="#059669"/>
+  <polygon points="540,225 615,540 540,540" fill="#064E3B"/>
+
+  <!-- Center Hub in Deep Obsidian with Emerald Trim -->
+  <circle cx="540" cy="540" r="62" fill="#06050C" stroke="#059669" stroke-width="15"/>
+  <circle cx="540" cy="540" r="28" fill="#10B981"/>
+</svg>
