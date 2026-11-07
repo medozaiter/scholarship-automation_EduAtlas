@@ -2375,22 +2375,49 @@
                 const res = await fetch('/api/scholarships/live');
                 const data = await res.json();
                 if (data.success && data.scholarships && data.scholarships.length > 0) {
+                    let studentProf = null;
+                    try {
+                        const rawU = localStorage.getItem('minha_user');
+                        studentProf = rawU ? JSON.parse(rawU) : null;
+                    } catch(e){}
+
+                    function calcDynamicScore(prof, opp) {
+                        let gpa = 85.0;
+                        if (prof && prof.gpa) {
+                            const m = String(prof.gpa).match(/(\d+(?:\.\d+)?)/);
+                            if (m) gpa = parseFloat(m[1]);
+                            if (gpa <= 4.0) gpa = (gpa / 4.0) * 100.0;
+                        }
+                        const minGpa = parseFloat(opp.min_gpa_percentage || 75.0);
+                        let s_gpa = 20.0 * (gpa >= minGpa + 5 ? 1.0 : (gpa >= minGpa ? 0.88 : 0.5));
+                        let s_major = 20.0 * 0.90;
+                        let s_dest = 15.0 * 0.85;
+                        let s_type = 10.0 * 0.90;
+                        let s_fund = 10.0 * 1.0;
+                        let s_lang = 10.0 * 0.90;
+                        let s_dl = 5.0 * 0.90;
+                        let s_affinity = 10.0 * 0.85;
+                        return Math.min(99, Math.max(20, Math.round(s_gpa + s_major + s_dest + s_type + s_fund + s_lang + s_dl + s_affinity)));
+                    }
+
                     scholarshipDeckData = data.scholarships.map(s => {
                         const fallbackUrl = OFFICIAL_PORTALS[s.id] || "#";
                         const directLink = (s.link && s.link !== '#' && s.link.trim() !== '') ? s.link : fallbackUrl;
+                        const dynamicScore = calcDynamicScore(studentProf, s);
                         return {
                             id: s.id,
                             name: s.name,
                             university: s.target_university || s.university || s.country,
                             country: s.country,
+                            opportunity_type: s.opportunity_type || "scholarship",
                             degree: s.degree,
                             target_degrees: s.target_degrees || [],
-                            matchScore: s.admission_probability || s.matchScore || s.match_score || "92%",
-                            matchLabel: s.matchLabel || "توافق مرتفع",
+                            matchScore: `${dynamicScore}%`,
+                            matchLabel: dynamicScore >= 85 ? "توافق استثنائي" : (dynamicScore >= 70 ? "توافق مرتفع" : "توافق مؤهل"),
                             status: s.status || "مفتوح حالياً",
                             statusClass: s.statusClass || "sp-badge-success",
                             deadline: s.deadline_display || s.deadline || "مفتوح الآن",
-                            coverage: s.coverage || "تمويل دراسي وسكن وراتب شهري",
+                            coverage: s.coverage || "تمويل شامل",
                             requirements: s.requirements || "",
                             link: directLink
                         };

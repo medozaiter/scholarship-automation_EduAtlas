@@ -193,6 +193,13 @@ class AuthService:
             "gpa": u.get("gpa") or "85%",
             "english_level": u.get("english_level") or "Intermediate",
             "country": u.get("country") or "Palestine",
+            "nationality": u.get("nationality") or u.get("country") or "Global",
+            "residence_country": u.get("residence_country") or u.get("country") or "Global",
+            "target_study_countries": [str(c).strip() for c in (u.get("target_study_countries") or u.get("target_countries") or u.get("preferred_countries") or []) if str(c).strip()],
+            "academic_level": u.get("academic_level") or "undergraduate_student",
+            "degree_level": u.get("degree_level") or "bachelors",
+            "opportunity_interests": u.get("opportunity_interests") or ["scholarship", "internship", "conference", "training_program"],
+            "funding_preference": u.get("funding_preference") or u.get("funding_type") or "any",
             "talents_experience": u.get("talents_experience") or "",
             "languages": norm_langs,
             "skills": [str(s).strip() for s in u.get("skills", []) if str(s).strip()],
@@ -804,6 +811,24 @@ class AuthService:
             user["bio"] = sanitize_text(profile_data["bio"], max_length=600)
         if "country" in profile_data and profile_data["country"]:
             user["country"] = sanitize_text(profile_data["country"], max_length=60)
+        if "nationality" in profile_data and profile_data["nationality"]:
+            user["nationality"] = sanitize_text(profile_data["nationality"], max_length=80)
+        if "residence_country" in profile_data and profile_data["residence_country"]:
+            user["residence_country"] = sanitize_text(profile_data["residence_country"], max_length=80)
+        if "academic_level" in profile_data and profile_data["academic_level"]:
+            user["academic_level"] = sanitize_text(profile_data["academic_level"], max_length=80)
+        if "degree_level" in profile_data and profile_data["degree_level"]:
+            user["degree_level"] = sanitize_text(profile_data["degree_level"], max_length=80)
+        if "funding_preference" in profile_data and profile_data["funding_preference"]:
+            user["funding_preference"] = sanitize_text(profile_data["funding_preference"], max_length=50)
+            user["funding_type"] = user["funding_preference"]
+        if "opportunity_interests" in profile_data and isinstance(profile_data["opportunity_interests"], list):
+            user["opportunity_interests"] = [sanitize_text(o, max_length=50) for o in profile_data["opportunity_interests"] if str(o).strip()][:10]
+        if "target_study_countries" in profile_data and isinstance(profile_data["target_study_countries"], list):
+            clean_targets = [sanitize_text(c, max_length=50) for c in profile_data["target_study_countries"] if str(c).strip()][:15]
+            user["target_study_countries"] = clean_targets
+            user["target_countries"] = clean_targets
+            user["preferred_countries"] = clean_targets
         if "english_level" in profile_data:
             user["english_level"] = sanitize_text(profile_data["english_level"], max_length=60)
         if "gpa" in profile_data and profile_data["gpa"]:

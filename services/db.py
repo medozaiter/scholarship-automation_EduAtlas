@@ -92,6 +92,11 @@ try:
         gpa = Column(String(50), default="85%")
         english_level = Column(String(100), default="Intermediate")
         country = Column(String(100), default="Palestine")
+        nationality = Column(String(100), default="Global")
+        residence_country = Column(String(100), default="Global")
+        target_study_countries = Column(JSON, default=list)
+        opportunity_interests = Column(JSON, default=lambda: ["scholarship", "internship", "conference", "training_program"])
+        funding_preference = Column(String(50), default="any")
         talents_experience = Column(Text, default="")
 
         # Academic Skills, Languages & Interests
@@ -103,6 +108,15 @@ try:
 
         # Social & Portfolio Networks
         social_links = Column(JSON, default=dict)
+
+        # Decoupled Global Identity & Multi-Tier Preferences
+        nationality = Column(String(100), default="Global")
+        residence_country = Column(String(100), default="Global")
+        target_study_countries = Column(JSON, default=list)
+        academic_level = Column(String(100), default="undergraduate_student")
+        degree_level = Column(String(100), default="bachelors")
+        opportunity_interests = Column(JSON, default=lambda: ["scholarship", "internship", "conference", "training_program"])
+        funding_preference = Column(String(50), default="any")
 
         # Saved scholarships & Matching Preferences
         saved_scholarships = Column(JSON, default=list)
@@ -145,6 +159,13 @@ try:
                 "gpa": self.gpa or "85%",
                 "english_level": self.english_level or "Intermediate",
                 "country": self.country or "Palestine",
+                "nationality": getattr(self, "nationality", None) or self.country or "Global",
+                "residence_country": getattr(self, "residence_country", None) or self.country or "Global",
+                "target_study_countries": getattr(self, "target_study_countries", None) or self.target_countries or [],
+                "academic_level": getattr(self, "academic_level", None) or "undergraduate_student",
+                "degree_level": getattr(self, "degree_level", None) or "bachelors",
+                "opportunity_interests": getattr(self, "opportunity_interests", None) or ["scholarship", "internship", "conference", "training_program"],
+                "funding_preference": getattr(self, "funding_preference", None) or self.funding_type or "any",
                 "talents_experience": self.talents_experience or "",
                 "languages": self.languages or [],
                 "skills": self.skills or [],
@@ -215,6 +236,11 @@ try:
                 "english_level": self.english_level,
                 "target_destinations": self.target_destinations or ["Any"],
                 "country": self.country,
+                "nationality": getattr(self, "nationality", None) or self.country or "Global",
+                "residence_country": getattr(self, "residence_country", None) or self.country or "Global",
+                "target_study_countries": getattr(self, "target_study_countries", None) or self.target_destinations or [],
+                "opportunity_interests": getattr(self, "opportunity_interests", None) or ["scholarship", "internship", "conference", "training_program"],
+                "funding_preference": getattr(self, "funding_preference", None) or self.funding_type or "any",
                 "talents_experience": self.talents_experience or "",
                 "saved_scholarships": self.saved_scholarships or [],
                 "preferred_countries": self.preferred_countries or [],
@@ -235,6 +261,15 @@ try:
         university = Column(String(255))
         country = Column(String(100))
         degree = Column(String(100))
+        opportunity_type = Column(String(100), default="scholarship")
+        eligible_nationalities = Column(JSON, default=lambda: ["ALL"])
+        eligible_residences = Column(JSON, default=lambda: ["ANY"])
+        target_fields = Column(JSON, default=lambda: ["ALL"])
+        degree_levels = Column(JSON, default=lambda: ["bachelors", "masters"])
+        min_gpa_percentage = Column(Float, default=70.0)
+        required_languages = Column(JSON, default=dict)
+        funding_type = Column(String(50), default="fully_funded")
+        is_rolling_deadline = Column(Boolean, default=False)
         match_score = Column(String(50))
         match_label = Column(String(100))
         status = Column(String(100))
@@ -256,6 +291,15 @@ try:
                 "university": self.university,
                 "country": self.country,
                 "degree": self.degree,
+                "opportunity_type": getattr(self, "opportunity_type", None) or "scholarship",
+                "eligible_nationalities": getattr(self, "eligible_nationalities", None) or ["ALL"],
+                "eligible_residences": getattr(self, "eligible_residences", None) or ["ANY"],
+                "target_fields": getattr(self, "target_fields", None) or ["ALL"],
+                "degree_levels": getattr(self, "degree_levels", None) or ["bachelors", "masters"],
+                "min_gpa_percentage": getattr(self, "min_gpa_percentage", None) or 70.0,
+                "required_languages": getattr(self, "required_languages", None) or {},
+                "funding_type": getattr(self, "funding_type", None) or "fully_funded",
+                "is_rolling_deadline": bool(getattr(self, "is_rolling_deadline", False)),
                 "matchScore": self.match_score,
                 "matchLabel": self.match_label,
                 "status": self.status,
@@ -868,6 +912,13 @@ def init_db_and_migrate():
             if "users" in inspector.get_table_names():
                 existing_cols = {col["name"] for col in inspector.get_columns("users")}
                 cols_to_add = [
+                    ("nationality", "VARCHAR(100)"),
+                    ("residence_country", "VARCHAR(100)"),
+                    ("target_study_countries", "TEXT"),
+                    ("academic_level", "VARCHAR(100)"),
+                    ("degree_level", "VARCHAR(100)"),
+                    ("opportunity_interests", "TEXT"),
+                    ("funding_preference", "VARCHAR(50)"),
                     ("username", "VARCHAR(80)"),
                     ("avatar_url", "VARCHAR(500)"),
                     ("cover_url", "VARCHAR(500)"),
@@ -889,6 +940,13 @@ def init_db_and_migrate():
                     ("updated_at", "VARCHAR(50)")
                 ]
                 ALLOWED_COLUMNS = {
+                    "nationality": "VARCHAR(100)",
+                    "residence_country": "VARCHAR(100)",
+                    "target_study_countries": "TEXT",
+                    "academic_level": "VARCHAR(100)",
+                    "degree_level": "VARCHAR(100)",
+                    "opportunity_interests": "TEXT",
+                    "funding_preference": "VARCHAR(50)",
                     "username": "VARCHAR(80)",
                     "avatar_url": "VARCHAR(500)",
                     "cover_url": "VARCHAR(500)",

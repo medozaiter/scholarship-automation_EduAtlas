@@ -322,8 +322,45 @@
                     </div>
                 </div>
 
+                <!-- Opportunity Type Filter Tabs (Scholarships, Internships, Conferences, Training) -->
+                <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155]">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1.5 shrink-0">
+                        <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i>
+                        <span>نوع الفرصة:</span>
+                    </span>
+                    <button type="button" id="typeFilterAll" onclick="setRadarTypeFilter('all')"
+                        class="radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-xs">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>كافة الفرص</span>
+                    </button>
+                    <button type="button" id="typeFilterScholarship" onclick="setRadarTypeFilter('scholarship')"
+                        class="radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        <span>منح دراسية</span>
+                    </button>
+                    <button type="button" id="typeFilterInternship" onclick="setRadarTypeFilter('internship')"
+                        class="radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="briefcase" class="w-3.5 h-3.5 text-blue-500"></i>
+                        <span>تدريب عملي وأبحاث</span>
+                    </button>
+                    <button type="button" id="typeFilterConference" onclick="setRadarTypeFilter('conference')"
+                        class="radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="presentation" class="w-3.5 h-3.5 text-purple-500"></i>
+                        <span>مؤتمرات ومنح سفر</span>
+                    </button>
+                    <button type="button" id="typeFilterTraining" onclick="setRadarTypeFilter('training_program')"
+                        class="radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span>برامج تدريبية وتأهيل</span>
+                    </button>
+                </div>
+
                 <!-- Degree Category Filter Tabs -->
                 <div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155]">
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1.5 shrink-0">
+                        <i data-lucide="layers" class="w-4 h-4 text-purple-600"></i>
+                        <span>المرحلة:</span>
+                    </span>
                     <button type="button" id="degreeFilterAll" onclick="setRadarDegreeFilter('all')"
                         class="radar-filter-btn px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-emerald-600 text-white shadow-xs">
                         <i data-lucide="layers" class="w-4 h-4"></i>
@@ -484,8 +521,69 @@
         }
 
         // ==================== SCHOLARSHIP RADAR ENGINE ====================
+                // ==================== SCHOLARSHIP RADAR ENGINE ====================
         let scholarshipDeckData = [];
+        let currentTypeFilter = 'all'; // 'all' | 'scholarship' | 'internship' | 'conference' | 'training_program'
         let currentDegreeFilter = 'all';
+        let searchQuery = '';
+        let selectedCountry = '';
+        let fullyFundedOnly = false;
+        let radarViewMode = 'grid'; // 'grid' | 'compact'
+
+        function calculateClientDynamicMatch(profile, opp) {
+            let gpa = 85.0;
+            if (profile && profile.gpa) {
+                const m = String(profile.gpa).match(/(\d+(?:\.\d+)?)/);
+                if (m) gpa = parseFloat(m[1]);
+                if (gpa <= 4.0) gpa = (gpa / 4.0) * 100.0;
+            }
+            const minGpa = parseFloat(opp.min_gpa_percentage || 75.0);
+            let s_gpa = 20.0 * (gpa >= minGpa + 5 ? 1.0 : (gpa >= minGpa ? 0.88 : Math.max(0.2, 0.5 * Math.exp(-0.15 * Math.abs(minGpa - gpa)))));
+
+            let majors = (profile && profile.majors) || [];
+            let oppMajors = opp.target_majors || ["all"];
+            let s_major = 20.0;
+            if (!oppMajors.some(m => String(m).toLowerCase() === 'all')) {
+                const hasMatch = majors.some(sm => oppMajors.some(om => String(om).toLowerCase().includes(String(sm).toLowerCase())));
+                s_major = hasMatch ? 20.0 : 12.0;
+            }
+
+            let s_dest = 15.0 * 0.85;
+            let s_type = 10.0 * 0.90;
+            let s_fund = 10.0 * (String(opp.coverage || '').includes('100%') ? 1.0 : 0.80);
+            let s_lang = 10.0 * 0.90;
+            let s_dl = 5.0 * 0.90;
+            let s_affinity = 10.0 * 0.85;
+
+            let total = Math.round(s_gpa + s_major + s_dest + s_type + s_fund + s_lang + s_dl + s_affinity);
+            return Math.min(99, Math.max(20, total));
+        }
+
+        function setRadarTypeFilter(type) {
+            currentTypeFilter = type;
+            const filterIds = {
+                all: 'typeFilterAll',
+                scholarship: 'typeFilterScholarship',
+                internship: 'typeFilterInternship',
+                conference: 'typeFilterConference',
+                training_program: 'typeFilterTraining'
+            };
+
+            const activeClasses = 'bg-emerald-600 text-white shadow-xs';
+            const inactiveClasses = 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+            Object.entries(filterIds).forEach(([key, btnId]) => {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                if (key === type) {
+                    btn.className = `radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${activeClasses}`;
+                } else {
+                    btn.className = `radar-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${inactiveClasses}`;
+                }
+            });
+
+            renderRadarGrid();
+        }
         let searchQuery = '';
         let selectedCountry = '';
         let fullyFundedOnly = false;
@@ -605,22 +703,33 @@
                 const res = await fetch('/api/scholarships/live');
                 const data = await res.json();
                 if (data.success && data.scholarships && data.scholarships.length > 0) {
+                    let studentProf = null;
+                    try {
+                        const rawU = localStorage.getItem('minha_user');
+                        studentProf = rawU ? JSON.parse(rawU) : null;
+                    } catch(e){}
+
                     scholarshipDeckData = data.scholarships.map(s => {
                         const fallbackUrl = OFFICIAL_PORTALS[s.id] || "#";
                         const directLink = (s.link && s.link !== '#' && s.link.trim() !== '') ? s.link : fallbackUrl;
+                        const dynamicScore = calculateClientDynamicMatch(studentProf, s);
                         return {
                             id: s.id,
                             name: s.name,
                             university: s.target_university || s.university || s.country,
                             country: s.country,
+                            opportunity_type: s.opportunity_type || "scholarship",
                             degree: s.degree,
                             target_degrees: s.target_degrees || [],
-                            matchScore: s.admission_probability || s.matchScore || s.match_score || "92%",
-                            matchLabel: s.matchLabel || "توافق مرتفع",
+                            degree_levels: s.degree_levels || [],
+                            min_gpa_percentage: s.min_gpa_percentage || 75.0,
+                            target_majors: s.target_majors || ["all"],
+                            matchScore: `${dynamicScore}%`,
+                            matchLabel: dynamicScore >= 85 ? "توافق استثنائي" : (dynamicScore >= 70 ? "توافق مرتفع" : "توافق مؤهل"),
                             status: s.status || "مفتوح حالياً",
                             statusClass: s.statusClass || "sp-badge-success",
                             deadline: s.deadline_display || s.deadline || "مفتوح الآن",
-                            coverage: s.coverage || "تمويل دراسي وسكن وراتب شهري",
+                            coverage: s.coverage || "تمويل شامل",
                             requirements: s.requirements || "",
                             link: directLink
                         };
@@ -799,6 +908,12 @@
             if (!grid) return;
 
             let filtered = scholarshipDeckData.filter(s => {
+                // Opportunity Type filter (Scholarships, Internships, Conferences, Training)
+                if (currentTypeFilter !== 'all') {
+                    const oppType = (s.opportunity_type || 'scholarship').toLowerCase();
+                    if (oppType !== currentTypeFilter) return false;
+                }
+
                 // Degree filter
                 if (currentDegreeFilter === 'bachelor') {
                     const match = (s.degree || '').includes('بكالوريوس') || (s.degree || '').includes('Undergraduate') || (s.target_degrees || []).some(d => d.includes('Bachelor') || d.includes('بكالوريوس'));
@@ -887,7 +1002,10 @@
                                 <!-- Card Header -->
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-2 mb-1.5">
+                                        <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
+                                            <span class="sp-badge ${item.opportunity_type === 'internship' ? 'sp-badge-success' : (item.opportunity_type === 'conference' ? 'sp-badge-warning' : (item.opportunity_type === 'training_program' ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20' : 'sp-badge-info'))} text-[10px] font-bold">
+                                                ${item.opportunity_type === 'internship' ? 'تدريب عملي' : (item.opportunity_type === 'conference' ? 'مؤتمر أكاديمي' : (item.opportunity_type === 'training_program' ? 'برنامج تدريبي' : 'منحة دراسية'))}
+                                            </span>
                                             <span class="sp-badge sp-badge-info text-[10px] font-bold">${escapeHTML(item.country)}</span>
                                             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${countdown.colorClass}">
                                                 ${countdown.label}

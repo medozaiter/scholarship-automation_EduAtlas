@@ -694,6 +694,13 @@ class RegisterRequest(BaseModel):
     talents_experience: Optional[str] = Field("", max_length=500)
     english_level: Optional[str] = Field("Intermediate", max_length=80)
     country: Optional[str] = Field("Palestine", max_length=80)
+    nationality: Optional[str] = Field(None, max_length=100)
+    residence_country: Optional[str] = Field(None, max_length=100)
+    target_study_countries: Optional[List[str]] = Field(None, max_length=20)
+    academic_level: Optional[str] = Field(None, max_length=80)
+    degree_level: Optional[str] = Field(None, max_length=80)
+    opportunity_interests: Optional[List[str]] = Field(None, max_length=20)
+    funding_preference: Optional[str] = Field(None, max_length=50)
     city: Optional[str] = Field("", max_length=80)
     university: Optional[str] = Field("", max_length=150)
     graduation_year: Optional[str] = Field("", max_length=20)
@@ -878,6 +885,13 @@ class UpdateProfileRequest(BaseModel):
     gpa: Optional[str] = Field(None, max_length=20)
     english_level: Optional[str] = Field(None, max_length=80)
     country: Optional[str] = Field(None, max_length=80)
+    nationality: Optional[str] = Field(None, max_length=100)
+    residence_country: Optional[str] = Field(None, max_length=100)
+    target_study_countries: Optional[List[str]] = Field(None, max_length=20)
+    academic_level: Optional[str] = Field(None, max_length=80)
+    degree_level: Optional[str] = Field(None, max_length=80)
+    opportunity_interests: Optional[List[str]] = Field(None, max_length=20)
+    funding_preference: Optional[str] = Field(None, max_length=50)
     languages: Optional[List[Any]] = Field(None, max_length=20)
     skills: Optional[List[str]] = Field(None, max_length=30)
     interests: Optional[List[str]] = Field(None, max_length=30)
@@ -1084,6 +1098,10 @@ class MatchCalculationRequest(BaseModel):
     majors: List[str] = Field(default_factory=lambda: ["Software Engineering"], max_length=10)
     talents_experience: Optional[str] = Field("", max_length=500)
     country: Optional[str] = Field("Palestine", max_length=80)
+    nationality: Optional[str] = Field(None, max_length=100)
+    residence_country: Optional[str] = Field(None, max_length=100)
+    target_study_countries: Optional[List[str]] = Field(None, max_length=20)
+    opportunity_type: Optional[str] = Field(None, max_length=50)
     scholarship_name: Optional[str] = Field("", max_length=150)
 
     @field_validator("gpa")
@@ -2357,14 +2375,35 @@ async def test_email_dispatch(payload: Dict[str, str], request: Request):
 
 
 @app.get("/api/scholarships/live")
-async def get_live_scholarships():
-    """Returns autonomous live scholarships automatically fetched and maintained with application links & requirements."""
+async def get_live_scholarships(
+    request: Request,
+    type: Optional[str] = Query(None, description="Filter by opportunity type: scholarship, internship, conference, training_program"),
+    country: Optional[str] = Query(None),
+    degree: Optional[str] = Query(None)
+):
+    """Returns autonomous live opportunities automatically maintained with application links, requirements & dynamic matching."""
     try:
         items = automation_service.get_live_scholarships()
+        if type and type.lower() != "all":
+            items = [s for s in items if (s.get("opportunity_type") or "scholarship").lower() == type.lower()]
+        if country and country.strip():
+            items = [s for s in items if country.lower() in (s.get("country") or "").lower()]
+        if degree and degree.strip() and degree.lower() != "all":
+            items = [s for s in items if any(degree.lower() in str(d).lower() for d in (s.get("degree_levels") or s.get("target_degrees") or []))]
+
+        # If user is authenticated, compute and attach real-time dynamic scores
+        user = get_authenticated_user(request)
+        if user:
+            for item in items:
+                m_res = advisor_service.calculate_dynamic_match(user, item)
+                item["matchScore"] = m_res["match_score_display"]
+                item["match_score"] = m_res["match_score"]
+                item["matchLabel"] = "توافق استثنائي" if m_res["match_score"] >= 85 else ("توافق مرتفع" if m_res["match_score"] >= 70 else "توافق مؤهل")
+
         return {
             "success": True,
             "count": len(items),
-            "source": "Automated Live Feed & Ingestion Engine",
+            "source": "Automated Global Live Feed & Ingestion Engine",
             "scholarships": items
         }
     except Exception as e:
@@ -3001,16 +3040,52 @@ async def get_deadlines_route():
 
 @app.post("/api/match/calculate")
 async def calculate_match(req: MatchCalculationRequest):
-    """Calculates student admission probability & match percentage based on GPA, talents, and target profile."""
+    """Calculates 100% dynamic admission probability & 9-dimensional match score based on GPA, nationality, residency, and profile."""
     try:
-        res = advisor_service.calculate_match_score(
-            gpa=req.gpa,
-            majors=req.majors,
-            country=req.country or "Palestine",
-            scholarship={"name": req.scholarship_name or "Global Scholarship", "target_majors": req.majors},
-            student_talents=req.talents_experience or ""
-        )
-        return {"success": True, "match": res}
+        profile_dict = {
+            "gpa": req.gpa,
+            "degree": req.degree,
+            "degree_level": req.degree,
+            "majors": req.majors,
+            "nationality": req.nationality or req.country or "Global",
+            "residence_country": req.residence_country or req.country or "Global",
+            "country": req.country or "Global",
+            "target_study_countries": req.target_study_countries or [],
+            "opportunity_interests": [req.opportunity_type] if req.opportunity_type else ["scholarship", "internship", "conference", "training_program"],
+            "talents_experience": req.talents_experience or ""
+        }
+        target_sch = None
+        if req.scholarship_name:
+            sch_name_clean = req.scholarship_name.lower().strip()
+            target_sch = next(
+                (s for s in advisor_service.catalog if sch_name_clean in s.get("name", "").lower() or s.get("id", "").lower() == sch_name_clean),
+                None
+            )
+        if not target_sch:
+            target_sch = {
+                "name": req.scholarship_name or "Global Opportunity",
+                "opportunity_type": req.opportunity_type or "scholarship",
+                "target_majors": req.majors,
+                "degree_levels": [req.degree]
+            }
+
+        res = advisor_service.calculate_dynamic_match(profile_dict, target_sch)
+        return {
+            "success": True,
+            "match": {
+                "score": res["match_score"],
+                "match_score": res["match_score_display"],
+                "admission_probability": res["match_score_display"],
+                "probability_label": "فرصة قبول قوية وتنافسية" if res["match_score"] >= 80 else ("فرصة جيدة ومؤهلة" if res["match_score"] >= 65 else "فرصة مقبولة"),
+                "badge": f"{res['match_score']}% توافق وتوقع قبول",
+                "is_eligible": res.get("is_eligible", True),
+                "ineligibility_reason": res.get("ineligibility_reason", ""),
+                "sub_scores": res.get("sub_scores", {}),
+                "strengths": res.get("strengths", []),
+                "weaknesses": res.get("weaknesses", []),
+                "recommendation": res.get("recommendation", "")
+            }
+        }
     except HTTPException:
         raise
     except ValueError as ve:

@@ -1,906 +1,926 @@
 [
   {
     "id": "pearson",
-    "name": "Lester B. Pearson Scholarship",
+    "name": "Lester B. Pearson International Scholarship",
     "university": "جامعة تورنتو (University of Toronto)",
     "country": "كندا (Canada)",
+    "opportunity_type": "scholarship",
     "degree": "Undergraduate (بكالوريوس)",
-    "matchScore": "96%",
-    "matchLabel": "توافق استثنائي",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "بكالوريوس",
+      "ثانوية عامة"
+    ],
+    "degree_levels": [
+      "high_school",
+      "bachelors"
+    ],
+    "target_majors": [
+      "Computer Science",
+      "Engineering",
+      "Data Science",
+      "Humanities",
+      "Life Sciences",
+      "Business"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 85.0,
+    "funding_type": "fully_funded",
     "status": "مفتوح حالياً للتقديم",
     "statusClass": "sp-badge-success",
     "deadline": "2026-11-06",
     "deadline_display": "6 نوفمبر 2026",
     "deadlineDays": "متبقي أسبوع واحد",
-    "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين",
-    "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح من المدرسة، إثبات القيادة المجتمعية",
+    "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين الصحي",
+    "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح رسمية من المدرسة، وإثبات التميز القيادي والمجتمعي",
     "link": "https://future.utoronto.ca/pearson/about/#apply",
-    "is_active": true,
-    "official_link": "https://future.utoronto.ca/pearson/about/#apply"
+    "is_active": true
   },
   {
     "id": "hungaricum",
     "name": "Stipendium Hungaricum Scholarship",
     "university": "جامعات المجر الحكومية (بودابست، ديبريسين، زيجد)",
     "country": "المجر (الاتحاد الأوروبي)",
+    "opportunity_type": "scholarship",
     "degree": "بكالوريوس • ماجستير • دكتوراه",
-    "matchScore": "95%",
-    "matchLabel": "توافق مرتفع جداً",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "بكالوريوس",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd"
+    ],
+    "target_majors": [
+      "Computer Science & IT",
+      "Software Engineering",
+      "Medicine",
+      "Civil Engineering",
+      "Business",
+      "Economics"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 75.0,
+    "funding_type": "fully_funded",
     "status": "تفتح للتقديم قريباً",
     "statusClass": "sp-badge-info",
     "deadline": "2027-01-15",
     "deadline_display": "15 يناير 2027",
     "deadlineDays": "يفتح خلال شهرين",
-    "coverage": "إعفاء دراسي 100% + راتب شهري + سكن جامعي مجاني + تأمين صحي شامل",
-    "requirements": "معدل 80%+ للبكالوريوس، شهادة إتمام مرحلة سابقة، خطاب دافع وفحص طبي رسمي",
+    "coverage": "إعفاء دراسي 100% + راتب شهري مجزي + سكن جامعي مجاني + تأمين صحي شامل طوال فترة الدراسة",
+    "requirements": "معدل 75%+ للبكالوريوس و80%+ للدراسات العليا، شهادة التخرج السابقة، خطاب دافع أكاديمي وفحص طبي رسمي",
     "link": "https://apply.stipendiumhungaricum.hu/",
-    "is_active": true,
-    "official_link": "https://apply.stipendiumhungaricum.hu/"
+    "is_active": true
   },
   {
     "id": "turkiye",
-    "name": "Türkiye Bursları Government",
-    "university": "كافة الجامعات التركية الحكومية الرائدة (METU, Boğaziçi)",
+    "name": "Türkiye Bursları Government Scholarship",
+    "university": "كافة الجامعات التركية الحكومية الرائدة (METU, Boğaziçi, ITU)",
     "country": "تركيا (Turkey)",
+    "opportunity_type": "scholarship",
     "degree": "كافة المراحل (بكالوريوس ودراسات عليا)",
-    "matchScore": "93%",
-    "matchLabel": "كوتا سنوية خاصة",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "بكالوريوس",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd"
+    ],
+    "target_majors": [
+      "Computer Science & IT",
+      "Engineering",
+      "Medicine",
+      "Business",
+      "International Relations",
+      "Humanities"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 70.0,
+    "funding_type": "fully_funded",
     "status": "تفتح 10 يناير 2027",
     "statusClass": "sp-badge-info",
     "deadline": "2027-02-20",
     "deadline_display": "20 فبراير 2027",
     "deadlineDays": "فرصة سنوية كبرى",
-    "coverage": "رسوم مجانية 100% + راتب شهري + سكن جامعي + سنة تحضيرية للغة وتذاكر طيران",
-    "requirements": "حد أدنى 70% للبكالوريوس (90% للطب البشري)، رسائل توصية، وخطاب نوايا قوي",
+    "coverage": "رسوم دراسية مجانية 100% + راتب شهري + سكن جامعي مجاني + سنة تحضيرية كاملة للغة وتذاكر طيران",
+    "requirements": "حد أدنى 70% للبكالوريوس (90% للطب البشري)، رسائل توصية، وخطاب نوايا أكاديمي قوي",
     "link": "https://tbbs.turkiyeburslari.gov.tr/",
-    "is_active": true,
-    "official_link": "https://tbbs.turkiyeburslari.gov.tr/"
+    "is_active": true
   },
   {
     "id": "chevening",
     "name": "Chevening UK Government Scholarship",
-    "university": "جامعات المملكة المتحدة (أكسفورد، كامبريدج، إمبريال، UCL)",
+    "university": "جامعات المملكة المتحدة (أكسفورد، كامبريدج، إمبريال، UCL, LSE)",
     "country": "بريطانيا (UK)",
+    "opportunity_type": "scholarship",
     "degree": "Master's Degree (ماجستير)",
-    "matchScore": "90%",
-    "matchLabel": "برنامج القادة والتميز",
+    "target_degrees": [
+      "Master's Degree",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "masters"
+    ],
+    "target_majors": [
+      "Engineering",
+      "Public Policy",
+      "Computer Science",
+      "Finance",
+      "Law",
+      "International Development"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
     "status": "مفتوح حالياً",
     "statusClass": "sp-badge-warning",
-    "deadline": "2026-11-05",
-    "deadline_display": "5 نوفمبر 2026",
+    "deadline": "2026-11-20",
+    "deadline_display": "20 نوفمبر 2026",
     "deadlineDays": "أيام معدودة للإغلاق",
-    "coverage": "تمويل كامل بنسبة 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة",
-    "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية، 4 مقالات قيادية",
+    "coverage": "تمويل كامل 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة ورسوم التأشيرة",
+    "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية (2800 ساعة)، 4 مقالات قيادية",
     "link": "https://www.chevening.org/apply/",
-    "is_active": true,
-    "official_link": "https://www.chevening.org/apply/"
+    "is_active": true
   },
   {
     "id": "gks",
     "name": "Global Korea Scholarship (GKS)",
-    "university": "أفضل الجامعات الكورية في سيئول والمدن الكبرى (SNU, KAIST)",
+    "university": "أفضل الجامعات الكورية في سيئول والمدن الكبرى (SNU, KAIST, Yonsei)",
     "country": "كوريا الجنوبية (South Korea)",
+    "opportunity_type": "scholarship",
     "degree": "بكالوريوس وماجستير ودكتوراه",
-    "matchScore": "91%",
-    "matchLabel": "تطور تكنولوجي وأكاديمي",
-    "status": "التقديم السنوي عبر السفارة",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "بكالوريوس",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd"
+    ],
+    "target_majors": [
+      "Information Technology",
+      "AI",
+      "Electrical Engineering",
+      "Korean Studies",
+      "Biotech",
+      "Semiconductors"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
+    "status": "التقديم السنوي عبر السفارة والجامعات",
     "statusClass": "sp-badge-info",
     "deadline": "2027-03-25",
-    "deadline_display": "مارس 2027",
+    "deadline_display": "25 مارس 2027",
     "deadlineDays": "تفتح في الربيع",
-    "coverage": "رسوم دراسية كاملة + راتب شهري 1,000,000 وون + سنة لغة كورية وتذاكر طيران",
-    "requirements": "معدل تراكمي أعلى من 80%، فحص طبي، خطة دراسية وبيان شخصي باللغة الإنجليزية",
+    "coverage": "رسوم دراسية كاملة 100% + راتب شهري 1,000,000 وون + سنة لغة كورية وتذاكر طيران دولية",
+    "requirements": "معدل تراكمي أعلى من 80%، فحص طبي شامل، خطة دراسية وبيان شخصي باللغة الإنجليزية",
     "link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do",
-    "is_active": true,
-    "official_link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do"
+    "is_active": true
   },
   {
     "id": "daad",
     "name": "DAAD Scholarships Germany",
-    "university": "جامعات ألمانيا التقنية والبحثية (TUM, LMU, Heidelberg)",
+    "university": "جامعات ألمانيا التقنية والبحثية (TUM, LMU Munich, Heidelberg, RWTH Aachen)",
     "country": "ألمانيا (Germany)",
+    "opportunity_type": "scholarship",
     "degree": "Master's & PhD (دراسات عليا)",
-    "matchScore": "95%",
-    "matchLabel": "توافق استثنائي",
-    "status": "مفتوح حسب التخصص",
+    "target_degrees": [
+      "Master's Degree",
+      "PhD / Doctorate",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "masters",
+      "phd",
+      "postdoctoral"
+    ],
+    "target_majors": [
+      "Engineering",
+      "Informatics",
+      "Data Science",
+      "Natural Sciences",
+      "Economics",
+      "Renewable Energy"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 78.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح حسب البرنامج",
     "statusClass": "sp-badge-success",
     "deadline": "2026-12-15",
     "deadline_display": "15 ديسمبر 2026",
     "deadlineDays": "مستمر حسب البرنامج",
-    "coverage": "راتب شهري 934 يورو + تأمين صحي شامل + بدل سفر وتكاليف الأبحاث والمراجع",
-    "requirements": "درجة بكالوريوس لا يتجاوز عمرها 6 سنوات، سنتان خبرة عمل، وخطاب دافع أكاديمي",
+    "coverage": "راتب شهري 934 يورو للماجستير و1,300 يورو للدكتوراه + تأمين صحي شامل + بدل سفر وتكاليف الأبحاث والمراجع",
+    "requirements": "درجة بكالوريوس لا يتجاوز عمرها 6 سنوات، سنتان خبرة عمل، وخطاب دافع أكاديمي بالإنجليزية أو الألمانية",
     "link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/",
-    "is_active": true,
-    "official_link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/"
+    "is_active": true
   },
   {
     "id": "erasmus",
     "name": "Erasmus Mundus Joint Masters (EMJM)",
-    "university": "اتحاد جامعات أوروبية متعددة (فرنسا، ألمانيا، إسبانيا، إيطاليا)",
+    "university": "اتحاد جامعات أوروبية متعددة (فرنسا، ألمانيا، إسبانيا، إيطاليا، بلجيكا)",
     "country": "الاتحاد الأوروبي (Europe)",
+    "opportunity_type": "scholarship",
     "degree": "Master's Degree (ماجستير مشترك)",
-    "matchScore": "94%",
-    "matchLabel": "دراسة في 2 إلى 3 دول أوروبية",
-    "status": "تفتح للتقديم الآن تدريجياً",
-    "statusClass": "sp-badge-info",
+    "target_degrees": [
+      "Master's Degree",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "masters"
+    ],
+    "target_majors": [
+      "Artificial Intelligence",
+      "Cybersecurity",
+      "Environmental Sciences",
+      "Humanities",
+      "Data Analytics"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 75.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم حالياً",
+    "statusClass": "sp-badge-success",
     "deadline": "2027-01-20",
     "deadline_display": "20 يناير 2027",
     "deadlineDays": "برامج متعددة",
-    "coverage": "إعفاء دراسي كامل 100% + راتب شهري 1,400 يورو لمدة عامين + تذاكر سفر وبدل إقامة",
-    "requirements": "شهادة البكالوريوس، سيرة ذاتية Europass، رسالتا توصية، ومقال دافع لكل تخصص",
+    "coverage": "إعفاء دراسي كامل 100% + راتب شهري 1,400 يورو لمدة عامين + تذاكر سفر وبدل إقامة في دولتين أوروبيتين على الأقل",
+    "requirements": "شهادة البكالوريوس، سيرة ذاتية Europass، رسالتا توصية، ومقال دافع لكل برنامج",
     "link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en",
-    "is_active": true,
-    "official_link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en"
-  },
-  {
-    "id": "auto_899330",
-    "name": "Lester B. Pearson International Scholarship Program",
-    "university": "Canada, University of Toronto",
-    "country": "Toronto",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-09-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-06",
-    "deadline_display": "2026-11-06",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, books, incidental fees, and full residence support for 4 years",
-    "requirements": "Academic excellence, leadership potential, creative and original thinking, community involvement.",
-    "link": "https://future.utoronto.ca/pearson/",
-    "official_link": "https://future.utoronto.ca/pearson/",
     "is_active": true
   },
   {
-    "id": "auto_190830",
-    "name": "UBC International Scholars Program",
-    "university": "Canada, University of British Columbia",
-    "country": "Columbia",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-09-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-15",
-    "deadline_display": "2026-11-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition and living costs",
-    "requirements": "Academic excellence, demonstrated leadership, community service, financial need.",
-    "link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
-    "official_link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
-    "is_active": true
-  },
-  {
-    "id": "auto_928138",
-    "name": "U.S.-MEPI Tomorrow's Leaders Undergraduate Program",
-    "university": "Lebanon/Egypt, AUB, AUC, or LAU",
-    "country": "LAU",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-09-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-18",
-    "deadline_display": "2026-11-18",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, housing, monthly stipend, health insurance, laptop, textbooks, and US exchange semester",
-    "requirements": "Academic excellence, leadership potential, community service, financial need.",
-    "link": "https://www.tomorrowsleadersprogram.org/",
-    "official_link": "https://www.tomorrowsleadersprogram.org/",
-    "is_active": true
-  },
-  {
-    "id": "auto_652935",
-    "name": "Global Korea Scholarship (GKS-U)",
-    "university": "South Korea, Various Universities",
-    "country": "Universities",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-09-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-30",
-    "deadline_display": "2026-11-30",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, 1-year language training, roundtrip airfare, monthly stipend, settlement allowance",
-    "requirements": "High GPA, age under 25, good health.",
-    "link": "https://www.studyinkorea.go.kr",
-    "official_link": "https://www.studyinkorea.go.kr",
-    "is_active": true
-  },
-  {
-    "id": "auto_792082",
-    "name": "Russian Government Scholarships",
-    "university": "Russia, Various Universities",
-    "country": "Universities",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-09-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, 1-year preparatory language course, monthly stipend, subsidized dormitories",
-    "requirements": "Academic transcripts, medical certificate, passport.",
-    "link": "https://education-in-russia.com/",
-    "official_link": "https://education-in-russia.com/",
-    "is_active": true
-  },
-  {
-    "id": "auto_967753",
-    "name": "Reach Oxford Scholarship",
-    "university": "United Kingdom, University of Oxford",
-    "country": "Oxford",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2026-12-01]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-26",
-    "deadline_display": "2027-01-26",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, living costs grant, and return airfare",
-    "requirements": "Academic excellence, financial need, social commitment.",
-    "link": "https://www.ox.ac.uk/admissions/undergraduate/fees-and-funding/oxford-support/reach-oxford-scholarship",
-    "official_link": "https://www.ox.ac.uk/admissions/undergraduate/fees-and-funding/oxford-support/reach-oxford-scholarship",
-    "is_active": true
-  },
-  {
-    "id": "auto_845117",
-    "name": "Türkiye Bursları",
-    "university": "Turkey, Various Universities",
-    "country": "Universities",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2027-01-10]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-02-20",
-    "deadline_display": "2027-02-20",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, monthly stipend, dormitory, health insurance, 1-year language course, flight ticket",
-    "requirements": "Academic excellence, age requirements, no citizenship in Turkey.",
-    "link": "https://www.turkiyeburslari.gov.tr/",
-    "official_link": "https://www.turkiyeburslari.gov.tr/",
-    "is_active": true
-  },
-  {
-    "id": "auto_964637",
-    "name": "Qaddumi Foundation UK Master's Scholarship",
-    "university": "United Kingdom (Partner Universities)",
-    "country": "Universities",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Open Now",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026/2027 Academic Year",
-    "deadline_display": "2026/2027 Academic Year",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Fully funded scholarship covering tuition and related academic expenses",
-    "requirements": "Palestinian nationality, acceptance into a UK Master's program in Engineering, Architecture, Business Administration, or Computer Science and Technology. Strong academic background and essays.",
-    "link": "https://qaddumi.org/en/applications-now-open-for-the-uk-masters-scholarship-2026-2027/",
-    "official_link": "https://qaddumi.org/en/applications-now-open-for-the-uk-masters-scholarship-2026-2027/",
-    "is_active": true
-  },
-  {
-    "id": "auto_642578",
-    "name": "Stipendium Hungaricum Scholarship (Master's)",
-    "university": "Hungary (Participating Hungarian Universities e.g., ELTE, BME, University of Debrecen)",
-    "country": "Debrecen",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [January 15, 2027]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Fully funded: full tuition waiver, monthly living allowance, free dormitory accommodation or housing contribution, and health insurance",
-    "requirements": "Bachelor's degree, strong academic record, motivation letter, medical certificate, and English proficiency proof.",
-    "link": "https://stipendiumhungaricum.hu/",
-    "official_link": "https://stipendiumhungaricum.hu/",
-    "is_active": true
-  },
-  {
-    "id": "auto_432269",
-    "name": "Russian Government Scholarships - Master's Quota",
-    "university": "Russia (Russian State Universities)",
-    "country": "Universities",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [January 15, 2027]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Fully funded: tuition fees covered for the entire duration, 1-year Russian language preparatory course, monthly academic stipend, and subsidized dormitory accommodation",
-    "requirements": "Bachelor's degree certificate, transcripts, passport copy, medical certificate, and motivation letter.",
-    "link": "https://education-in-russia.com/",
-    "official_link": "https://education-in-russia.com/",
-    "is_active": true
-  },
-  {
-    "id": "auto_986085",
-    "name": "Türkiye Bursları Scholarship (Master's)",
-    "university": "Türkiye (Various Turkish Universities)",
-    "country": "Universities",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [January 10, 2027]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-02-20",
-    "deadline_display": "2027-02-20",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Fully funded: 100% tuition waiver, monthly stipend, university placement, 1-year Turkish language course, accommodation, health insurance, and round-trip flight tickets",
-    "requirements": "Minimum GPA criteria (usually 75% for masters), under 30 years of age for Master's, transcripts, diploma, statement of purpose, and recommendation letters.",
-    "link": "https://www.turkiyeburslari.gov.tr/",
-    "official_link": "https://www.turkiyeburslari.gov.tr/",
-    "is_active": true
-  },
-  {
-    "id": "auto_44766",
-    "name": "Stipendium Hungaricum Scholarship - Hungarian Government",
-    "university": "Hungary (ELTE, BME, University of Debrecen)",
-    "country": "Debrecen",
-    "degree": "PhD / Doctorate",
-    "target_degrees": [
-      "PhD / Doctorate"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [November 2026]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, monthly living allowance, free dormitory or accommodation subsidy, health insurance",
-    "requirements": "Academic transcripts, research proposal for PhD, medical certificate, passport copy",
-    "link": "https://stipendiumhungaricum.hu/",
-    "official_link": "https://stipendiumhungaricum.hu/",
-    "is_active": true
-  },
-  {
-    "id": "auto_375429",
-    "name": "Russian Government Scholarships - Rossotrudnichestvo",
-    "university": "Russia (Various State Universities)",
-    "country": "Universities",
-    "degree": "PhD / Doctorate",
-    "target_degrees": [
-      "PhD / Doctorate"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [November 2026]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, 1-year preparatory language training, monthly academic stipend, subsidized dormitories",
-    "requirements": "Academic transcripts, medical certificate, passport, research proposal for PhD",
-    "link": "https://education-in-russia.com/",
-    "official_link": "https://education-in-russia.com/",
-    "is_active": true
-  },
-  {
-    "id": "auto_606358",
-    "name": "Türkiye Bursları - Presidency for Turks Abroad (YTB)",
-    "university": "Turkey (Various Public Universities)",
-    "country": "Universities",
-    "degree": "PhD / Doctorate",
-    "target_degrees": [
-      "PhD / Doctorate"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Opening Soon [2027-01-10]",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-02-20",
-    "deadline_display": "2027-02-20",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "100% tuition waiver, monthly stipend, dormitory accommodation, health insurance, 1-year language course, flight ticket",
-    "requirements": "Academic transcripts, research proposal for PhD, reference letters, passport",
-    "link": "https://www.turkiyeburslari.gov.tr/",
-    "official_link": "https://www.turkiyeburslari.gov.tr/",
-    "is_active": true
-  },
-  {
-    "id": "auto_885113",
-    "name": "Lester B. Pearson International Scholarship Program - University of Toronto",
-    "university": "Canada, University of Toronto",
-    "country": "Toronto",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Open Now",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-06",
-    "deadline_display": "2026-11-06",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, books, incidental fees, and full residence support for 4 years",
-    "requirements": "Academic excellence, leadership, creativity, and community involvement. Proof of English proficiency required.",
-    "link": "https://future.utoronto.ca/pearson/",
-    "official_link": "https://future.utoronto.ca/pearson/",
-    "is_active": true
-  },
-  {
-    "id": "auto_995616",
-    "name": "UBC International Scholars Program - University of British Columbia",
-    "university": "Canada, University of British Columbia",
-    "country": "Columbia",
-    "degree": "Undergraduate (Bachelor's)",
-    "target_degrees": [
-      "Undergraduate (Bachelor's)"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Open Now",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-15",
-    "deadline_display": "2026-11-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition and living costs",
-    "requirements": "Academic excellence, leadership, and financial need. English proficiency test scores required.",
-    "link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
-    "official_link": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
-    "is_active": true
-  },
-  {
-    "id": "auto_938397",
-    "name": "Russian Government Scholarships - Education in Russia (Rossotrudnichestvo)",
-    "university": "Russia (Russian State Universities)",
-    "country": "Universities",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Open Now",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Fully funded: tuition fees, 1-year preparatory faculty for Russian language, monthly academic stipend, and subsidized student dormitories",
-    "requirements": "Completed previous degree, academic transcripts, medical health certificate, passport copy, motivation letter",
-    "link": "https://education-in-russia.com/",
-    "official_link": "https://education-in-russia.com/",
-    "is_active": true
-  },
-  {
-    "id": "auto_577374",
-    "name": "Russian Government Scholarships - Education in Russia",
-    "university": "Russia (Various State Universities)",
-    "country": "Universities",
-    "degree": "PhD / Doctorate",
-    "target_degrees": [
-      "PhD / Doctorate"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Engineering"
-    ],
-    "matchScore": "92%",
-    "matchLabel": "فرصة جديدة تم رصدها آلياً ⚡",
-    "status": "Open Now",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-15",
-    "deadline_display": "2027-01-15",
-    "deadlineDays": "تحقق من الرابط",
-    "coverage": "Full tuition, 1-year preparatory language training, monthly academic stipend, subsidized dormitories",
-    "requirements": "Academic transcripts, research proposal for PhD, medical certificate, passport",
-    "link": "https://education-in-russia.com/",
-    "official_link": "https://education-in-russia.com/",
-    "is_active": true
-  },
-  {
-    "id": "chevening_uk",
-    "name": "Chevening Scholarships (FCDO UK)",
-    "university": "All UK Universities (Oxford, Cambridge, UCL, Imperial, Edinburgh)",
-    "country": "المملكة المتحدة (UK)",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "All Majors",
-      "Computer Science",
-      "Public Policy",
-      "Engineering",
-      "Medicine",
-      "International Relations"
-    ],
-    "matchScore": "96%",
-    "matchLabel": "تمويل حكومي كامل 100%",
-    "status": "مفتوح سنوياً (دورة 2026/2027)",
-    "statusClass": "sp-badge-success",
-    "deadline": "2026-11-05",
-    "deadline_display": "5 نوفمبر 2026",
-    "deadlineDays": "راجع الموقع للعام الجديد",
-    "coverage": "تمويل كامل 100% (تذاكر السفر، الرسوم الدراسية بالكامل، راتب شهري، وبدل تأشيرة)",
-    "min_gpa_percent": 80,
-    "requirements": "شهادة بكالوريوس معترف بها بمعدل جيد جداً، خبرة عملية لا تقل عن سنتين، وإثبات قيادة وتأثير مجتمعي.",
-    "link": "https://www.chevening.org/scholarships/",
-    "official_link": "https://www.chevening.org/scholarships/",
-    "quota_palestine": true,
-    "is_active": true
-  },
-  {
-    "id": "fulbright_foreign_student",
-    "name": "Fulbright Foreign Student Program (USA)",
-    "university": "Accredited Universities Across the United States",
+    "id": "fulbright",
+    "name": "Fulbright Foreign Student Program",
+    "university": "كافة الجامعات الأمريكية المعتمدة (MIT, Harvard, Stanford, Columbia)",
     "country": "الولايات المتحدة (USA)",
-    "degree": "Master's Degree",
+    "opportunity_type": "scholarship",
+    "degree": "Master's & PhD (دراسات عليا)",
     "target_degrees": [
       "Master's Degree",
-      "PhD / Doctorate"
+      "PhD / Doctorate",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "masters",
+      "phd"
     ],
     "target_majors": [
-      "All Majors",
-      "STEM",
-      "Humanities",
-      "Economics",
-      "Education"
+      "Engineering",
+      "Public Policy",
+      "Social Sciences",
+      "Natural Sciences",
+      "Business",
+      "Humanities"
     ],
-    "matchScore": "95%",
-    "matchLabel": "تمويل كامل Full Ride",
-    "status": "مفتوح رسمياً",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-04-15",
-    "deadline_display": "15 أبريل 2027",
-    "deadlineDays": "متبقي أكثر من 150 يوماً",
-    "coverage": "تمويل كامل (الرسوم الدراسية كاملة، سكن وإعاشة شهرية، تذاكر طيران ذهاب وإياب، وتأمين صحي)",
-    "min_gpa_percent": 82,
-    "requirements": "درجة البكالوريوس، إتقان اللغة الإنجليزية (TOEFL أو إفادة)، والتزام بالعودة لنقل المعرفة.",
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
+    "status": "التقديم السنوي عبر Amideast والسفارة",
+    "statusClass": "sp-badge-info",
+    "deadline": "2027-05-31",
+    "deadline_display": "31 مايو 2027",
+    "deadlineDays": "دورة 2027",
+    "coverage": "تغطية الرسوم الجامعية بالكامل + راتب شهري للإعاشة + تذاكر طيران ذهاب وعودة + تأمين صحي شامل + فيزا J-1",
+    "requirements": "درجة البكالوريوس بتقدير جيد جداً، كفاءة عالية في اللغة الإنجليزية، واجتياز المقابلة الشخصية",
     "link": "https://foreign.fulbrightonline.org/",
-    "official_link": "https://foreign.fulbrightonline.org/",
-    "quota_palestine": true,
     "is_active": true
   },
   {
-    "id": "holland_nl_scholarship",
-    "name": "NL Scholarship (formerly Holland Scholarship)",
-    "university": "Dutch Research Universities & Universities of Applied Sciences",
-    "country": "هولندا (Netherlands)",
-    "degree": "Undergraduate & Master's",
+    "id": "cern_summer",
+    "name": "CERN Summer Student Programme",
+    "university": "المنظمة الأوروبية للأبحاث النووية (CERN Laboratory)",
+    "country": "سويسرا (Switzerland)",
+    "opportunity_type": "internship",
+    "degree": "Undergraduate & Master's Internship",
     "target_degrees": [
       "Undergraduate (Bachelor's)",
-      "Master's Degree"
+      "Master's Degree",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters"
     ],
     "target_majors": [
-      "All Majors",
+      "Physics",
       "Computer Science",
-      "Water Technology",
-      "Design",
-      "Business"
+      "Software Engineering",
+      "Mathematics",
+      "Electrical Engineering"
     ],
-    "matchScore": "91%",
-    "matchLabel": "منحة تمويل جزئي €5,000",
-    "status": "مفتوح للتقديم",
-    "statusClass": "sp-badge-warning",
-    "deadline": "2027-02-01",
-    "deadline_display": "1 فبراير أو 1 مايو 2027",
-    "deadlineDays": "حسب الجامعة",
-    "coverage": "منحة مالية بقيمة 5,000 يورو في السنة الأولى للمساعدة في نفقات المعيشة والدراسة",
-    "min_gpa_percent": 75,
-    "requirements": "قبول أكاديمي من إحدى الجامعات الهولندية المشاركة، وجنسية من خارج الاتحاد الأوروبي.",
-    "link": "https://www.studyinnl.org/finances/nl-scholarship",
-    "official_link": "https://www.studyinnl.org/finances/nl-scholarship",
-    "quota_palestine": false,
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 75.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم حالياً",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-01-31",
+    "deadline_display": "31 يناير 2027",
+    "deadlineDays": "فرصة بحثية فريدة",
+    "coverage": "تمويل كامل: بدل معيشة 90 فرنك سويسري يومياً (حوالي 2,700 CHF شهرياً) + تذاكر طيران + تأمين صحي شامل + تدريب متقدم في مصادم الهادرونات الكبير",
+    "requirements": "إتمام 3 سنوات على الأقل من دراسة البكالوريوس أو الماجستير في تخصصات الفيزياء أو الحوسبة أو الهندسة، وإتقان اللغة الإنجليزية",
+    "link": "https://careers.cern/summer",
     "is_active": true
   },
   {
-    "id": "italy_maeci_scholarship",
-    "name": "Italian Government MAECI Scholarships",
-    "university": "State-Recognized Italian Universities & AFAM Institutions",
-    "country": "إيطاليا (Italy)",
-    "degree": "Master's Degree",
+    "id": "world_bank_internship",
+    "name": "World Bank Group Global Internship",
+    "university": "مجموعة البنك الدولي (World Bank HQ & Regional Hubs)",
+    "country": "الولايات المتحدة (USA & Global)",
+    "opportunity_type": "internship",
+    "degree": "Graduate Internship (Master's & PhD)",
     "target_degrees": [
       "Master's Degree",
-      "PhD / Doctorate"
+      "PhD / Doctorate",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "masters",
+      "phd"
     ],
     "target_majors": [
-      "Engineering",
-      "Architecture",
-      "Design",
       "Economics",
-      "Italian Studies"
-    ],
-    "matchScore": "93%",
-    "matchLabel": "إعفاء دراسي + راتب شهري",
-    "status": "يفتح دورياً كل ربيع",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-06-14",
-    "deadline_display": "14 يونيو 2027",
-    "deadlineDays": "يفتح في أبريل 2027",
-    "coverage": "إعفاء 100% من الأقساط الجامعية + راتب شهري 900 يورو وتأمين صحي إيطالي مجاني",
-    "min_gpa_percent": 75,
-    "requirements": "شهادة البكالوريوس، ألا يتجاوز عمر المتقدم 28 عاماً للماجستير و30 عاماً للدكتوراه.",
-    "link": "https://studyinitaly.esteri.it/en/call-for-procedure",
-    "official_link": "https://studyinitaly.esteri.it/en/call-for-procedure",
-    "quota_palestine": true,
-    "is_active": true
-  },
-  {
-    "id": "polimi_merit_grants",
-    "name": "Politecnico di Milano Merit-Based Grants",
-    "university": "Politecnico di Milano (Top 20 Worldwide in Engineering/Design)",
-    "country": "إيطاليا (Italy)",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "Computer Science & Engineering",
-      "Civil Engineering",
-      "Architecture",
-      "Design"
-    ],
-    "matchScore": "94%",
-    "matchLabel": "منحة تميز (إعفاء + 10,000 يورو)",
-    "status": "مفتوح للدفعة القادمة",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-02-28",
-    "deadline_display": "28 فبراير 2027",
-    "deadlineDays": "متبقي 114 يوماً",
-    "coverage": "إعفاء كامل من الرسوم الدراسية بقيمة €3,900 سنوياً + منحة نقدية تصل إلى 10,000 يورو لتغطية المعيشة",
-    "min_gpa_percent": 82,
-    "requirements": "سجل أكاديمي متميز، خطاب دافع احترافي، وملف أعمال (لبرامج العمارة والتصميم).",
-    "link": "https://www.polimi.it/en/international-prospective-students",
-    "official_link": "https://www.polimi.it/en/international-prospective-students",
-    "quota_palestine": true,
-    "is_active": true
-  },
-  {
-    "id": "si_scholarship_sweden",
-    "name": "Swedish Institute Scholarships for Global Professionals (SI)",
-    "university": "Top Swedish Universities (KTH, Lund, Uppsala, Chalmers)",
-    "country": "السويد (Sweden)",
-    "degree": "Master's Degree",
-    "target_degrees": [
-      "Master's Degree"
-    ],
-    "target_majors": [
-      "Sustainability",
+      "Finance",
+      "Public Policy",
       "Computer Science",
-      "Public Health",
-      "Renewable Energy"
+      "Data Science",
+      "International Relations"
     ],
-    "matchScore": "95%",
-    "matchLabel": "تمويل كامل ومصروف شهري",
-    "status": "يفتح في فبراير 2027",
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم",
     "statusClass": "sp-badge-success",
-    "deadline": "2027-02-28",
-    "deadline_display": "28 فبراير 2027",
-    "deadlineDays": "التقديم عبر universityadmissions.se أولاً",
-    "coverage": "تغطية كامل الرسوم الدراسية + راتب شهري 12,000 كرونة سويدية + تذكرة سفر 15,000 كرونة + تأمين صحي",
-    "min_gpa_percent": 80,
-    "requirements": "إثبات ما لا يقل عن 3,000 ساعة خبرة عملية أو تطوعية، وسجل قيادي مثبت.",
-    "link": "https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/",
-    "official_link": "https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/",
-    "quota_palestine": false,
+    "deadline": "2027-01-31",
+    "deadline_display": "31 يناير 2027",
+    "deadlineDays": "فرصة دولية مرموقة",
+    "coverage": "راتب شهري ممول بالساعة لكافة ساعات العمل + بدل سفر دولي يصل إلى 3,000 دولار لمن يحتاج السفر إلى واشنطن",
+    "requirements": "التسجيل في برنامج ماجستير أو دكتوراه معترف به، وإجادة تامة للغة الإنجليزية مع مهارات تحليلية كمية مثبتة",
+    "link": "https://www.worldbank.org/en/about/careers/programs-and-internships/internship",
     "is_active": true
   },
   {
-    "id": "mext_japan_embassy",
-    "name": "Japanese Government MEXT Scholarship (Monbukagakusho)",
-    "university": "Tokyo University, Kyoto University, Osaka University, Tokyo Tech",
+    "id": "max_planck_internship",
+    "name": "Max Planck Summer Research Internship",
+    "university": "معاهد ماكس بلانك البحثية (Max Planck Institutes)",
+    "country": "ألمانيا (Germany)",
+    "opportunity_type": "internship",
+    "degree": "Undergraduate & Master's Lab Internship",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters"
+    ],
+    "target_majors": [
+      "Neurobiology",
+      "Computer Science",
+      "Biochemistry",
+      "Physics",
+      "Artificial Intelligence"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
+    "status": "يفتح ديسمبر 2026",
+    "statusClass": "sp-badge-info",
+    "deadline": "2027-02-15",
+    "deadline_display": "15 فبراير 2027",
+    "deadlineDays": "تدريب بحثي مكثف",
+    "coverage": "تمويل كامل: راتب شهري 900 يورو + سكن مجاني داخل مجمع المعهد + تغطية تذاكر السفر وتأمين صحي كامل لمدة 10 أسابيع",
+    "requirements": "سجل أكاديمي متميز في مرحلة البكالوريوس أو الماجستير وشغف بالأبحاث المعملية والابتكار العلمي",
+    "link": "https://www.imprs-ls.mpg.de/",
+    "is_active": true
+  },
+  {
+    "id": "gsoc_fellowship",
+    "name": "Google Summer of Code (GSoC) Global Fellowship",
+    "university": "شركة جوجل ومؤسسات البرمجيات الحرة (Google Open Source)",
+    "country": "عالمي عن بُعد (Global / Remote)",
+    "opportunity_type": "internship",
+    "degree": "كافة المراحل من 18 عاماً فأكثر",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "Diploma",
+      "بكالوريوس",
+      "دبلوم"
+    ],
+    "degree_levels": [
+      "high_school",
+      "diploma",
+      "bachelors",
+      "masters",
+      "phd",
+      "professional_training"
+    ],
+    "target_majors": [
+      "Computer Science",
+      "Software Engineering",
+      "AI",
+      "Data Science",
+      "Web Development",
+      "All"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 60.0,
+    "funding_type": "fully_funded",
+    "status": "يفتح التقديم مارس 2027",
+    "statusClass": "sp-badge-info",
+    "deadline": "2027-04-04",
+    "deadline_display": "4 أبريل 2027",
+    "deadlineDays": "تدريب برمجي عالمي",
+    "coverage": "مكافأة مالية متدرجة (1,500$ إلى 3,300$) مدفوعة من جوجل حسب بلد إقامة الطالب + توجيه وإشراف مباشر من كبار مهندسي البرمجيات في العالم",
+    "requirements": "مهارات برمجية جيدة في إحدى اللغات (Python, C++, JS, Rust) وتقديم مقترح مشروع متكامل لمنظمة مفتوحة المصدر",
+    "link": "https://summerofcode.withgoogle.com/",
+    "is_active": true
+  },
+  {
+    "id": "riken_summer",
+    "name": "RIKEN Center for Brain Science Summer Internship",
+    "university": "معهد رايكن للأبحاث العلمية (RIKEN CBS)",
     "country": "اليابان (Japan)",
+    "opportunity_type": "internship",
+    "degree": "Undergraduate & Graduate Internship",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd"
+    ],
+    "target_majors": [
+      "Life Sciences",
+      "Artificial Intelligence",
+      "Computational Biology",
+      "Bioengineering",
+      "Neuroscience"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 78.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-28",
+    "deadline_display": "28 فبراير 2027",
+    "deadlineDays": "تدريب نخبوي باليابان",
+    "coverage": "تمويل كامل: سكن جامعي مجاني في طوكيو + تذاكر طيران ذهاب وعودة لليابان + مصروف معيشة يومي + العمل في أحدث مختبرات الدماغ والذكاء الاصطناعي",
+    "requirements": "طلبة البكالوريوس والدراسات العليا ذوو الاهتمام بالعلوم العصبية والحوسبة الحيوية، ورسائل توصية أكاديمية",
+    "link": "https://cbs.riken.jp/en/summer/",
+    "is_active": true
+  },
+  {
+    "id": "harvard_hnmun",
+    "name": "Harvard National Model United Nations (HNMUN) & Travel Grants",
+    "university": "جامعة هارفارد (Harvard University - Boston)",
+    "country": "الولايات المتحدة (USA)",
+    "opportunity_type": "conference",
+    "degree": "Undergraduate & Graduate Conference",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters"
+    ],
+    "target_majors": [
+      "Political Science",
+      "International Relations",
+      "Law",
+      "Public Policy",
+      "Economics",
+      "All"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 70.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم حالياً",
+    "statusClass": "sp-badge-warning",
+    "deadline": "2026-12-01",
+    "deadline_display": "1 ديسمبر 2026",
+    "deadlineDays": "مؤتمر دولي رائد",
+    "coverage": "منحة سفر ومشاركة: تغطية رسوم المؤتمر بالكامل + دعم تذاكر الطيران والسكن لوفود الطلبة الدوليين المتميزين من الدول النامية",
+    "requirements": "التسجيل كوفد أو مندوب فردي، كتابة أوراق سياسات موقفية، وشغف بالقضايا الدبلوماسية الدولية",
+    "link": "https://www.harvardmun.org/",
+    "is_active": true
+  },
+  {
+    "id": "ieee_travel_grant",
+    "name": "IEEE Student Conference Travel Grants",
+    "university": "معهد مهندسي الكهرباء والإلكترونيات (IEEE Global)",
+    "country": "عالمي (Global / Various Locations)",
+    "opportunity_type": "conference",
     "degree": "Undergraduate, Master's & PhD",
     "target_degrees": [
       "Undergraduate (Bachelor's)",
       "Master's Degree",
-      "PhD / Doctorate"
+      "PhD / Doctorate",
+      "بكالوريوس",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd"
     ],
     "target_majors": [
-      "All Majors",
-      "Robotics",
+      "Electrical Engineering",
       "Computer Science",
-      "Biotechnology",
-      "Economics"
+      "AI",
+      "Robotics",
+      "Telecommunications"
     ],
-    "matchScore": "97%",
-    "matchLabel": "تمويل حكومي ياباني كامل 100%",
-    "status": "يفتح في أبريل/مايو سنوياً",
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 75.0,
+    "funding_type": "partial",
+    "status": "مفتوح على مدار العام",
     "statusClass": "sp-badge-success",
-    "deadline": "2027-05-30",
-    "deadline_display": "30 مايو 2027",
-    "deadlineDays": "عبر السفارة اليابانية",
-    "coverage": "إعفاء 100% من رسوم التسجيل والدراسة + راتب شهري 144,000 ين ياباني + تذاكر طيران ذهاب وإياب",
-    "min_gpa_percent": 80,
-    "requirements": "اجتياز امتحانات السفارة في الرياضيات واللغة الإنجليزية أو اليابانية والمقابلة الشخصية.",
-    "link": "https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/",
-    "official_link": "https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/",
-    "quota_palestine": true,
+    "deadline": "2027-03-15",
+    "deadline_display": "15 مارس 2027",
+    "deadlineDays": "دعم مستمر للمؤتمرات",
+    "coverage": "منحة سفر مالية من 500$ إلى 1,500$ لتغطية تذاكر السفر ورسوم التسجيل والإقامة للطلبة المقبولين لعرض أوراقهم البحثية في مؤتمرات IEEE المرموقة",
+    "requirements": "عضوية طلابية في IEEE وقبول ورقة بحثية أصلية تم تحكيمها ونشرها في المؤتمر المستهدف",
+    "link": "https://www.ieee.org/membership/students/scholarships-grants-awards.html",
     "is_active": true
   },
   {
-    "id": "eiffel_excellence_france",
-    "name": "Eiffel Excellence Scholarship Program (Campus France)",
-    "university": "French Higher Education Institutions & Grandes Écoles",
-    "country": "فرنسا (France)",
-    "degree": "Master's Degree & PhD",
-    "target_degrees": [
-      "Master's Degree",
-      "PhD / Doctorate"
-    ],
-    "target_majors": [
-      "Science & Tech",
-      "Engineering",
-      "Law & Political Science",
-      "Economics & Management"
-    ],
-    "matchScore": "96%",
-    "matchLabel": "تمويل فرنسي مرموق كامل",
-    "status": "مفتوح للتقديم حالياً",
-    "statusClass": "sp-badge-success",
-    "deadline": "2027-01-10",
-    "deadline_display": "10 يناير 2027",
-    "deadlineDays": "متبقي 65 يوماً",
-    "coverage": "بدل شهري قدره 1,181 يورو للماجستير و1,750 يورو للدكتوراه + تذكرة طيران دولية + تأمين صحي ونشاطات ثقافية",
-    "min_gpa_percent": 84,
-    "requirements": "يتم الترشيح حصراً من قِبل الجامعة الفرنسية التي تقبل الطالب.",
-    "link": "https://www.campusfrance.org/en/the-eiffel-scholarship-program",
-    "official_link": "https://www.campusfrance.org/en/the-eiffel-scholarship-program",
-    "quota_palestine": false,
-    "is_active": true
-  },
-  {
-    "id": "gaza_emergency_academic_solidarity",
-    "name": "صندوق التضامن الأكاديمي الدولي لطلبة قطاع غزة (Emergency Solidarity Grants)",
-    "university": "Consortium of European, Turkish & Arab Universities",
-    "country": "دولي (أوروبا، تركيا، مصر، والأردن)",
-    "degree": "Undergraduate & Graduate",
+    "id": "world_youth_forum",
+    "name": "World Youth Forum Academic Fellowship & Summit",
+    "university": "الأكاديمية الوطنية للتدريب ورئاسة المؤتمر (WYF Egypt)",
+    "country": "مصر (Egypt - Sharm El-Sheikh)",
+    "opportunity_type": "conference",
+    "degree": "كافة المراحل والشباب المتميزين (18-35 عاماً)",
     "target_degrees": [
       "Undergraduate (Bachelor's)",
       "Master's Degree",
-      "PhD / Doctorate"
+      "PhD / Doctorate",
+      "Professional",
+      "بكالوريوس"
+    ],
+    "degree_levels": [
+      "diploma",
+      "bachelors",
+      "masters",
+      "phd",
+      "professional_training"
     ],
     "target_majors": [
-      "الطب البشري",
-      "طب الأسنان",
-      "الهندسة وتكنولوجيا المعلومات",
-      "التمريض والعلوم الطبية",
-      "كافة التخصصات"
+      "All Majors",
+      "Entrepreneurship",
+      "Technology",
+      "Peacebuilding",
+      "Environment"
     ],
-    "matchScore": "99%",
-    "matchLabel": "أولوية قصوى وإعفاء شامل 100%",
-    "status": "مفتوح عاجل ومستمر",
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 65.0,
+    "funding_type": "fully_funded",
+    "status": "تفتح التسجيلات قريباً",
+    "statusClass": "sp-badge-info",
+    "deadline": "2027-01-10",
+    "deadline_display": "10 يناير 2027",
+    "deadlineDays": "مؤتمر سنوي ضخم",
+    "coverage": "تمويل كامل 100%: تذاكر طيران ذهاب وعودة من أي دولة بالعالم + إقامة فندقية فاخرة كاملة + حضور جلسات قادة العالم وورش العمل التخصصية",
+    "requirements": "الفئة العمرية من 18 إلى 35 عاماً، تقديم فيديو تعريفي أو مقال حول رؤية الطالب في القيادة والتنمية المستدامة",
+    "link": "https://wyfegypt.com/",
+    "is_active": true
+  },
+  {
+    "id": "lindau_nobel",
+    "name": "Lindau Nobel Laureate Meetings Fellowship",
+    "university": "مؤسسة اجتماعات لينداو لجائزة نوبل (Lindau Foundation)",
+    "country": "ألمانيا (Germany - Bavaria)",
+    "opportunity_type": "conference",
+    "degree": "Graduate & Postdoc Young Scientists",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "Postdoc",
+      "ماجستير",
+      "دكتوراه"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd",
+      "postdoctoral"
+    ],
+    "target_majors": [
+      "Physics",
+      "Chemistry",
+      "Physiology/Medicine",
+      "Economic Sciences"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 85.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للترشيح والتقديم",
+    "statusClass": "sp-badge-warning",
+    "deadline": "2026-11-30",
+    "deadline_display": "30 نوفمبر 2026",
+    "deadlineDays": "لقاء تاريخي مع علماء نوبل",
+    "coverage": "منحة حضور كاملة: لقاء مباشر مع 30+ من حائزي جوائز نوبل + تغطية كاملة للإقامة الفندقية والسفر والوجبات في بافاريا الألمانية",
+    "requirements": "علماء وباحثون شباب متميزون في مجالات العلوم الطبيعية أو الاقتصاد، مع توصيات بحثية رفيعة المستوى",
+    "link": "https://www.lindau-nobel.org/",
+    "is_active": true
+  },
+  {
+    "id": "unitar_diplomacy",
+    "name": "UNITAR Global Multilateral Diplomacy Fellowship",
+    "university": "معهد الأمم المتحدة للتدريب والبحث (UNITAR - Geneva)",
+    "country": "سويسرا وعن بُعد (Switzerland & Online)",
+    "opportunity_type": "training_program",
+    "degree": "Professional & Academic Training Fellowship",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "Professional",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters",
+      "phd",
+      "professional_training"
+    ],
+    "target_majors": [
+      "International Law",
+      "Diplomacy",
+      "Political Science",
+      "Sustainable Development",
+      "Public Policy"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 70.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم حالياً",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-10",
+    "deadline_display": "10 فبراير 2027",
+    "deadlineDays": "تدريب دبلوماسي أممي",
+    "coverage": "منحة دراسية وتدريبية كاملة من الأمم المتحدة مع شهادة رسمية معتمدة ورعاية كاملة للمشاركين المتميزين من الدول النامية",
+    "requirements": "الاهتمام بالعمل الدبلوماسي والمفاوضات الدولية، شهادة جامعية أو قيد الدراسة، وإتقان اللغة الإنجليزية أو الفرنسية",
+    "link": "https://unitar.org/",
+    "is_active": true
+  },
+  {
+    "id": "kaust_vsrp",
+    "name": "KAUST Visiting Student Research Program (VSRP)",
+    "university": "جامعة الملك عبد الله للعلوم والتقنية (KAUST)",
+    "country": "السعودية (Saudi Arabia)",
+    "opportunity_type": "training_program",
+    "degree": "Graduate Research Training Internship (3-6 Months)",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters"
+    ],
+    "target_majors": [
+      "Applied Mathematics",
+      "Computer Science",
+      "Energy",
+      "Bioengineering",
+      "Material Sciences",
+      "AI"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 80.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم طوال العام",
     "statusClass": "sp-badge-success",
     "deadline": "2027-03-31",
     "deadline_display": "31 مارس 2027",
-    "deadlineDays": "تقديم مستمر على دفعات",
-    "coverage": "إعفاء 100% من الأقساط + سكن جامعي مجاني + راتب إعانة طوارئ + مساعدة في تنسيق السفر والإجلاء للدراسة",
-    "min_gpa_percent": 70,
-    "requirements": "أن يكون المتقدم طالباً مسجلاً في إحدى جامعات قطاع غزة وتأثرت دراسته، مع إثبات القيد أو كشف الدرجات الإلكتروني.",
-    "link": "https://mohe.pna.ps",
-    "official_link": "https://mohe.pna.ps",
-    "quota_palestine": true,
+    "deadlineDays": "تدريب بحثي استثنائي",
+    "coverage": "تمويل كامل 100%: راتب شهري 1,000$ + غرفة خاصة مع حمام مستقل في السكن الجامعي + تذاكر طيران ذهاب وعودة + تأمين صحي وتكاليف الفيزا",
+    "requirements": "إتمام السنة الثالثة من البكالوريوس أو دراسة الماجستير بمعدل GPA لا يقل عن 3.5 من 4 (أو 85%+)، وكفاءة لغة إنجليزية مثبتة",
+    "link": "https://vsrp.kaust.edu.sa/",
+    "is_active": true
+  },
+  {
+    "id": "oxford_climate_training",
+    "name": "Oxford Climate Leadership & Policy Network",
+    "university": "جامعة أكسفورد (Oxford Climate Society / Smith School)",
+    "country": "بريطانيا وعن بُعد (UK & Hybrid)",
+    "opportunity_type": "training_program",
+    "degree": "Executive & Academic Training Fellowship",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "PhD / Doctorate",
+      "Professional",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "diploma",
+      "bachelors",
+      "masters",
+      "phd",
+      "professional_training"
+    ],
+    "target_majors": [
+      "Environmental Science",
+      "Economics",
+      "Policy",
+      "Geography",
+      "Engineering",
+      "Law"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 75.0,
+    "funding_type": "fully_funded",
+    "status": "يفتح للتقديم يناير 2027",
+    "statusClass": "sp-badge-info",
+    "deadline": "2027-01-25",
+    "deadline_display": "25 يناير 2027",
+    "deadlineDays": "تدريب قيادي بأكسفورد",
+    "coverage": "تدريب مكثف مع تغطية كاملة للرسوم والمواد البحثية وفرصة توجيه مباشر من أساتذة جامعة أكسفورد وشهادة إتمام معتمدة",
+    "requirements": "سيرة ذاتية قوية ومقال يوضح مساهمة المتقدم في حلول الاستدامة وتغير المناخ",
+    "link": "https://www.ox.ac.uk/",
+    "is_active": true
+  },
+  {
+    "id": "iaeste_intern_training",
+    "name": "IAESTE International Practical Engineering Training",
+    "university": "الرابطة الدولية لتبادل الطلاب للخبرة الفنية (IAESTE Global)",
+    "country": "أكثر من 80 دولة (Europe, Asia, Americas)",
+    "opportunity_type": "training_program",
+    "degree": "Engineering & Technical Practical Training",
+    "target_degrees": [
+      "Undergraduate (Bachelor's)",
+      "Master's Degree",
+      "بكالوريوس",
+      "ماجستير"
+    ],
+    "degree_levels": [
+      "bachelors",
+      "masters"
+    ],
+    "target_majors": [
+      "Engineering",
+      "Architecture",
+      "Technology",
+      "Natural Sciences",
+      "Computer Science"
+    ],
+    "eligible_nationalities": [
+      "ALL"
+    ],
+    "eligible_residences": [
+      "ANY"
+    ],
+    "min_gpa_percentage": 70.0,
+    "funding_type": "fully_funded",
+    "status": "مفتوح للتقديم السنوي",
+    "statusClass": "sp-badge-success",
+    "deadline": "2027-02-28",
+    "deadline_display": "28 فبراير 2027",
+    "deadlineDays": "تدريب مهني عالمي",
+    "coverage": "تدريب مهني مدفوع الأجر في شركات وجامعات عالمية يغطي نفقات المعيشة وتأشيرات العمل والتدريب التقني الميداني لمدة 8 إلى 52 أسبوعاً",
+    "requirements": "دراسة أحد تخصصات الهندسة أو العلوم أو الحاسوب، وإتمام عامين دراسيين على الأقل",
+    "link": "https://iaeste.org/",
     "is_active": true
   }
 ]
