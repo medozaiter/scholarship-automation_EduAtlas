@@ -130,7 +130,11 @@ class TestAcademicIdentitySystem(unittest.TestCase):
         self.assertEqual(res_forgot.status_code, 200)
         data_forgot = res_forgot.json()
         self.assertTrue(data_forgot["success"])
-        token = data_forgot.get("reset_token")
+        # In secure production, reset_token is sent via email and NEVER leaked in API response.
+        # For integration testing, retrieve token from persisted record:
+        from services.db import get_user_by_email
+        u_record = get_user_by_email(self.test_email)
+        token = u_record.get("reset_token") if u_record else data_forgot.get("reset_token")
         self.assertTrue(bool(token))
 
         # 2. Reset password using token

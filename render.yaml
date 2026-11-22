@@ -6,10 +6,14 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn web.app:app --host 0.0.0.0 --port $PORT --proxy-headers
     healthCheckPath: /healthz
-    autoDeploy: true
+    # autoDeploy is disabled so Render waits for GitHub Actions CI (lint, typecheck, audit, test)
+    # to pass before deploying via the secure Deploy Hook (RENDER_DEPLOY_HOOK_URL)
+    autoDeploy: false
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
 
       # 1. Neon PostgreSQL Database Connection
       - key: DATABASE_URL
@@ -28,7 +32,17 @@ services:
         value: gemini-2.5-flash
 
       # 4. Security & Session Integrity
+      - key: ENVIRONMENT
+        value: production
       - key: SECRET_KEY
         generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
       - key: ALLOWED_ORIGINS
-        value: "*"
+        value: "https://eduatlas-irxv.onrender.com,https://scholarpilot-ai.onrender.com,http://localhost:7860"
+
+      # 5. Google reCAPTCHA Verification (Required for production fail-closed security)
+      - key: RECAPTCHA_SECRET_KEY
+        sync: false
+      - key: RECAPTCHA_SITE_KEY
+        sync: false

@@ -9,6 +9,30 @@ declare global {
         parse: (markdown: string) => string;
     }
 
+    interface DOMPurifyStatic {
+        sanitize: (dirty: string) => string;
+    }
+
+    interface SaaSEngineStatic {
+        init: () => void;
+        refreshReveals: () => void;
+        refreshSpotlights: () => void;
+    }
+
+    interface EduAtlasClockFormattedDate {
+        fullDateArabic: string;
+        shortDateArabic: string;
+        time12WithSec: string;
+        time12Compact: string;
+        time24: string;
+        iso: string;
+    }
+
+    interface EduAtlasClockStatic {
+        getDateTime: (now?: Date) => EduAtlasClockFormattedDate;
+        update: () => void;
+    }
+
     interface ConfettiOptions {
         particleCount?: number;
         spread?: number;
@@ -103,6 +127,11 @@ declare global {
         switchMainTab?: (tab: string) => void;
         toggleTheme?: () => void;
         updateThemeButton?: () => void;
+        updateThemeIcon?: () => void;
+        toggleEduAtlasTheme?: () => void;
+        setupInstantScholarshipSearch?: (inputSelector: string, itemsSelector: string, onSearchCallback?: ((query: string) => void) | null) => void;
+        animateCompassGauge?: (scorePercent: number, circleSelector: string, textSelector: string) => void;
+        toggleEduAtlasDrawer?: (open?: boolean) => void;
         openDocumentStudioModal?: (scholarshipId?: string) => void;
         closeDocumentStudioModal?: () => void;
         openAssistantSidePanel?: (schId?: string, schName?: string) => void;
@@ -114,11 +143,33 @@ declare global {
         triggerMyReport?: () => void;
         saveAcademicProfile?: (e?: Event) => Promise<void>;
         escapeHTML?: (str: unknown) => string;
+
+        // Additional services & libraries
+        DOMPurify?: DOMPurifyStatic;
+        EduAtlasClock?: EduAtlasClockStatic;
+        EduAtlasValidator?: any;
+        SaaSEngine?: SaaSEngineStatic;
+        observeNewSaaSElements?: (container?: Element | Document) => void;
+        attachSaaSSpotlights?: (root?: ParentNode) => void;
+        clipboardData?: DataTransfer;
+    }
+
+    interface Element {
+        _eaFiltered?: boolean;
+        _warnTimeout?: any;
+        _eaObserverAttached?: boolean;
+    }
+
+    interface Document {
+        _eaObserverAttached?: boolean;
     }
 
     const lucide: LucideStatic | undefined;
     const marked: MarkedStatic | undefined;
     const confetti: ConfettiFunction | undefined;
+    const DOMPurify: DOMPurifyStatic | undefined;
+    const define: any;
+    var EduAtlasValidator: any;
 }
 
 export {};

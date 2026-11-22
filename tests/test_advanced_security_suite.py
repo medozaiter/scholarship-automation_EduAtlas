@@ -374,26 +374,31 @@ class TestAdvancedSecuritySuite(unittest.TestCase):
             self.assertFalse("postgres://" in audit_str and "@" in audit_str)
 
         # 2. verify_cron_secret cryptographic constant-time comparison
-        cron_secret = os.getenv("CRON_SECRET", "scholarpilot-cron-secret-2026")
-        self.assertTrue(su.verify_cron_secret(cron_secret))
-        self.assertFalse(su.verify_cron_secret("wrong_token_guess"))
-        self.assertFalse(su.verify_cron_secret(None))
-
-        # 3. Endpoint verification: unauthenticated cron endpoints rejected with 403
-        clean_client = TestClient(app)
-        res_cycle_unauth = clean_client.post("/api/automation/trigger-cycle")
-        self.assertEqual(res_cycle_unauth.status_code, 403)
-
+        cron_secret = "test-advanced-suite-cron-secret-2026"
         from unittest.mock import patch
-        with patch("fastapi.BackgroundTasks.add_task") as mock_bg:
-            res_cycle_auth = clean_client.post("/api/automation/trigger-cycle", headers={"X-Cron-Secret": cron_secret})
-            self.assertEqual(res_cycle_auth.status_code, 200)
+        with patch.dict(os.environ, {"CRON_SECRET": cron_secret}):
+            self.assertTrue(su.verify_cron_secret(cron_secret))
+            self.assertFalse(su.verify_cron_secret("wrong_token_guess"))
+            self.assertFalse(su.verify_cron_secret(None))
 
-        res_email_test = clean_client.post("/api/email/test", json={"email": "test@example.com"})
-        self.assertEqual(res_email_test.status_code, 403)
+            # 3. Endpoint verification: unauthenticated cron endpoints rejected with 403
+            clean_client = TestClient(app)
+            res_cycle_unauth = clean_client.post("/api/automation/trigger-cycle")
+            self.assertEqual(res_cycle_unauth.status_code, 403)
 
-        res_news_sync = clean_client.post("/api/news/sync")
-        self.assertEqual(res_news_sync.status_code, 403)
+            # Query parameter authentication rejected with 403
+            res_cycle_query = clean_client.post(f"/api/automation/trigger-cycle?secret={cron_secret}")
+            self.assertEqual(res_cycle_query.status_code, 403)
+
+            with patch("fastapi.BackgroundTasks.add_task") as mock_bg:
+                res_cycle_auth = clean_client.post("/api/automation/trigger-cycle", headers={"X-Cron-Secret": cron_secret})
+                self.assertEqual(res_cycle_auth.status_code, 200)
+
+            res_email_test = clean_client.post("/api/email/test", json={"email": "test@example.com"})
+            self.assertEqual(res_email_test.status_code, 403)
+
+            res_news_sync = clean_client.post("/api/news/sync")
+            self.assertEqual(res_news_sync.status_code, 403)
         print(" -> PASSED: [TEST 11] Startup environment audit & X-Cron-Secret endpoint protection verified.")
 
     def test_12_prompt_injection_xml_delimiters_and_xss_sanitization(self):

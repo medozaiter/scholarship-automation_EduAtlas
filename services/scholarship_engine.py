@@ -20,19 +20,20 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 FALLBACK_MODELS = [
-    "gemini-3.5-flash-lite",
-    "gemini-3.1-flash-lite",
-    "gemini-3.8-flash"
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
 ]
 
 # Prestigious Global Undergraduate fallbacks
-CURATED_UNDERGRADUATE_SCHOLARSHIPS: List[Dict[str, str]] = [
+CURATED_UNDERGRADUATE_SCHOLARSHIPS: List[Dict[str, Any]] = [
     {
         "name": "Lester B. Pearson International Scholarship Program",
         "provider": "University of Toronto",
         "country_institution": "Canada / University of Toronto",
         "language": "English",
-        "status": "Open Now",
+        "status": "Closed / Expired (منتهية)",
+        "is_active": False,
         "deadline": "2026-11-06",
         "mechanism": "School nomination followed by direct portal application",
         "requirements": "High school senior with exceptional academic achievement (A / 90%+ equivalent), recognized leadership & creative thinking",
@@ -90,13 +91,14 @@ CURATED_UNDERGRADUATE_SCHOLARSHIPS: List[Dict[str, str]] = [
 ]
 
 # Prestigious Global Master's / PhD fallbacks when requested
-CURATED_GRADUATE_SCHOLARSHIPS: List[Dict[str, str]] = [
+CURATED_GRADUATE_SCHOLARSHIPS: List[Dict[str, Any]] = [
     {
         "name": "Chevening Scholarships",
         "provider": "UK Foreign, Commonwealth & Development Office (FCDO)",
         "country_institution": "United Kingdom / Leading UK Universities",
         "language": "English",
-        "status": "Open Now (Annual cycle)",
+        "status": "Closed / Expired (منتهية)",
+        "is_active": False,
         "deadline": "2026-11-05",
         "mechanism": "Integrated Central Portal (Direct application via Chevening e-portal + 3 separate UK university choices)",
         "requirements": "Undergraduate degree (minimum 2:1 equivalent / 80%+), 2+ years of professional work experience (2,800 hours), proven leadership and networking qualities",
@@ -206,11 +208,14 @@ class ScholarshipEngine:
                 country=country,
                 funding=funding
             )
-            if extracted and len(extracted) >= 3:
-                return self._sort_by_deadline(extracted)
+            if extracted:
+                # Add validation preventing expired records from appearing in active search results
+                active_extracted = [s for s in extracted if not self.is_deadline_expired(s.get("deadline"))]
+                if len(active_extracted) >= 3:
+                    return self._sort_by_deadline(active_extracted)
 
         logger.info("Using verified fallback directory matching student degree...")
-        return self._get_fallback_scholarships(degree, country)
+        return self._get_fallback_scholarships(degree, country, active_only=True)
 
     async def _query_gemini_json(
         self,
@@ -290,13 +295,34 @@ Ensure output is strictly valid JSON:
 
         return None
 
-    def _get_fallback_scholarships(self, degree: str, country: str) -> List[Dict[str, Any]]:
+    @staticmethod
+    def is_deadline_expired(dl_text: Optional[str]) -> bool:
+        """Validates if a scholarship deadline is expired against today's date."""
+        if not dl_text:
+            return False
+        match = re.search(r"(\d{4}-\d{2}-\d{2})", str(dl_text))
+        if match:
+            try:
+                dl_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+                return dl_date < date.today()
+            except Exception:
+                pass
+        return False
+
+    def _get_fallback_scholarships(self, degree: str, country: str, active_only: bool = True) -> List[Dict[str, Any]]:
         """Returns verified scholarships tailored to undergraduate vs graduate."""
         degree_lower = degree.lower()
         if "master" in degree_lower or "phd" in degree_lower or "doctor" in degree_lower or "graduate" in degree_lower:
-            return CURATED_GRADUATE_SCHOLARSHIPS
+            candidates = CURATED_GRADUATE_SCHOLARSHIPS
+        else:
+            candidates = CURATED_UNDERGRADUATE_SCHOLARSHIPS
 
-        return CURATED_UNDERGRADUATE_SCHOLARSHIPS
+        if active_only:
+            candidates = [
+                s for s in candidates
+                if s.get("is_active") is not False and not self.is_deadline_expired(s.get("deadline"))
+            ]
+        return candidates
 
     def _sort_by_deadline(self, scholarships: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Sorts scholarships chronologically by deadline ascending."""
@@ -367,8 +393,13 @@ Ensure output is strictly valid JSON:
         rows_html = ""
         for idx, s in enumerate(scholarships, 1):
             status = s.get("status", "Open Now")
-            status_color = "#10b981" if "Open" in status or "مفتوح" in status else "#3b82f6"
-            badge_text = "مفتوح حالياً (Open Now)" if "Open" in status or "مفتوح" in status else "يفتح قريباً (Opening Soon)"
+            is_expired = s.get("is_active") is False or self.is_deadline_expired(s.get("deadline"))
+            if is_expired:
+                status_color = "#dc2626"
+                badge_text = "منتهية الصلاحية (Expired)"
+            else:
+                status_color = "#10b981" if "Open" in status or "مفتوح" in status else "#3b82f6"
+                badge_text = "مفتوح حالياً (Open Now)" if "Open" in status or "مفتوح" in status else "يفتح قريباً (Opening Soon)"
 
             # Match Score Evaluation
             match_data = self.advisor.calculate_match_score(profile_data, s)
@@ -387,6 +418,8 @@ Ensure output is strictly valid JSON:
                         countdown_badge = f"<span style='background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-right: 6px; font-weight: bold;'>متبقي {days_left} يوماً</span>"
                     elif days_left == 0:
                         countdown_badge = "<span style='background: #dc2626; color: #ffffff; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-right: 6px; font-weight: bold;'>اليوم الأخير للتقديم</span>"
+                    else:
+                        countdown_badge = "<span style='background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-right: 6px; font-weight: bold;'>انتهى موعد التقديم</span>"
                 except Exception:
                     pass
 

@@ -41,6 +41,8 @@ from services.security_utils import (
 from services.db import (
     get_db_session,
     is_db_available,
+    can_use_local_json_storage,
+    is_production_mode,
     UserDB,
     get_user_by_email,
     get_user_by_username,
@@ -80,6 +82,8 @@ PENDING_REG_FILE = os.path.join(DATA_DIR, "pending_registrations.json")
 
 
 def _ensure_pending_reg_file():
+    if not can_use_local_json_storage():
+        return
     os.makedirs(DATA_DIR, exist_ok=True)
     if not os.path.exists(PENDING_REG_FILE):
         atomic_json_write(PENDING_REG_FILE, {})
@@ -122,6 +126,8 @@ def _remove_pending_registration(email: str):
 
 
 def _ensure_users_file():
+    if not can_use_local_json_storage():
+        return
     os.makedirs(DATA_DIR, exist_ok=True)
     if not os.path.exists(USERS_FILE):
         admin_email = os.getenv("DEFAULT_ADMIN_EMAIL", "").strip().lower()
@@ -280,7 +286,8 @@ class AuthService:
 
     def _load_users(self) -> List[Dict[str, Any]]:
         global _users_cache, _users_cache_mtime
-        _ensure_users_file()
+        if can_use_local_json_storage():
+            _ensure_users_file()
         if is_db_available():
             try:
                 with get_db_session() as db:
@@ -289,7 +296,15 @@ class AuthService:
                         if db_users:
                             return [self._normalize_user_dict(u.to_dict()) for u in db_users]
             except Exception as e:
-                logger.debug(f"DB load users failed, falling back to JSON: {e}")
+                if not can_use_local_json_storage():
+                    logger.error(f"[PRODUCTION] PostgreSQL query failed in _load_users: {e}")
+                    raise RuntimeError(f"PostgreSQL user query failed in production: {e}")
+                logger.debug(f"[DEV MODE] DB load users failed, falling back to JSON: {e}")
+
+        if not can_use_local_json_storage():
+            logger.error("[PRODUCTION] PostgreSQL database unavailable. Refusing to fall back to local users.json.")
+            raise RuntimeError("PostgreSQL database unavailable. Local JSON storage is disabled in production.")
+
         with _users_cache_lock:
             try:
                 current_mtime = os.path.getmtime(USERS_FILE) if os.path.exists(USERS_FILE) else 0.0
@@ -306,8 +321,9 @@ class AuthService:
                 return []
 
     def _save_users(self, users: List[Dict[str, Any]]):
-        atomic_json_write(USERS_FILE, users)
-        _invalidate_users_cache()
+        if can_use_local_json_storage():
+            atomic_json_write(USERS_FILE, users)
+            _invalidate_users_cache()
 
     def generate_unique_username(self, full_name: str, email: str, current_email: Optional[str] = None) -> str:
         """Generates a non-conflicting unique handle slug for public profile URLs."""
@@ -386,6 +402,22 @@ class AuthService:
         users = self._load_users()
         if any(u.get("email", "").lower() == email_clean for u in users) or get_user_by_email(email_clean):
             raise ValueError("هذا البريد الإلكتروني مسجل بالفعل. يمكنك تسجيل الدخول مباشرة.")
+
+        # Email Abuse Protection: 60-second cooldown on registration OTP dispatch
+        pending = self._get_pending_registration(email_clean)
+        if pending:
+            last_sent_str = pending.get("last_sent", "")
+            if last_sent_str:
+                try:
+                    last_dt = datetime.fromisoformat(last_sent_str)
+                    diff = (datetime.now() - last_dt).total_seconds()
+                    if diff < 60:
+                        wait_sec = int(60 - diff)
+                        raise ValueError(f"يرجى الانتظار {wait_sec} ثانية قبل طلب رمز جديد.")
+                except ValueError:
+                    raise
+                except Exception:
+                    pass
 
         # Resolve unique username
         if username and username.strip():
@@ -806,7 +838,7 @@ class AuthService:
 
         # Automatically dispatch email verification code and link
         try:
-            self.send_verification_email(email_clean)
+            self.send_verification_email(email_clean, is_initial=True)
         except Exception as ve_err:
             logger.warning(f"Initial email verification dispatch error: {ve_err}")
 
@@ -923,6 +955,11 @@ class AuthService:
                 "message": "إذا كان هذا البريد مسجلاً لدينا، فستصلك تعليمات استعادة كلمة المرور فوراً."
             }
 
+        # Email Abuse Protection: 60-second cooldown per target recipient
+        allowed, wait_sec = security_rate_limiter.check_welcome_email_cooldown(f"reset_{email_clean}", cooldown_seconds=60)
+        if not allowed:
+            raise ValueError(f"يرجى الانتظار {wait_sec} ثانية قبل طلب إعادة تعيين كلمة المرور مجدداً.")
+
         # Issue 1-hour secure reset token
         reset_token = secrets.token_hex(20)
         expires_at = (datetime.now() + timedelta(hours=1)).isoformat()
@@ -996,7 +1033,7 @@ class AuthService:
         logger.info(f"Password reset successful for {email_clean}")
         return True
 
-    def send_verification_email(self, email: str, base_url: str = "") -> Dict[str, Any]:
+    def send_verification_email(self, email: str, base_url: str = "", is_initial: bool = False) -> Dict[str, Any]:
         """Issues 6-digit code and HMAC verification token for student email verification."""
         email_clean = validate_email(email)
         user = get_user_by_email(email_clean)
@@ -1005,6 +1042,12 @@ class AuthService:
 
         if user.get("email_verified"):
             return {"success": True, "message": "البريد الإلكتروني موثق بالفعل."}
+
+        # Email Abuse Protection: 60-second cooldown per recipient address
+        if not is_initial:
+            allowed, wait_sec = security_rate_limiter.check_welcome_email_cooldown(f"verify_{email_clean}", cooldown_seconds=60)
+            if not allowed:
+                raise ValueError(f"يرجى الانتظار {wait_sec} ثانية قبل طلب رمز تأكيد جديد.")
 
         code = str(secrets.randbelow(900000) + 100000)
         token = create_email_verification_token(email_clean)

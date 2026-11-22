@@ -1,0 +1,120 @@
+name: Manual Production Deployment & Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: 'Git commit SHA, branch, or tag to deploy'
+        required: true
+        default: 'main'
+      skip_ci_verification:
+        description: 'Override: bypass CI check verification (Emergency only)'
+        required: false
+        type: boolean
+        default: false
+      reason:
+        description: 'Reason for manual release or rollback'
+        required: false
+        default: 'Standard scheduled manual release'
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  verify-and-deploy:
+    name: Verify CI Gate & Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ secrets.PROD_APP_URL || 'https://eduatlas-irxv.onrender.com' }}
+
+    steps:
+      - name: Checkout Target Ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_ref }}
+
+      - name: Verify CI Status for Target Commit
+        if: ${{ github.event.inputs.skip_ci_verification == 'false' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_REF: ${{ github.event.inputs.git_ref }}
+        run: |
+          echo "Verifying CI check status for reference: $TARGET_REF"
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "Resolved Commit SHA: $COMMIT_SHA"
+
+          # Query GitHub API for commit check-runs
+          CONCLUSION=$(gh api "repos/${{ github.repository }}/commits/${COMMIT_SHA}/check-runs" \
+            --jq '.check_runs[] | select(.name | contains("Production Deployment") | not) | .conclusion' || true)
+
+          if echo "$CONCLUSION" | grep -q "failure"; then
+            echo "::error ::Target commit has failing CI checks. Deployment is strictly blocked."
+            exit 1
+          fi
+
+          if echo "$CONCLUSION" | grep -q "cancelled"; then
+            echo "::error ::Target commit has cancelled CI checks. Deployment is blocked."
+            exit 1
+          fi
+
+          echo "Target commit checks verified. Proceeding with deployment."
+
+      - name: Trigger Production Deployment (Render Deploy Hook)
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::error ::RENDER_DEPLOY_HOOK_URL secret is not configured in repository secrets."
+            exit 1
+          fi
+
+          echo "Invoking Render Deploy Webhook for target ref: ${{ github.event.inputs.git_ref }}..."
+          DEPLOY_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "$RENDER_DEPLOY_HOOK_URL")
+          HTTP_STATUS=$(echo "$DEPLOY_RESPONSE" | tail -n1 | cut -d':' -f2)
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Deployment webhook triggered successfully (HTTP $HTTP_STATUS)."
+          else
+            echo "::error ::Deployment webhook returned error HTTP $HTTP_STATUS: $DEPLOY_RESPONSE"
+            exit 1
+          fi
+
+      - name: Verify Production Healthz
+        env:
+          APP_URL: ${{ secrets.PROD_APP_URL || 'https://eduatlas-irxv.onrender.com' }}
+        run: |
+          echo "Validating health probe at ${APP_URL}/healthz..."
+          MAX_ATTEMPTS=12
+          ATTEMPT=1
+          SUCCESS=0
+
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Health probe attempt $ATTEMPT of $MAX_ATTEMPTS..."
+            RESPONSE=$(curl -s -w "\n%{http_code}" --max-time 10 "${APP_URL}/healthz" || echo "000")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+
+            if [ "$HTTP_CODE" -eq 200 ]; then
+              echo "Production /healthz probe healthy (HTTP 200)."
+              SUCCESS=1
+              break
+            fi
+
+            sleep 10
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+          if [ $SUCCESS -ne 1 ]; then
+            echo "::warning ::Production service did not report healthy within timeout."
+          fi
+
+      - name: Deployment Audit Log
+        if: always()
+        run: |
+          echo "### Manual Deployment Audit Record" >> $GITHUB_STEP_SUMMARY
+          echo "- **Operator:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Ref:** \`${{ github.event.inputs.git_ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment Reason:** ${{ github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Bypass CI Verification:** \`${{ github.event.inputs.skip_ci_verification }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** Completed" >> $GITHUB_STEP_SUMMARY

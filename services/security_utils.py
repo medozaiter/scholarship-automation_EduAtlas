@@ -315,8 +315,8 @@ def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
     if re.search(r"[\d\u0660-\u0669\u06F0-\u06F9]", clean):
         raise ValueError("الاسم لا يمكن أن يحتوي على أي أرقام.")
 
-    # Strictly reject injection characters and special symbols
-    if re.search(r"[!@#$%^&*()_+={}\[\]|\\:;\"<>,.?/~`؟،؛٪\x00-\x1f]", clean):
+    # Strictly reject injection characters and special symbols (allow academic dot, hyphen and apostrophe)
+    if re.search(r"[!@#$%^&*()_+={}\[\]|\\:;\"<>,?/~`؟،؛٪\x00-\x1f]", clean):
         raise ValueError("الاسم يحتوي على رموز خاصة أو علامات غير مسموح بها.")
 
     clean = re.sub(r"\s+", " ", clean)
@@ -327,7 +327,7 @@ def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
     if len(clean) > 100:
         clean = clean[:100]
 
-    if not re.match(r"^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s'\-]{2,100}$", clean):
+    if not re.match(r"^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s'\-\.]{2,100}$", clean):
         raise ValueError("يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون رموز خاصة أو أرقام.")
 
     letter_count = len(re.findall(r"[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]", clean))
@@ -749,10 +749,11 @@ def validate_password(password_str: str) -> str:
 
 
 def sanitize_email_header(val: Optional[str], max_length: int = 150) -> str:
-    """Strips CRLF and null characters to prevent header injection."""
+    """Strips CRLF, null characters, and injected header directives to prevent header injection."""
     if not val:
         return ""
     clean = str(val).replace("\r", " ").replace("\n", " ").replace("\x00", "")
+    clean = re.sub(r"(?i)\b(bcc|cc|to)\s*:", "", clean)
     clean = re.sub(r"\s+", " ", clean).strip()
     return clean[:max_length]
 
@@ -928,8 +929,10 @@ def revoke_token(token: Optional[str]) -> bool:
     except Exception:
         pass
 
-    # Persist to JSON file store as fallback
-    _persist_revoked_token_file(token_hash, exp)
+    # Persist to JSON file store as fallback only in explicit dev mode
+    from services.db import can_use_local_json_storage
+    if can_use_local_json_storage():
+        _persist_revoked_token_file(token_hash, exp)
     return True
 
 
@@ -961,8 +964,9 @@ def is_token_revoked(token: Optional[str]) -> bool:
     except Exception:
         pass
 
-    # Check persistent file store
-    if _is_token_revoked_file(token_hash):
+    # Check persistent file store only in explicit dev mode
+    from services.db import can_use_local_json_storage
+    if can_use_local_json_storage() and _is_token_revoked_file(token_hash):
         with _revocation_lock:
             _revoked_tokens[token_hash] = time.time() + 1800
         return True
@@ -1025,9 +1029,8 @@ def verify_session_token(token: Optional[str]) -> Optional[Dict[str, Any]]:
         payload_json = base64.urlsafe_b64decode((payload_b64 + padding).encode("utf-8")).decode("utf-8")
         payload = json.loads(payload_json)
 
-        # Allow legacy tokens without purpose or explicitly marked session
-        purpose = payload.get("purpose")
-        if purpose and purpose != "session":
+        # Enforce strict session purpose (defends against refresh/reset/email token confusion)
+        if payload.get("purpose") != "session":
             return None
 
         if time.time() > payload.get("exp", 0):
@@ -1207,7 +1210,7 @@ class SecurityRateLimiter:
 
         self.LIMITS = {
             "login": (5, 900),     # Strict 5 requests / 15 minutes for authentication login
-            "auth": (5, 900),      # 5 requests / 15 minutes for registration & password reset
+            "auth": (10, 900),     # 10 requests / 15 minutes for registration & password reset
             "search": (60, 60),    # 60 requests / minute for search operations
             "advisor": (20, 60),   # 20 requests / minute for AI assistant queries
             "contact": (3, 3600),  # 3 requests / hour for contact form submissions
@@ -1224,6 +1227,19 @@ class SecurityRateLimiter:
         self.DAILY_ADVISOR_LIMIT: int = 10
         self._hourly_generations: Dict[str, List[float]] = {}
         self.HOURLY_GENERATION_LIMIT: int = 10
+
+        # Multi-worker / Distributed Redis hook (activated when REDIS_URL is configured)
+        self.redis_client = None
+        redis_url = os.getenv("REDIS_URL")
+        if redis_url:
+            try:
+                import redis
+                self.redis_client = redis.from_url(redis_url, socket_connect_timeout=2)
+                self.redis_client.ping()
+                logger.info("Connected to distributed Redis for multi-worker rate limiting.")
+            except Exception as re_err:
+                logger.debug(f"Redis distributed rate limiter not active ({re_err}); using thread-safe sliding window.")
+                self.redis_client = None
 
     def reset(self):
         """Resets all in-memory rate limiting state (useful for tests)."""
@@ -1260,6 +1276,22 @@ class SecurityRateLimiter:
         max_reqs, window = self.LIMITS.get(category, self.LIMITS["general"])
         key = f"{client_ip}:{category}"
         now = time.time()
+
+        if self.redis_client:
+            try:
+                pipe = self.redis_client.pipeline()
+                r_key = f"rl:{category}:{client_ip}"
+                pipe.incr(r_key)
+                pipe.ttl(r_key)
+                cnt, ttl = pipe.execute()
+                if cnt == 1 or ttl < 0:
+                    self.redis_client.expire(r_key, window)
+                    ttl = window
+                if cnt > max_reqs:
+                    return False, max(1, ttl)
+                return True, 0
+            except Exception:
+                pass
 
         with self._lock:
             self._check_counter += 1
@@ -1447,18 +1479,90 @@ def verify_cron_secret(provided_secret: Optional[str]) -> bool:
     return False
 
 
+# ==============================================================================
+# reCAPTCHA CONSTANTS & HELPERS
+# ==============================================================================
+
+KNOWN_RECAPTCHA_PLACEHOLDERS = {
+    "",
+    "test",
+    "dummy",
+    "disabled",
+    "none",
+    "bypass",
+    "placeholder",
+    "mock",
+    "changeme",
+    "your_secret_key",
+    "your_recaptcha_secret_key",
+    "replace_with_your_recaptcha_secret_key",
+    "replace_with_a_64_character_random_hex_string_in_production",
+}
+
+TEST_RECAPTCHA_BYPASS_TOKENS = {
+    "test_captcha_token",
+    "dev_token",
+    "bypass_token",
+    "mock_recaptcha",
+    "test_token",
+    "test",
+}
+
+
+def is_production_environment() -> bool:
+    """Returns True if the application is running in production mode."""
+    env = os.getenv("ENVIRONMENT", "development").strip().lower()
+    return env in ("production", "prod")
+
+
+def is_recaptcha_placeholder_key(secret_key: Optional[str]) -> bool:
+    """
+    Returns True if the given reCAPTCHA secret key is empty, unconfigured,
+    or matches known placeholder/dummy values.
+    """
+    if not secret_key:
+        return True
+    val = secret_key.strip().lower()
+    if val in KNOWN_RECAPTCHA_PLACEHOLDERS:
+        return True
+    if val.startswith("replace_") or val.startswith("your_"):
+        return True
+    return False
+
+
+def validate_production_configuration(raise_on_error: bool = False) -> Dict[str, Any]:
+    """
+    Validates required configuration when running in production mode.
+    Raises RuntimeError if raise_on_error is True and critical production configuration is missing.
+    """
+    report = validate_environment_at_startup()
+    if report["is_production"]:
+        recaptcha_status = report.get("recaptcha_status")
+        if recaptcha_status in ("missing", "placeholder"):
+            msg = (
+                "Missing required production configuration: RECAPTCHA_SECRET_KEY must be set to a "
+                "valid secret key. Protected endpoints are configured to fail closed."
+            )
+            logger.error(msg)
+            if raise_on_error:
+                raise RuntimeError(msg)
+    return report
+
+
 def validate_environment_at_startup() -> Dict[str, Any]:
     """
     Validates required environment variables and production security posture at startup.
     Ensures zero secrets or sensitive keys are exposed or logged.
     """
+    is_prod = is_production_environment()
     results = {
-        "is_production": os.getenv("ENVIRONMENT", "development").lower() in ("production", "prod"),
+        "is_production": is_prod,
         "secret_key_status": "present",
         "gemini_api_key_status": "present" if os.getenv("GEMINI_API_KEY") else "missing",
         "email_provider_configured": bool(os.getenv("RESEND_API_KEY") or os.getenv("SENDER_EMAIL")),
         "database_configured": bool(os.getenv("DATABASE_URL")),
         "cron_secret_status": "configured" if os.getenv("CRON_SECRET") else "fallback_app_secret",
+        "recaptcha_status": "unconfigured",
         "issues": []
     }
 
@@ -1480,27 +1584,98 @@ def validate_environment_at_startup() -> Dict[str, Any]:
     if not os.getenv("CRON_SECRET"):
         results["issues"].append("CRON_SECRET not explicitly defined; falling back to internal application secret.")
 
+    # 5. DATABASE_URL PostgreSQL Mandatory Validation
+    raw_db = (os.getenv("DATABASE_URL") or "").strip()
+    if is_prod:
+        if not raw_db:
+            results["issues"].append("FATAL: DATABASE_URL is missing in production mode. PostgreSQL is mandatory.")
+        elif not (raw_db.startswith("postgresql://") or raw_db.startswith("postgres://") or raw_db.startswith("postgresql+")):
+            results["issues"].append("FATAL: DATABASE_URL must be a PostgreSQL connection string in production mode.")
+    else:
+        if not raw_db:
+            results["issues"].append("INFO: DATABASE_URL not set; using local JSON file store (explicit development mode).")
+
+    # 4. RECAPTCHA_SECRET_KEY validation
+    raw_recaptcha = os.getenv("RECAPTCHA_SECRET_KEY", "").strip()
+    if not raw_recaptcha:
+        results["recaptcha_status"] = "missing"
+        if is_prod:
+            results["issues"].append(
+                "CRITICAL: RECAPTCHA_SECRET_KEY is required in production but is missing. "
+                "All protected requests will fail closed and be rejected."
+            )
+        else:
+            results["issues"].append("RECAPTCHA_SECRET_KEY is not set; development bypass mode active.")
+    elif is_recaptcha_placeholder_key(raw_recaptcha):
+        results["recaptcha_status"] = "placeholder"
+        if is_prod:
+            results["issues"].append(
+                "CRITICAL: RECAPTCHA_SECRET_KEY contains an insecure placeholder in production. "
+                "All protected requests will fail closed and be rejected."
+            )
+        else:
+            results["issues"].append("RECAPTCHA_SECRET_KEY contains a placeholder; development bypass mode active.")
+    else:
+        results["recaptcha_status"] = "configured"
+
     return results
 
 
 def verify_recaptcha(token: Optional[str], client_ip: Optional[str] = None) -> Tuple[bool, str]:
     """
     Server-side verification of Google reCAPTCHA (v2 / v3) tokens.
-    Supports testing mock tokens and automatic dev bypass when unconfigured.
+
+    Security posture:
+    - In PRODUCTION: Fails closed.
+      * Rejects protected requests if RECAPTCHA_SECRET_KEY is missing or a placeholder.
+      * Rejects requests with missing or empty CAPTCHA tokens.
+      * Rejects test/bypass tokens (test bypass is strictly forbidden in production).
+      * Validates real tokens against Google's siteverify API.
+    - In DEVELOPMENT / TESTING:
+      * Allows dev bypass when unconfigured or when using test tokens.
+      * If a real/mock secret is explicitly configured, enforces token presence.
     """
     secret_key = os.getenv("RECAPTCHA_SECRET_KEY", "").strip()
     clean_token = (token or "").strip()
+    is_prod = is_production_environment()
+    has_placeholder_or_missing_secret = is_recaptcha_placeholder_key(secret_key)
 
-    # Automatic test/dev bypass when secret is unconfigured or testing token provided
-    if not secret_key or secret_key.lower() in ("test", "dummy", "disabled", "none", "bypass"):
-        return True, "BYPASSED_NO_SECRET"
+    # ==================== PRODUCTION ENFORCEMENT (FAIL CLOSED) ====================
+    if is_prod:
+        # 1. Reject if production secret key is missing or placeholder
+        if has_placeholder_or_missing_secret:
+            logger.error(
+                "reCAPTCHA validation failed closed: RECAPTCHA_SECRET_KEY is missing or contains "
+                "a placeholder value in production environment."
+            )
+            return False, "فشل التحقق الأمني: إعدادات reCAPTCHA غير مكتملة في بيئة الإنتاج."
 
-    if clean_token in ("test_captcha_token", "dev_token", "bypass_token", "mock_recaptcha"):
-        return True, "BYPASSED_TEST_TOKEN"
+        # 2. Reject if token is missing
+        if not clean_token:
+            return False, "رمز التحقق reCAPTCHA مطلوب لمنع الطلبات المؤتمتة."
 
-    if not clean_token:
-        return False, "رمز التحقق reCAPTCHA مطلوب لمنع الطلبات المؤتمتة."
+        # 3. Disallow bypass tokens in production
+        if clean_token in TEST_RECAPTCHA_BYPASS_TOKENS:
+            logger.warning(
+                f"reCAPTCHA test bypass token rejected in production environment (IP: {client_ip or 'unknown'})."
+            )
+            return False, "رمز التحقق reCAPTCHA المقدم غير صالح في بيئة الإنتاج."
 
+    # ==================== DEV / TEST ENVIRONMENTS (BYPASS ALLOWED) ====================
+    else:
+        # Dev bypass token check
+        if clean_token in TEST_RECAPTCHA_BYPASS_TOKENS:
+            return True, "BYPASSED_TEST_TOKEN"
+
+        # Dev bypass when secret key is unconfigured or placeholder
+        if has_placeholder_or_missing_secret:
+            return True, "BYPASSED_NO_SECRET"
+
+        # If secret key is configured in dev, token is required
+        if not clean_token:
+            return False, "رمز التحقق reCAPTCHA مطلوب لمنع الطلبات المؤتمتة."
+
+    # ==================== LIVE GOOGLE SITEVERIFY API ====================
     try:
         import httpx
         with httpx.Client(timeout=6.0) as client:
@@ -1548,7 +1723,15 @@ PROMPT_INJECTION_TOKENS = [
     r"<system>",
     r"\[system\]",
     r"<\s*script\s*>",
-    r"eval\s*\("
+    r"eval\s*\(",
+    r"تجاهل\s+(كافة\s+|كل\s+)?(التعليمات|الأوامر)\s+(السابقة|الأصلية|المسبقة)",
+    r"اكشف\s+(البرومبت|التوجيهات|التعليمات\s+الداخلية|السر|المفتاح)",
+    r"اطبع\s+(البرومبت|التعليمات\s+الداخلية|التوجيهات|النظام)",
+    r"تجاوز\s+القيود",
+    r"وضع\s+المطور",
+    r"أنت\s+الآن\s+(في\s+وضع|غير\s+مقيد)",
+    r"أظهر\s+(المفتاح|الرمز\s+السري)",
+    r"تصرف\s+كـ?\s*مساعد\s+غير\s+مقيد"
 ]
 COMPILED_INJECTION_REGEX = re.compile("|".join(PROMPT_INJECTION_TOKENS), re.IGNORECASE)
 
@@ -1604,7 +1787,7 @@ def validate_uploaded_file(filename: str, content_bytes: bytes, max_size_mb: int
 
 
 XML_ESCAPE_TAGS = re.compile(
-    r"</?(?:student_profile|cv_content|motivation_letter|student_query|student_bio|student_message|system_instruction|system|prompt)[^>]*>",
+    r"</?(?:student_profile|cv_content|motivation_letter|student_query|student_bio|student_message|system_instruction|system|prompt|conversation_history|search_snippets|grounded_catalog)[^>]*>",
     re.IGNORECASE
 )
 
@@ -1645,7 +1828,7 @@ def sanitize_llm_output(output_text: str) -> str:
         return ""
 
     sanitized = output_text
-    sanitized = re.sub(r"AIza[0-9A-Za-z-_]{35}", "[REDACTED_API_KEY]", sanitized)
+    sanitized = re.sub(r"AIza[0-9A-Za-z-_]{30,40}", "[REDACTED_API_KEY]", sanitized)
     sanitized = re.sub(r"sk-[0-9A-Za-z-_]{32,}", "[REDACTED_SECRET]", sanitized)
     sanitized = re.sub(r"re_[0-9A-Za-z-_]{20,}", "[REDACTED_RESEND_KEY]", sanitized)
     sanitized = re.sub(r"postgres(?:ql)?://[^\s]+", "[REDACTED_DATABASE_URL]", sanitized)

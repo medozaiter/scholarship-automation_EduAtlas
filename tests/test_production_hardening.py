@@ -3,7 +3,7 @@ Comprehensive Production Hardening Verification Suite
 Tests:
 1. Fast /healthz (<50ms) probe non-blocking.
 2. /api/health/diagnostics deep check.
-3. /api/cron/trigger-scan authentication (401 without secret, 202 with secret).
+3. /api/cron/trigger-scan authentication (403 without header, 202 with X-Cron-Secret header, 403 on query param secret).
 4. Title normalization & identical hashing across title variations.
 5. SentNotification idempotency (never sends duplicate alerts).
 6. Resend Daily Quota tracker (85 cap circuit breaker).
@@ -53,26 +53,33 @@ def test_cron_trigger_endpoint():
             return {"success": True}
         mock_job.side_effect = dummy
 
-        # 1. Without secret -> 401
-        res_unauth = client.post("/api/cron/trigger-scan")
-        assert res_unauth.status_code == 401, "Should reject unauthenticated request"
-        print("    [PASS] 401 returned when secret is missing.")
+        test_secret = "scholarpilot_cron_secret"
+        with patch.dict(os.environ, {"CRON_SECRET": test_secret}):
+            # 1. Without secret header -> 403 Forbidden
+            res_unauth = client.post("/api/cron/trigger-scan")
+            assert res_unauth.status_code == 403, f"Should reject unauthenticated request with 403, got {res_unauth.status_code}"
+            print("    [PASS] 403 returned when secret header is missing.")
 
-        # 2. With wrong secret -> 401
-        res_wrong = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": "wrong_token"})
-        assert res_wrong.status_code == 401, "Should reject invalid secret"
-        print("    [PASS] 401 returned when secret is invalid.")
+            # 2. With wrong secret -> 403 Forbidden
+            res_wrong = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": "wrong_token"})
+            assert res_wrong.status_code == 403, f"Should reject invalid secret with 403, got {res_wrong.status_code}"
+            print("    [PASS] 403 returned when secret is invalid.")
 
-        # 3. With valid secret via header -> 202
-        res_auth = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": "scholarpilot_cron_secret"})
-        assert res_auth.status_code == 202, f"Should accept valid secret, got {res_auth.status_code}"
-        assert res_auth.json()["status"] == "accepted"
-        print("    [PASS] 202 Accepted returned with valid secret via X-Cron-Secret header.")
+            # 3. With valid secret via header -> 202 Accepted
+            res_auth = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": test_secret})
+            assert res_auth.status_code == 202, f"Should accept valid secret via header, got {res_auth.status_code}"
+            assert res_auth.json()["status"] == "accepted"
+            print("    [PASS] 202 Accepted returned with valid secret via X-Cron-Secret header.")
 
-        # 4. With valid secret via query param -> 202
-        res_query = client.get("/api/cron/trigger-scan?secret=scholarpilot_cron_secret")
-        assert res_query.status_code == 202, f"Should accept valid secret via query param, got {res_query.status_code}"
-        print("    [PASS] 202 Accepted returned with valid secret via ?secret= query param.")
+            # 4. With secret via query param -> 403 Forbidden (query param authentication rejected)
+            res_query = client.get(f"/api/cron/trigger-scan?secret={test_secret}")
+            assert res_query.status_code == 403, f"Should reject secret via query param with 403, got {res_query.status_code}"
+            print("    [PASS] 403 Forbidden returned when secret is passed via ?secret= query param.")
+
+            # 5. With cron_secret via query param -> 403 Forbidden
+            res_query_cron = client.post(f"/api/cron/trigger-scan?cron_secret={test_secret}")
+            assert res_query_cron.status_code == 403, f"Should reject cron_secret via query param with 403, got {res_query_cron.status_code}"
+            print("    [PASS] 403 Forbidden returned when cron_secret is passed via ?cron_secret= query param.")
 
 
 def test_title_normalization_and_hashing():

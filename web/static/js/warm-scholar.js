@@ -11,13 +11,16 @@
   // ===================================================================
   window.toggleEduAtlasTheme = function () {
     const isDark = document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
     if (isDark) {
       document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
     } else {
       document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
     }
+    try {
+      localStorage.setItem('theme', newTheme);
+      localStorage.theme = newTheme;
+    } catch(_e) {}
     updateThemeToggleIcons();
   };
 
@@ -33,8 +36,8 @@
         ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
         : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
     }
-    if (window.lucide && typeof lucide.createIcons === 'function') {
-      try { lucide.createIcons(); } catch(e) {}
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      try { window.lucide.createIcons(); } catch(_e) {}
     }
   }
 
@@ -46,23 +49,41 @@
   // ===================================================================
   // 2. INSTANT SEARCH DEBOUNCE ENGINE
   // ===================================================================
+  /**
+   * @param {Function} func
+   * @param {number} wait
+   * @returns {(...args: any[]) => void}
+   */
   function debounce(func, wait) {
+    /** @type {any} */
     let timeout;
+    /**
+     * @this {any}
+     * @param {...any} args
+     */
     return function (...args) {
       clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
+      const self = this;
+      timeout = setTimeout(() => func.apply(self, args), wait);
     };
   }
 
+  /**
+   * @param {string} inputSelector
+   * @param {string} itemsSelector
+   * @param {((query: string) => void) | null | undefined} [onSearchCallback]
+   */
   window.setupInstantScholarshipSearch = function (inputSelector, itemsSelector, onSearchCallback) {
     const input = document.querySelector(inputSelector);
     if (!input) return;
 
-    const handleSearch = debounce(function (query) {
+    const handleSearch = debounce(
+      /** @param {string} [query] */
+      function (query) {
       const q = (query || '').trim().toLowerCase();
       
       // Update URL search param seamlessly without reload
-      const url = new URL(window.location);
+      const url = new URL(window.location.href);
       if (q) {
         url.searchParams.set('q', q);
       } else {
@@ -76,7 +97,7 @@
       }
 
       // Default client-side filter
-      const cards = document.querySelectorAll(itemsSelector);
+      const cards = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll(itemsSelector));
       let matchedCount = 0;
       cards.forEach(card => {
         const text = (card.innerText || '').toLowerCase();
@@ -94,15 +115,23 @@
       }
     }, 250);
 
-    input.addEventListener('input', (e) => handleSearch(e.target.value));
+    input.addEventListener('input', (e) => {
+      const target = /** @type {HTMLInputElement | null} */ (e.target);
+      handleSearch(target ? target.value : '');
+    });
   };
 
   // ===================================================================
-  // 3. COMPASS GAUGE ANIMATION
+  // 3. COMPASS GAUAGE ANIMATION
   // ===================================================================
+  /**
+   * @param {number} scorePercent
+   * @param {string} circleSelector
+   * @param {string} textSelector
+   */
   window.animateCompassGauge = function (scorePercent, circleSelector, textSelector) {
-    const circle = document.querySelector(circleSelector);
-    const textEl = document.querySelector(textSelector);
+    const circle = /** @type {SVGCircleElement | null} */ (document.querySelector(circleSelector));
+    const textEl = /** @type {HTMLElement | null} */ (document.querySelector(textSelector));
     if (!circle) return;
 
     const radius = circle.r.baseVal.value || 42;
@@ -113,7 +142,7 @@
     
     // Smooth frame transition
     setTimeout(() => {
-      circle.style.strokeDashoffset = offset;
+      circle.style.strokeDashoffset = `${offset}`;
     }, 50);
 
     if (textEl) {
@@ -135,6 +164,9 @@
   // ===================================================================
   // 4. MOBILE NAVIGATION DRAWER
   // ===================================================================
+  /**
+   * @param {boolean} [open]
+   */
   window.toggleEduAtlasDrawer = function (open) {
     const drawer = document.getElementById('eaMobileDrawer');
     const backdrop = document.getElementById('eaMobileBackdrop');
@@ -162,7 +194,7 @@
   // Close on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      window.toggleEduAtlasDrawer(false);
+      window.toggleEduAtlasDrawer?.(false);
     }
   });
 

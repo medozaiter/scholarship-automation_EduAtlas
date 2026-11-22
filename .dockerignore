@@ -1,9 +1,82 @@
-.git
-.github
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache
-tests
-.env
+# ==============================================================================
+# EduAtlas / ScholarPilot AI - Docker Build Packaging Allowlist (.dockerignore)
+# ==============================================================================
+# Security Policy: Default-Deny Allowlist.
+# Everything is excluded from the build context by default.
+# Only verified runtime application code and static seed data are included.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. DEFAULT-DENY: Ignore everything in the repository by default
+# ------------------------------------------------------------------------------
+**
+
+# ------------------------------------------------------------------------------
+# 2. ROOT RUNTIME ALLOWLIST: Only required dependency & execution files
+# ------------------------------------------------------------------------------
+!requirements.txt
+!dispatch_weekly_subscribers.py
+
+# ------------------------------------------------------------------------------
+# 3. BACKEND SERVICES ALLOWLIST: All Python business logic & service modules
+# ------------------------------------------------------------------------------
+!services/**
+
+# ------------------------------------------------------------------------------
+# 4. FRONTEND APPLICATION ALLOWLIST: FastAPI app, templates, JS, CSS & brand assets
+# ------------------------------------------------------------------------------
+!web/**
+
+# ------------------------------------------------------------------------------
+# 5. DATA SEED ALLOWLIST: Read-only live scholarship catalogue ONLY
+# ------------------------------------------------------------------------------
+!data/live_scholarships.json
+
+# ==============================================================================
+# DEFENSE-IN-DEPTH DENY OVERRIDES (Enforced across any allowed trees)
+# ==============================================================================
+
+# 6. Exclude ALL user uploads and runtime media from web/static/uploads/
+web/static/uploads/**
+!web/static/uploads/avatars/.gitkeep
+!web/static/uploads/covers/.gitkeep
+
+# 7. Exclude Python caches, bytecode, and test caches across all directories
+**/__pycache__/**
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/**
+**/.ruff_cache/**
+**/.mypy_cache/**
+
+# 8. Exclude secrets, credentials, tokens, and environment files everywhere
+**/.env*
+**/.app_secret*
+**/*.secret
+**/*.key
+**/*.pem
+**/*.crt
+**/*.p12
+**/*.pfx
+**/id_rsa*
+**/id_ed25519*
+
+# 9. Exclude logs, temporary files, backups, and OS metadata everywhere
+**/*.log*
+**/*.tmp
+**/*.temp
+**/*.bak
+**/*.backup
+**/*.swp
+**/*.swo
+**/*~
+**/.DS_Store
+**/Thumbs.db
+
+# 10. Exclude databases and local data stores (strictly preserve only live_scholarships.json)
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*.csv
+data/**
+!data/live_scholarships.json

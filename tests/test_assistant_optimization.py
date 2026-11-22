@@ -1,4 +1,6 @@
 import os
+import asyncio
+import hashlib
 import sys
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
@@ -163,30 +165,46 @@ def test_consult_advisor_endpoint_zero_token_direct():
 
 
 def test_consult_advisor_semantic_duplicate_cache():
-    """Verifies that asking an equivalent question reuses the cached response without AI model invocation."""
-    # Seed cache with an initial answer
-    _advisor_response_cache["pearson::custom_query"] = {
+    """Reuses a scoped cache entry for its owner but never for another student."""
+    email_a = "student-a@example.com"
+    email_b = "student-b@example.com"
+    scope_a = hashlib.sha256(email_a.encode("utf-8")).hexdigest()
+    query = "Could you suggest a thoughtful application narrative structure?"
+    normalized_query = normalize_query_intent(query)[1]
+    cache_key = f"{scope_a}::pearson::{normalized_query}"
+    _advisor_response_cache[cache_key] = {
         "timestamp": 9999999999,
-        "original_query": "كيف اكتب مقال الدافع لمنحة تورنتو؟",
-        "normalized_q": "كيف اكتب مقال الدافع لمنحة تورنتو",
+        "user_scope": scope_a,
+        "original_query": query,
+        "normalized_q": normalized_query,
         "scholarship_id": "pearson",
         "intent": "general_consultation",
-        "advice": "نصائح كتابة خطاب الدافع لمنحة تورنتو: ركز على الأثر القيادي والمشاريع التقنية التطوعية.",
-        "follow_ups": ["ما هي معايير الاختيار؟", "احسب نسبة قبولي"]
+        "advice": "Personalized advice for student A.",
+        "follow_ups": ["Review my checklist"]
     }
 
-    # Ask the same question with slightly different phrasing
-    resp = client.post("/api/advisor/chat", json={
-        "query": "كيف اكتب رسالة الدافع لمنحة تورنتو؟",
-        "scholarship_id": "pearson",
-        "email": "test_student@example.com"
-    })
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["success"] is True
-    assert data["cached"] is True
-    assert data["duplicate_detected"] is True
-    assert "نصائح كتابة خطاب الدافع" in data["advice"]
+    original_client = advisor.client
+    advisor.client = None
+    try:
+        same_user = asyncio.run(advisor.consult_ai_advisor(
+            student_query=query,
+            email=email_a,
+            scholarship_id="pearson"
+        ))
+        other_user = asyncio.run(advisor.consult_ai_advisor(
+            student_query=query,
+            email=email_b,
+            scholarship_id="pearson"
+        ))
+    finally:
+        advisor.client = original_client
+        _advisor_response_cache.pop(cache_key, None)
+
+    assert same_user["cached"] is True
+    assert same_user["duplicate_detected"] is True
+    assert same_user["advice"] == "Personalized advice for student A."
+    assert other_user["cached"] is False
+    assert "Personalized advice for student A." not in other_user["advice"]
 
 
 if __name__ == "__main__":

@@ -89,7 +89,6 @@
     // Arabic Letters: \u0621-\u064A, \u0671-\u06D3, \u06D5, Tashkeel: \u064B-\u0652
     // Latin Letters: a-zA-Z
     // Space: \s
-    const REGEX_ARABIC_LATIN_LETTERS = /[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z]/u;
     const REGEX_TEXT_ONLY_CHAR = /^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]$/u;
     const REGEX_TEXT_ONLY_STRIP = /[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]/gu;
 
@@ -105,7 +104,6 @@
     const REGEX_GPA_CHAR = /^[0-9.%/]$/;
     const REGEX_GPA_STRIP = /[^0-9.%/]/g;
 
-    const REGEX_PHONE_CHAR = /^[0-9+]$/;
     const REGEX_PHONE_STRIP = /[^0-9+]/g;
 
     const REGEX_UNIVERSITY_STRIP = /[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z0-9\s.\-()&/,\u060C]/gu;
@@ -113,6 +111,7 @@
 
     /**
      * Anti-gibberish, anti-spam, and keyboard-smash analyzer.
+     * @param {string | null | undefined} text
      */
     function isGibberishOrSpam(text) {
         if (!text) return false;
@@ -132,6 +131,8 @@
 
     /**
      * Strips dangerous script tags, invisible characters, and malicious payload markers.
+     * @param {string | null | undefined} str
+     * @param {number} [maxLength]
      */
     function sanitizeString(str, maxLength) {
         if (!str) return '';
@@ -154,6 +155,8 @@
         /**
          * Validates student full name.
          * Only Arabic/English letters, spaces, and clean apostrophes/hyphens. Strictly NO numbers or injection symbols.
+         * @param {string} name
+         * @param {boolean} [isRequired]
          */
         validateFullName: function (name, isRequired = true) {
             if (!name || !name.trim()) {
@@ -193,6 +196,8 @@
         /**
          * Validates city name.
          * Strictly letters and spaces only. Absolutely NO numbers or symbols.
+         * @param {string} cityStr
+         * @param {boolean} [isRequired]
          */
         validateCity: function (cityStr, isRequired = false) {
             if (!cityStr || !cityStr.trim()) {
@@ -232,6 +237,8 @@
         /**
          * Validates country against the official recognized list.
          * Strictly letters and spaces. Absolutely NO numbers or symbols.
+         * @param {string} countryStr
+         * @param {boolean} [isRequired]
          */
         validateCountry: function (countryStr, isRequired = false) {
             if (!countryStr || !countryStr.trim()) {
@@ -270,6 +277,8 @@
         /**
          * Validates field of study / major.
          * Strictly text-only (letters and spaces). No numbers or injection symbols.
+         * @param {string} major
+         * @param {boolean} [isRequired]
          */
         validateMajor: function (major, isRequired = false) {
             if (!major || !major.trim()) {
@@ -309,6 +318,8 @@
         /**
          * Validates university or educational institution.
          * Letters, numbers (for institutions with numbers), common institution punctuation.
+         * @param {string} univ
+         * @param {boolean} [isRequired]
          */
         validateUniversity: function (univ, isRequired = false) {
             if (!univ || !univ.trim()) {
@@ -347,6 +358,7 @@
         /**
          * Validates public username / handle.
          * English lowercase letters, numbers, and allowed punctuation (_, -, .).
+         * @param {string} usernameStr
          */
         validateUsername: function (usernameStr) {
             if (!usernameStr || !usernameStr.trim()) {
@@ -372,6 +384,8 @@
          * Validates academic GPA strictly:
          * - 4.0 / 5.0 systems (0.5 to 5.0)
          * - Percentage systems (40% to 100%)
+         * @param {string} gpaStr
+         * @param {boolean} [isRequired]
          */
         validateGpa: function (gpaStr, isRequired = true) {
             if (!gpaStr || !gpaStr.trim()) {
@@ -445,6 +459,8 @@
         /**
          * Validates student biography. Max 600 characters.
          * Strips dangerous script tags and injection tokens.
+         * @param {string} bioStr
+         * @param {number} [maxLength]
          */
         validateBio: function (bioStr, maxLength = 600) {
             if (!bioStr || !bioStr.trim()) {
@@ -461,6 +477,8 @@
 
         /**
          * Validates student age (10 to 100).
+         * @param {string | number} ageVal
+         * @param {boolean} [isRequired]
          */
         validateAge: function (ageVal, isRequired = false) {
             if (!ageVal && ageVal !== 0) {
@@ -476,6 +494,8 @@
 
         /**
          * Validates expected graduation year (1970 to 2040).
+         * @param {string | number} yrVal
+         * @param {boolean} [isRequired]
          */
         validateGradYear: function (yrVal, isRequired = false) {
             if (!yrVal) {
@@ -491,6 +511,8 @@
 
         /**
          * Validates international phone number (+ followed by 7-15 digits).
+         * @param {string} phoneStr
+         * @param {boolean} [isRequired]
          */
         validatePhone: function (phoneStr, isRequired = false) {
             if (!phoneStr || !phoneStr.trim()) {
@@ -508,6 +530,7 @@
 
         /**
          * Validates RFC 5322 compliant email address.
+         * @param {string} emailStr
          */
         validateEmail: function (emailStr) {
             if (!emailStr || !emailStr.trim()) {
@@ -529,6 +552,7 @@
 
         /**
          * Validates password strength (8+ chars, uppercase, lowercase, numbers, special characters).
+         * @param {string} passwordStr
          */
         validatePassword: function (passwordStr) {
             if (!passwordStr) {
@@ -554,6 +578,7 @@
 
         /**
          * Validates search queries (max 120 chars, defuses script injections).
+         * @param {string} qStr
          */
         validateSearchQuery: function (qStr) {
             if (!qStr) return { valid: true, value: "" };
@@ -566,7 +591,12 @@
         // SANITIZATION ROUTINES BY DATA TYPE (FOR INPUT & PASTE EVENTS)
         // =====================================================================
 
-        sanitizeByFilterType: function (val, filterType, maxLen) {
+        /**
+         * @param {any} val
+         * @param {string} filterType
+         * @param {number | null} [maxLen]
+         */
+        sanitizeByFilterType: function (val, filterType, maxLen = null) {
             if (val === null || val === undefined) return '';
             let s = String(val);
 
@@ -645,6 +675,7 @@
         },
 
         // Helper wrappers for explicit sanitization calls
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeFullNameInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -652,6 +683,7 @@
             if (original !== filtered) inputEl.value = filtered;
         },
 
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeCityInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -659,6 +691,7 @@
             if (original !== filtered) inputEl.value = filtered;
         },
 
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeCountryInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -666,6 +699,7 @@
             if (original !== filtered) inputEl.value = filtered;
         },
 
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeGpaInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -673,6 +707,7 @@
             if (original !== filtered) inputEl.value = filtered;
         },
 
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeUniversityInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -680,6 +715,7 @@
             if (original !== filtered) inputEl.value = filtered;
         },
 
+        /** @param {HTMLInputElement | HTMLTextAreaElement} inputEl */
         sanitizeMajorInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
@@ -691,6 +727,11 @@
         // REAL-TIME UX FEEDBACK & FLOATING WARNING BADGES
         // =====================================================================
 
+        /**
+         * @param {HTMLElement} inputEl
+         * @param {string} [filterType]
+         * @param {string} [customMsg]
+         */
         showInputWarning: function (inputEl, filterType, customMsg) {
             if (!inputEl || typeof document === 'undefined') return;
 
@@ -737,7 +778,7 @@
                 }
             }
 
-            const warnId = (inputEl.id || inputEl.name || 'field') + '_warnTooltip';
+            const warnId = (inputEl.id || inputEl.getAttribute('name') || 'field') + '_warnTooltip';
             let badge = document.getElementById(warnId);
             if (!badge) {
                 badge = document.createElement('div');
@@ -761,13 +802,17 @@
             }, 1800);
         },
 
+        /**
+         * @param {HTMLElement} inputEl
+         * @param {string} [errorMsg]
+         */
         showError: function (inputEl, errorMsg) {
             if (!inputEl) return;
             inputEl.classList.add('border-rose-500', 'focus:border-rose-500', 'ring-2', 'ring-rose-500/20');
             inputEl.classList.remove('border-slate-200', 'dark:border-slate-800');
             inputEl.setAttribute('aria-invalid', 'true');
 
-            const errorId = (inputEl.id || inputEl.name || 'field') + 'Error';
+            const errorId = (inputEl.id || inputEl.getAttribute('name') || 'field') + 'Error';
             let errEl = document.getElementById(errorId);
             if (!errEl) {
                 errEl = document.createElement('p');
@@ -777,17 +822,18 @@
                     inputEl.parentNode.appendChild(errEl);
                 }
             }
-            errEl.textContent = errorMsg;
+            errEl.textContent = errorMsg || '';
             errEl.classList.remove('hidden');
         },
 
+        /** @param {HTMLElement} inputEl */
         clearError: function (inputEl) {
             if (!inputEl) return;
             inputEl.classList.remove('border-rose-500', 'focus:border-rose-500', 'ring-2', 'ring-rose-500/20');
             inputEl.classList.add('border-slate-200', 'dark:border-slate-800');
             inputEl.setAttribute('aria-invalid', 'false');
 
-            const errorId = (inputEl.id || inputEl.name || 'field') + 'Error';
+            const errorId = (inputEl.id || inputEl.getAttribute('name') || 'field') + 'Error';
             const errEl = document.getElementById(errorId);
             if (errEl) {
                 errEl.textContent = '';
@@ -795,6 +841,11 @@
             }
         },
 
+        /**
+         * @param {HTMLTextAreaElement} textareaEl
+         * @param {HTMLElement | null} [counterEl]
+         * @param {number} [maxLength]
+         */
         bindCharCounter: function (textareaEl, counterEl, maxLength = 600) {
             if (!textareaEl) return;
             if (!counterEl) {
@@ -825,6 +876,7 @@
 
         /**
          * Resolves the proper validation & filter rule for a DOM element.
+         * @param {HTMLElement} inputEl
          */
         detectFilterType: function (inputEl) {
             if (!inputEl) return null;
@@ -854,8 +906,8 @@
 
             // 2. Automated inference based on ID, name, or HTML type
             const id = (inputEl.id || '').toLowerCase();
-            const name = (inputEl.name || '').toLowerCase();
-            const htmlType = (inputEl.type || '').toLowerCase();
+            const name = (inputEl.getAttribute('name') || '').toLowerCase();
+            const htmlType = (inputEl.getAttribute('type') || '').toLowerCase();
 
             if (htmlType === 'tel') return 'phone';
             if (htmlType === 'url') return 'url';
@@ -904,6 +956,7 @@
 
         /**
          * Validates a single input element according to its resolved rule.
+         * @param {HTMLInputElement | HTMLTextAreaElement} inputEl
          */
         validateElement: function (inputEl) {
             if (!inputEl) return true;
@@ -912,6 +965,7 @@
 
             const val = inputEl.value;
             const isReq = inputEl.hasAttribute('required');
+            /** @type {{ valid: boolean, message?: string, value?: any }} */
             let result = { valid: true };
 
             switch (filterType) {
@@ -952,7 +1006,7 @@
                     break;
                 case 'safe-text':
                 case 'bio':
-                    result = this.validateBio(val, parseInt(inputEl.getAttribute('maxlength')) || 600);
+                    result = this.validateBio(val, parseInt(inputEl.getAttribute('maxlength') || '600', 10));
                     break;
                 case 'email':
                     result = this.validateEmail(val);
@@ -975,6 +1029,8 @@
 
         /**
          * Binds real-time filtering, keypress blocking, and clipboard sanitization to an input element.
+         * @param {HTMLInputElement | HTMLTextAreaElement} inputEl
+         * @param {string} [explicitType]
          */
         bindField: function (inputEl, explicitType) {
             if (!inputEl || inputEl._eaFiltered) return;
@@ -986,14 +1042,16 @@
             inputEl.setAttribute('data-filter-active', filterType);
 
             const self = this;
-            const maxLen = parseInt(inputEl.getAttribute('maxlength')) || null;
+            const maxLenAttr = inputEl.getAttribute('maxlength');
+            const maxLen = maxLenAttr ? parseInt(maxLenAttr, 10) : null;
 
             // 1. KEYPRESS / BEFOREINPUT BLOCKER: Block invalid characters from being typed
             inputEl.addEventListener('keypress', function (e) {
+                const keyEvent = /** @type {KeyboardEvent} */ (e);
                 // Ignore system & navigation keys (Enter, Backspace, arrows, shortcuts)
-                if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+                if (keyEvent.ctrlKey || keyEvent.altKey || keyEvent.metaKey || keyEvent.key.length > 1) return;
 
-                const char = e.key;
+                const char = keyEvent.key;
                 let allowed = true;
 
                 if (filterType === 'text-only' || filterType === 'city' || filterType === 'country') {
@@ -1013,7 +1071,7 @@
                     allowed = REGEX_GPA_CHAR.test(char);
                 } else if (filterType === 'phone' || filterType === 'whatsapp') {
                     if (char === '+') {
-                        allowed = (this.selectionStart === 0 && !this.value.includes('+'));
+                        allowed = (inputEl.selectionStart === 0 && !inputEl.value.includes('+'));
                     } else {
                         allowed = REGEX_DIGITS_CHAR.test(char);
                     }
@@ -1026,70 +1084,72 @@
                 }
 
                 if (!allowed) {
-                    e.preventDefault();
-                    self.showInputWarning(this, filterType);
+                    keyEvent.preventDefault();
+                    self.showInputWarning(inputEl, filterType);
                 }
             });
 
             // 2. CLIPBOARD PASTE INTERCEPTOR: Sanitize clipboard data on paste
             inputEl.addEventListener('paste', function (e) {
-                const pasteText = (e.clipboardData || window.clipboardData)?.getData('text');
+                const clipEvent = /** @type {ClipboardEvent} */ (e);
+                const pasteText = (clipEvent.clipboardData || window.clipboardData)?.getData('text');
                 if (!pasteText) return;
 
                 const sanitized = self.sanitizeByFilterType(pasteText, filterType, maxLen);
                 if (sanitized !== pasteText) {
                     e.preventDefault();
-                    const start = this.selectionStart ?? this.value.length;
-                    const end = this.selectionEnd ?? this.value.length;
-                    const cur = this.value;
+                    const start = inputEl.selectionStart ?? inputEl.value.length;
+                    const end = inputEl.selectionEnd ?? inputEl.value.length;
+                    const cur = inputEl.value;
                     const nextVal = cur.substring(0, start) + sanitized + cur.substring(end);
-                    this.value = maxLen ? nextVal.slice(0, maxLen) : nextVal;
+                    inputEl.value = maxLen ? nextVal.slice(0, maxLen) : nextVal;
                     const newCursor = start + sanitized.length;
-                    if (this.setSelectionRange) this.setSelectionRange(newCursor, newCursor);
+                    if (inputEl.setSelectionRange) inputEl.setSelectionRange(newCursor, newCursor);
 
-                    this.dispatchEvent(new Event('input', { bubbles: true }));
+                    inputEl.dispatchEvent(new Event('input', { bubbles: true }));
 
                     if (sanitized.length < pasteText.length) {
-                        self.showInputWarning(this, filterType, "تم تنقية المحتوى الملصق وحظر الرموز والأرقام غير المسموح بها.");
+                        self.showInputWarning(inputEl, filterType, "تم تنقية المحتوى الملصق وحظر الرموز والأرقام غير المسموح بها.");
                     }
                 }
             });
 
             // 3. INPUT EVENT SANITIZER (Safety net for autofill, drag-drop, mobile suggestions)
             inputEl.addEventListener('input', function () {
-                const original = this.value;
+                const original = inputEl.value;
                 const sanitized = self.sanitizeByFilterType(original, filterType, maxLen);
 
                 if (original !== sanitized) {
-                    const start = this.selectionStart;
-                    this.value = sanitized;
-                    if (start !== null && this.setSelectionRange) {
+                    const start = inputEl.selectionStart;
+                    inputEl.value = sanitized;
+                    if (start !== null && inputEl.setSelectionRange) {
                         const targetPos = Math.min(start, sanitized.length);
-                        this.setSelectionRange(targetPos, targetPos);
+                        inputEl.setSelectionRange(targetPos, targetPos);
                     }
-                    self.showInputWarning(this, filterType);
+                    self.showInputWarning(inputEl, filterType);
                 }
 
-                if (this.value.trim().length >= 2) {
-                    self.validateElement(this);
+                if (inputEl.value.trim().length >= 2) {
+                    self.validateElement(inputEl);
                 } else {
-                    self.clearError(this);
+                    self.clearError(inputEl);
                 }
             });
 
             // 4. BLUR & CHANGE: Final formatting and validation
             inputEl.addEventListener('blur', function () {
                 if (filterType === 'text-only' || filterType === 'city' || filterType === 'country' || filterType === 'fullname') {
-                    this.value = this.value.replace(/\s+/g, ' ').trim();
+                    inputEl.value = inputEl.value.replace(/\s+/g, ' ').trim();
                 } else if (filterType === 'username') {
-                    this.value = this.value.replace(/^[._-]+|[._-]+$/g, '').trim();
+                    inputEl.value = inputEl.value.replace(/^[._-]+|[._-]+$/g, '').trim();
                 }
-                self.validateElement(this);
+                self.validateElement(inputEl);
             });
         },
 
         /**
          * Automatically binds validation listeners, character counters, and input filters to all inputs in container.
+         * @param {ParentNode | null} [container]
          */
         init: function (container = (typeof document !== 'undefined' ? document : null)) {
             if (!container) return;
@@ -1097,38 +1157,37 @@
             // Target all relevant input, textarea, and select elements
             const candidates = container.querySelectorAll('input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea');
             candidates.forEach(input => {
-                this.bindField(input);
+                this.bindField(/** @type {HTMLInputElement | HTMLTextAreaElement} */ (input));
             });
 
             // Auto-bind character counters for textareas with maxlength
             const textareas = container.querySelectorAll('textarea[maxlength], textarea[data-counter="true"]');
             textareas.forEach(ta => {
-                const max = parseInt(ta.getAttribute('maxlength')) || 600;
-                this.bindCharCounter(ta, null, max);
+                const max = parseInt(ta.getAttribute('maxlength') || '600', 10);
+                this.bindCharCounter(/** @type {HTMLTextAreaElement} */ (ta), null, max);
             });
 
             // Setup MutationObserver to automatically bind new dynamic fields (e.g. modals, tabs)
-            if (typeof MutationObserver !== 'undefined' && !container._eaObserverAttached) {
-                container._eaObserverAttached = true;
+            const obsContainer = /** @type {Document & { _eaObserverAttached?: boolean }} */ (container);
+            if (typeof MutationObserver !== 'undefined' && !obsContainer._eaObserverAttached) {
+                obsContainer._eaObserverAttached = true;
                 const observer = new MutationObserver(mutations => {
                     for (const m of mutations) {
                         if (m.addedNodes && m.addedNodes.length) {
                             m.addedNodes.forEach(node => {
-                                if (node.nodeType === 1) { // ELEMENT_NODE
-                                    if (node.matches && node.matches('input, textarea')) {
-                                        EduAtlasValidator.bindField(node);
+                                if (node instanceof Element) { // ELEMENT_NODE
+                                    if (node.matches('input, textarea')) {
+                                        EduAtlasValidator.bindField(/** @type {HTMLInputElement | HTMLTextAreaElement} */ (node));
                                     }
-                                    if (node.querySelectorAll) {
-                                        node.querySelectorAll('input:not([type="hidden"]):not([type="file"]), textarea').forEach(inp => {
-                                            EduAtlasValidator.bindField(inp);
-                                        });
-                                    }
+                                    node.querySelectorAll('input:not([type="hidden"]):not([type="file"]), textarea').forEach(inp => {
+                                        EduAtlasValidator.bindField(/** @type {HTMLInputElement | HTMLTextAreaElement} */ (inp));
+                                    });
                                 }
                             });
                         }
                     }
                 });
-                observer.observe(container === document ? document.body || document.documentElement : container, {
+                observer.observe(container === document ? document.body || document.documentElement : /** @type {Node} */ (container), {
                     childList: true,
                     subtree: true
                 });

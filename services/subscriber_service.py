@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 from services.security_utils import atomic_json_write
-from services.db import get_db_session, is_db_available, SubscriberDB
+from services.db import get_db_session, is_db_available, SubscriberDB, can_use_local_json_storage, is_production_mode
 
 logger = logging.getLogger(__name__)
 
@@ -14,30 +14,11 @@ SUBSCRIBERS_FILE = os.path.join(DATA_DIR, "subscribers.json")
 
 
 def _ensure_data_dir():
+    if not can_use_local_json_storage():
+        return
     os.makedirs(DATA_DIR, exist_ok=True)
     if not os.path.exists(SUBSCRIBERS_FILE):
-        default_subscribers = [
-            {
-                "email": "medo.msz.2006@gmail.com",
-                "full_name": "Mustafa AbuZaiter",
-                "degree": "Undergraduate (Bachelor's)",
-                "majors": [
-                    "Cybersecurity",
-                    "Software Engineering",
-                    "Artificial Intelligence",
-                    "Computer Science & IT"
-                ],
-                "gpa": "90%+",
-                "english_level": "IELTS 6.5+ / Advanced",
-                "target_destinations": ["Europe", "Canada", "Turkey"],
-                "country": "Palestine",
-                "saved_scholarships": ["Lester B. Pearson", "Stipendium Hungaricum"],
-                "created_at": datetime.now().isoformat(),
-                "last_sent_at": None,
-                "status": "active"
-            }
-        ]
-        atomic_json_write(SUBSCRIBERS_FILE, default_subscribers)
+        atomic_json_write(SUBSCRIBERS_FILE, [])
 
 
 class SubscriberService:
@@ -47,8 +28,9 @@ class SubscriberService:
         _ensure_data_dir()
 
     def get_all(self, active_only: bool = True) -> List[Dict[str, Any]]:
-        """Returns list of subscribers from PostgreSQL/Neon when connected, with fallback to JSON."""
-        _ensure_data_dir()
+        """Returns list of subscribers from PostgreSQL/Neon when connected, with fallback to JSON only in dev mode."""
+        if can_use_local_json_storage():
+            _ensure_data_dir()
         if is_db_available():
             try:
                 with get_db_session() as db:
@@ -60,7 +42,15 @@ class SubscriberService:
                         if results:
                             return [r.to_dict() for r in results]
             except Exception as e:
-                logger.debug(f"DB get_all failed, falling back to JSON: {e}")
+                if not can_use_local_json_storage():
+                    logger.error(f"[PRODUCTION] DB get_all failed: {e}")
+                    raise RuntimeError(f"PostgreSQL subscriber query failed in production: {e}")
+                logger.debug(f"[DEV MODE] DB get_all failed, falling back to JSON: {e}")
+
+        if not can_use_local_json_storage():
+            logger.error("[PRODUCTION] PostgreSQL database unavailable. Refusing to fall back to local subscribers.json.")
+            raise RuntimeError("PostgreSQL database unavailable. Local JSON storage is disabled in production.")
+
         try:
             with open(SUBSCRIBERS_FILE, "r", encoding="utf-8") as f:
                 subs = json.load(f)
@@ -171,7 +161,8 @@ class SubscriberService:
             except Exception as dbe:
                 logger.error(f"Error persisting subscriber to Neon DB: {dbe}")
 
-        atomic_json_write(SUBSCRIBERS_FILE, subs)
+        if can_use_local_json_storage():
+            atomic_json_write(SUBSCRIBERS_FILE, subs)
         return subscriber_record
 
     def toggle_saved_scholarship(self, email: str, scholarship_name: str) -> Dict[str, Any]:
@@ -203,7 +194,8 @@ class SubscriberService:
             except Exception as dbe:
                 logger.debug(f"DB toggle saved scholarship error: {dbe}")
 
-        atomic_json_write(SUBSCRIBERS_FILE, subs)
+        if can_use_local_json_storage():
+            atomic_json_write(SUBSCRIBERS_FILE, subs)
         return {"saved": is_saved, "all_saved": saved}
 
     def update_last_sent(self, email: str):
@@ -226,7 +218,8 @@ class SubscriberService:
             except Exception as dbe:
                 logger.debug(f"DB update last sent error: {dbe}")
 
-        atomic_json_write(SUBSCRIBERS_FILE, subs)
+        if can_use_local_json_storage():
+            atomic_json_write(SUBSCRIBERS_FILE, subs)
 
     def unsubscribe(self, email: str) -> bool:
         """Sets status to unsubscribed."""
@@ -249,6 +242,6 @@ class SubscriberService:
             except Exception as dbe:
                 logger.debug(f"DB unsubscribe error: {dbe}")
 
-        if found:
+        if found and can_use_local_json_storage():
             atomic_json_write(SUBSCRIBERS_FILE, subs)
         return found

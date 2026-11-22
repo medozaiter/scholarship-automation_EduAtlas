@@ -19,11 +19,16 @@ ENV/
 node_modules/
 .eslintcache
 scratch/
+security-audit-skill/
+
+# Runtime JSON stores may contain personal or operational data.
+data/*.json
+!data/live_scholarships.json
+!data/subscribers.example.json
 
 # User uploaded media
 web/static/uploads/avatars/*
 !web/static/uploads/avatars/.gitkeep
 web/static/uploads/covers/*
 !web/static/uploads/covers/.gitkeep
-
 

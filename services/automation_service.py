@@ -65,6 +65,21 @@ def compute_scholarship_hash(sch: Union[str, Dict[str, Any]]) -> str:
     canonical = f"{norm_name}:{country}".strip(":")
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
+
+def is_deadline_expired(deadline_str: Optional[str], ref_date: Optional[date] = None) -> bool:
+    """Validates if a scholarship deadline is expired against reference date (defaults to today)."""
+    if not deadline_str:
+        return False
+    target_date = ref_date or date.today()
+    match = re.search(r"(\d{4}-\d{2}-\d{2})", str(deadline_str))
+    if match:
+        try:
+            dl = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+            return dl < target_date
+        except Exception:
+            pass
+    return False
+
 # Verified base roster of flagship global scholarships
 DEFAULT_LIVE_SCHOLARSHIPS = [
     {
@@ -99,15 +114,15 @@ DEFAULT_LIVE_SCHOLARSHIPS = [
         ],
         "min_gpa_percentage": 85.0,
         "funding_type": "fully_funded",
-        "status": "مفتوح حالياً للتقديم",
-        "statusClass": "sp-badge-success",
+        "status": "منتهية (Expired)",
+        "statusClass": "sp-badge-danger",
         "deadline": "2026-11-06",
         "deadline_display": "6 نوفمبر 2026",
-        "deadlineDays": "متبقي أسبوع واحد",
+        "deadlineDays": "انتهى موعد التقديم",
         "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين الصحي",
         "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح رسمية من المدرسة، وإثبات التميز القيادي والمجتمعي",
         "link": "https://future.utoronto.ca/pearson/about/#apply",
-        "is_active": True
+        "is_active": False
     },
     {
         "id": "hungaricum",
@@ -231,15 +246,15 @@ DEFAULT_LIVE_SCHOLARSHIPS = [
         ],
         "min_gpa_percentage": 80.0,
         "funding_type": "fully_funded",
-        "status": "مفتوح حالياً",
-        "statusClass": "sp-badge-warning",
+        "status": "منتهية (Expired)",
+        "statusClass": "sp-badge-danger",
         "deadline": "2026-11-20",
         "deadline_display": "20 نوفمبر 2026",
-        "deadlineDays": "أيام معدودة للإغلاق",
+        "deadlineDays": "انتهى موعد التقديم",
         "coverage": "تمويل كامل 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة ورسوم التأشيرة",
         "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية (2800 ساعة)، 4 مقالات قيادية",
         "link": "https://www.chevening.org/apply/",
-        "is_active": True
+        "is_active": False
     },
     {
         "id": "gks",
@@ -1014,12 +1029,15 @@ class AutomationService:
         self._last_metrics: Dict[str, Any] = {}
 
     def _ensure_live_scholarships_file(self):
+        from services.db import can_use_local_json_storage
+        if not can_use_local_json_storage():
+            return
         os.makedirs(DATA_DIR, exist_ok=True)
         if not os.path.exists(LIVE_SCHOLARSHIPS_FILE):
             with open(LIVE_SCHOLARSHIPS_FILE, "w", encoding="utf-8") as f:
                 json.dump(DEFAULT_LIVE_SCHOLARSHIPS, f, ensure_ascii=False, indent=2)
 
-    def get_live_scholarships(self) -> List[Dict[str, Any]]:
+    def get_live_scholarships(self, active_only: bool = False) -> List[Dict[str, Any]]:
         """Returns the current auto-managed scholarship catalogue from database or JSON."""
         from services.db import is_db_available, get_db_session, LiveScholarshipDB
         
@@ -1028,13 +1046,24 @@ class AutomationService:
             try:
                 with get_db_session() as db:
                     if db is not None:
-                        db_items = db.query(LiveScholarshipDB).filter(LiveScholarshipDB.is_active == True).all()
+                        query = db.query(LiveScholarshipDB)
+                        if active_only:
+                            query = query.filter(LiveScholarshipDB.is_active == True)
+                        db_items = query.all()
                         if db_items and len(db_items) > 0:
-                            return [item.to_dict() for item in db_items]
+                            items = [item.to_dict() for item in db_items]
+                            if active_only:
+                                items = [s for s in items if s.get("is_active", True) is not False and not is_deadline_expired(s.get("deadline"))]
+                            return items
             except Exception as e:
                 logger.debug(f"DB load live scholarships error: {e}")
 
-        # 2. Fallback to JSON
+        from services.db import can_use_local_json_storage
+        if not can_use_local_json_storage():
+            logger.error("[PRODUCTION] PostgreSQL live scholarships query failed or unavailable. Local JSON fallback disabled.")
+            raise RuntimeError("PostgreSQL database unavailable. Local JSON storage is disabled in production.")
+
+        # 2. Fallback to JSON (only in explicit dev mode)
         data_list = []
         try:
             with open(LIVE_SCHOLARSHIPS_FILE, "r", encoding="utf-8") as f:
@@ -1045,12 +1074,62 @@ class AutomationService:
             logger.warning(f"Could not read live scholarships file: {e}")
             
         if not data_list:
-            data_list = list(DEFAULT_LIVE_SCHOLARSHIPS)
+            data_list = [dict(s) for s in DEFAULT_LIVE_SCHOLARSHIPS]
 
         for item in data_list:
             if "official_link" not in item:
                 item["official_link"] = item.get("link", "#")
+
+        if active_only:
+            data_list = [s for s in data_list if s.get("is_active", True) is not False and not is_deadline_expired(s.get("deadline"))]
+
         return data_list
+
+    def audit_and_enforce_deadlines(self) -> Dict[str, Any]:
+        """
+        Audits all scholarship records against current date.
+        Marks expired opportunities as is_active = False and updates status to 'منتهية (Expired)'.
+        Ensures expired opportunities are not presented as active/verified scholarships.
+        Persists changes and returns audit report summary.
+        """
+        current_date = date.today()
+        items = self.get_live_scholarships(active_only=False)
+        modified = []
+        for s in items:
+            dl_str = s.get("deadline", "")
+            if is_deadline_expired(dl_str, current_date):
+                changed = False
+                prev_status = s.get("status", "")
+                if s.get("is_active") is not False:
+                    s["is_active"] = False
+                    changed = True
+                if "منتهية" not in prev_status and "Expired" not in prev_status:
+                    s["status"] = "منتهية (Expired)"
+                    changed = True
+                if s.get("statusClass") != "sp-badge-danger":
+                    s["statusClass"] = "sp-badge-danger"
+                    changed = True
+                if s.get("deadlineDays") != "انتهى موعد التقديم":
+                    s["deadlineDays"] = "انتهى موعد التقديم"
+                    changed = True
+                if changed:
+                    modified.append({
+                        "id": s.get("id"),
+                        "name": s.get("name"),
+                        "deadline": dl_str,
+                        "previous_status": prev_status,
+                        "status": s["status"],
+                        "is_active": s["is_active"]
+                    })
+        if modified:
+            self._save_live_scholarships(items)
+        return {
+            "audited_at": datetime.now().isoformat(),
+            "reference_date": current_date.isoformat(),
+            "total_scholarships": len(items),
+            "modified_count": len(modified),
+            "modified_entries": modified
+        }
 
     def _save_live_scholarships(self, items: List[Dict[str, Any]]):
         """Persists updated scholarships to both PostgreSQL DB and JSON store."""
@@ -1097,14 +1176,16 @@ class AutomationService:
             except Exception as e:
                 logger.debug(f"DB save live scholarships error: {e}")
 
-        # 2. Update JSON
-        try:
-            temp_file = LIVE_SCHOLARSHIPS_FILE + ".tmp"
-            with open(temp_file, "w", encoding="utf-8") as f:
-                json.dump(items, f, ensure_ascii=False, indent=2)
-            os.replace(temp_file, LIVE_SCHOLARSHIPS_FILE)
-        except Exception as je:
-            logger.error(f"Error saving live scholarships JSON: {je}")
+        # 2. Update JSON (only in explicit dev mode)
+        from services.db import can_use_local_json_storage
+        if can_use_local_json_storage():
+            try:
+                temp_file = LIVE_SCHOLARSHIPS_FILE + ".tmp"
+                with open(temp_file, "w", encoding="utf-8") as f:
+                    json.dump(items, f, ensure_ascii=False, indent=2)
+                os.replace(temp_file, LIVE_SCHOLARSHIPS_FILE)
+            except Exception as je:
+                logger.error(f"Error saving live scholarships JSON: {je}")
 
     def _get_all_active_students(self) -> List[Dict[str, Any]]:
         """Unifies and deduplicates all registered students and active subscribers."""
@@ -1534,8 +1615,11 @@ class AutomationService:
                 if not matched:
                     continue
 
+                if matched.get("is_active") is False:
+                    continue
+
                 dl_str = matched.get("deadline")
-                if not dl_str:
+                if not dl_str or is_deadline_expired(dl_str):
                     continue
 
                 try:

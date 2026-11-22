@@ -1,3 +1,5 @@
+import globals from "globals";
+
 export default [
   {
     files: ["web/static/js/**/*.js"],
@@ -5,16 +7,9 @@ export default [
       ecmaVersion: 2022,
       sourceType: "script",
       globals: {
-        window: "readonly",
-        document: "readonly",
-        fetch: "readonly",
-        console: "readonly",
-        setInterval: "readonly",
-        encodeURIComponent: "readonly",
-        Date: "readonly",
-        String: "readonly",
-        Node: "readonly",
-        EventTarget: "readonly",
+        ...globals.browser,
+        ...globals.amd,
+        ...globals.commonjs,
         lucide: "readonly",
       },
     },

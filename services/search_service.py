@@ -10,33 +10,39 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 # Curated Fallback Directory of Top Verified International Scholarships
-CURATED_VERIFIED_SCHOLARSHIPS: List[Dict[str, str]] = [
+CURATED_VERIFIED_SCHOLARSHIPS: List[Dict[str, Any]] = [
     {
         "title": "Lester B. Pearson International Scholarship Program - University of Toronto",
         "snippet": (
             "Fully funded undergraduate scholarship covering tuition, books, incidental fees, and full residence "
             "support for 4 years at University of Toronto, Canada. Open to international students including Palestinians "
-            "in Computer Science, Software Engineering, and AI. Application deadline for students: November 6, 2026."
+            "in Computer Science, Software Engineering, and AI. Application deadline for students: November 6, 2026 (Expired / Closed)."
         ),
-        "url": "https://future.utoronto.ca/pearson/"
+        "url": "https://future.utoronto.ca/pearson/",
+        "is_active": False,
+        "is_expired": True
     },
     {
         "title": "UBC International Scholars Program - University of British Columbia",
         "snippet": (
             "Offers Karen McKellin International Leader of Tomorrow and Donald A. Wehrung awards for undergraduate "
             "studies at UBC Canada in Computer Science, Software Engineering, and Cognitive Systems. Fully funded "
-            "covering tuition and living costs. Application deadline: November 15, 2026."
+            "covering tuition and living costs. Application deadline: November 15, 2026 (Expired / Closed)."
         ),
-        "url": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/"
+        "url": "https://you.ubc.ca/financial-planning/scholarships-awards-international-students/international-scholars/",
+        "is_active": False,
+        "is_expired": True
     },
     {
         "title": "U.S.-MEPI Tomorrow's Leaders Undergraduate Program (AUB, AUC, LAU)",
         "snippet": (
             "Funded by U.S. Department of State for students from the Middle East including Palestine (West Bank & diaspora). "
             "Covers full tuition, university housing, monthly stipend, health insurance, laptop, textbooks, and a US exchange semester "
-            "in fields such as Computer Science, Software Engineering, and IT at AUB, AUC, or LAU. Deadline: November 18, 2026."
+            "in fields such as Computer Science, Software Engineering, and IT at AUB, AUC, or LAU. Deadline: November 18, 2026 (Expired / Closed)."
         ),
-        "url": "https://www.tomorrowsleadersprogram.org/"
+        "url": "https://www.tomorrowsleadersprogram.org/",
+        "is_active": False,
+        "is_expired": True
     },
     {
         "title": "Stipendium Hungaricum Scholarship - Hungarian Government",
@@ -271,8 +277,10 @@ class SearchService:
 
         logger.info(f"Retrieved {len(combined_results)} results from live web.")
 
-        # 3. Always enrich with our verified curated directory matching the target profile
+        # 3. Enrich with verified curated directory matching target profile (active only)
         for curated in CURATED_VERIFIED_SCHOLARSHIPS:
+            if curated.get("is_expired", False) or curated.get("is_active", True) is False:
+                continue
             url = curated["url"]
             if url not in seen_urls:
                 seen_urls.add(url)

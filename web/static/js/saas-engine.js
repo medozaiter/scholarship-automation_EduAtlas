@@ -23,13 +23,14 @@
       progressBar.setAttribute('aria-hidden', 'true');
       document.body.prepend(progressBar);
     }
+    const targetBar = progressBar;
 
     let ticking = false;
     function updateProgress() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
-      progressBar.style.transform = `scaleX(${progress})`;
+      targetBar.style.transform = `scaleX(${progress})`;
       ticking = false;
     }
 
@@ -114,7 +115,7 @@
 
     // Auto-discover cards and sections if not explicitly tagged
     const candidates = document.querySelectorAll('.reveal-on-scroll, .fade-up-card, .sp-card, .scholarship-card');
-    candidates.forEach((el, index) => {
+    candidates.forEach(el => {
       if (!el.classList.contains('reveal-on-scroll')) {
         el.classList.add('reveal-on-scroll');
       }
@@ -137,15 +138,25 @@
   // ===================================================================
   // 4. ANIMATED STATISTICS COUNTERS
   // ===================================================================
+  /**
+   * @param {HTMLElement} obj
+   * @param {number} start
+   * @param {number} end
+   * @param {number} duration
+   * @param {string} prefix
+   * @param {string} suffix
+   */
   function animateValue(obj, start, end, duration, prefix, suffix) {
     if (prefersReducedMotion) {
       obj.textContent = `${prefix}${end}${suffix}`;
       return;
     }
 
+    /** @type {number | null} */
     let startTimestamp = null;
     const isDecimals = String(end).includes('.');
 
+    /** @param {number} timestamp */
     function step(timestamp) {
       if (!startTimestamp) startTimestamp = timestamp;
       const elapsed = timestamp - startTimestamp;
@@ -181,7 +192,7 @@
     const counterObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          const el = entry.target;
+          const el = /** @type {HTMLElement} */ (entry.target);
           observer.unobserve(el);
 
           const rawText = el.getAttribute('data-counter-target') || el.textContent.trim();
@@ -209,8 +220,10 @@
     if (prefersReducedMotion) return;
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
+    /** @param {MouseEvent} e */
     function handleCardMouseMove(e) {
-      const card = e.currentTarget;
+      const card = /** @type {HTMLElement} */ (e.currentTarget);
+      if (!card) return;
       const rect = card.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -218,11 +231,12 @@
       card.style.setProperty('--mouse-y', `${y.toFixed(1)}%`);
     }
 
+    /** @param {ParentNode} [root] */
     function attachCardSpotlight(root) {
-      const cards = (root || document).querySelectorAll('.sp-card, .ea-card, .saas-card');
+      const cards = /** @type {NodeListOf<HTMLElement>} */ ((root || document).querySelectorAll('.sp-card, .ea-card, .saas-card'));
       cards.forEach(card => {
         if (!card.dataset.spotlightBound) {
-          card.addEventListener('mousemove', handleCardMouseMove, { passive: true });
+          card.addEventListener('mousemove', (e) => handleCardMouseMove(/** @type {MouseEvent} */ (e)), { passive: true });
           card.dataset.spotlightBound = 'true';
         }
       });
@@ -236,21 +250,22 @@
   // 6. HORIZONTAL SCROLLING SHOWCASE (DRAG TO SCROLL & BUTTON CONTROLS)
   // ===================================================================
   function initHorizontalShowcase() {
-    const sliders = document.querySelectorAll('.saas-horizontal-scroll');
+    const sliders = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.saas-horizontal-scroll'));
 
     sliders.forEach(slider => {
       let isDown = false;
-      let startX;
-      let scrollLeft;
+      let startX = 0;
+      let scrollLeft = 0;
       let isDragging = false;
 
       slider.addEventListener('mousedown', (e) => {
+        const mouseEvent = /** @type {MouseEvent} */ (e);
         isDown = true;
         isDragging = false;
         slider.style.cursor = 'grabbing';
         slider.style.userSelect = 'none';
         slider.style.scrollSnapType = 'none'; // Temporarily disable snap during active drag
-        startX = e.pageX - slider.offsetLeft;
+        startX = mouseEvent.pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
       });
 
@@ -264,8 +279,9 @@
 
       slider.addEventListener('mousemove', (e) => {
         if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
+        const mouseEvent = /** @type {MouseEvent} */ (e);
+        mouseEvent.preventDefault();
+        const x = mouseEvent.pageX - slider.offsetLeft;
         const walk = (x - startX) * 1.5;
         if (Math.abs(walk) > 5) {
           isDragging = true;
@@ -286,9 +302,11 @@
     document.querySelectorAll('[data-scroll-prev]').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-scroll-prev');
-        const target = document.getElementById(targetId);
-        if (target) {
-          target.scrollBy({ left: -320, behavior: 'smooth' });
+        if (targetId) {
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollBy({ left: -320, behavior: 'smooth' });
+          }
         }
       });
     });
@@ -296,9 +314,11 @@
     document.querySelectorAll('[data-scroll-next]').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-scroll-next');
-        const target = document.getElementById(targetId);
-        if (target) {
-          target.scrollBy({ left: 320, behavior: 'smooth' });
+        if (targetId) {
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.scrollBy({ left: 320, behavior: 'smooth' });
+          }
         }
       });
     });
@@ -309,13 +329,14 @@
   // ===================================================================
   function initSmoothAnchors() {
     document.addEventListener('click', (e) => {
-      const link = e.target.closest('a[href^="#"]');
+      const target = /** @type {Element | null} */ (e.target);
+      const link = target?.closest('a[href^="#"]');
       if (!link) return;
 
       const href = link.getAttribute('href');
       if (!href || href === '#' || href === '#!') return;
 
-      const targetEl = document.querySelector(href);
+      const targetEl = /** @type {HTMLElement | null} */ (document.querySelector(href));
       if (targetEl) {
         e.preventDefault();
         const headerOffset = 80;

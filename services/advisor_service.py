@@ -2,6 +2,7 @@ import math
 import os
 import re
 import json
+import hashlib
 import zlib
 import difflib
 import logging
@@ -637,8 +638,10 @@ VERIFIED_SCHOLARSHIPS_CATALOG: List[Dict[str, Any]] = [
         "application_complexity": "ترشيح رسمي من المدرسة الثانوية ثم تقديم إلكتروني مباشر عبر بوابة الجامعة",
         "deadline": "2026-11-06",
         "link": "https://future.utoronto.ca/pearson/",
-        "status": "مفتوح حالياً للتقديم",
-        "statusClass": "sp-badge-success",
+        "status": "منتهية (Expired)",
+        "statusClass": "sp-badge-danger",
+        "is_active": False,
+        "is_verified": False,
         "quota_palestine": True,
         "description": "منحة جامعة تورنتو الكندية الرائدة لخريجي الثانوية المتميزين أكاديمياً وقيادياً مع تغطية شاملة."
     },
@@ -724,8 +727,10 @@ VERIFIED_SCHOLARSHIPS_CATALOG: List[Dict[str, Any]] = [
         "application_complexity": "4 مقالات قيادية احترافية + رسالتا توصية + قبول غير مشروط من 3 جامعات بريطانية",
         "deadline": "2026-11-05",
         "link": "https://www.chevening.org/scholarships/",
-        "status": "مفتوح حالياً للتقديم",
-        "statusClass": "sp-badge-warning",
+        "status": "منتهية (Expired)",
+        "statusClass": "sp-badge-danger",
+        "is_active": False,
+        "is_verified": False,
         "quota_palestine": True,
         "description": "منحة وزارة الخارجية البريطانية لصناع القرار والقادة المستقبليين لدراسة الماجستير في بريطانيا."
     },
@@ -852,8 +857,25 @@ class AdvisorService:
         self._load_live_scholarships()
 
     def _load_live_scholarships(self):
-        """Loads and syncs verified dynamic opportunities from live_scholarships.json."""
-        if os.path.exists(LIVE_SCHOLARSHIPS_FILE):
+        """Loads and syncs verified dynamic opportunities from PostgreSQL DB, or local JSON in dev mode."""
+        from services.db import get_all_scholarships, can_use_local_json_storage
+        try:
+            db_scholarships = get_all_scholarships(active_only=True)
+            if db_scholarships:
+                items_by_id = {s.get("id"): s for s in db_scholarships if s.get("id")}
+                for i, cat_item in enumerate(self.catalog):
+                    c_id = cat_item.get("id")
+                    if c_id in items_by_id:
+                        self.catalog[i] = {**cat_item, **items_by_id[c_id]}
+                existing_ids = {s.get("id") for s in self.catalog}
+                for item in db_scholarships:
+                    if item.get("id") not in existing_ids:
+                        self.catalog.append(item)
+                return
+        except Exception as e:
+            logger.debug(f"Could not load dynamic scholarships from DB: {e}")
+
+        if can_use_local_json_storage() and os.path.exists(LIVE_SCHOLARSHIPS_FILE):
             try:
                 with open(LIVE_SCHOLARSHIPS_FILE, "r", encoding="utf-8") as f:
                     items = json.load(f)
@@ -868,6 +890,20 @@ class AdvisorService:
                     for item in items:
                         if item.get("id") not in existing_ids:
                             self.catalog.append(item)
+
+                    # Enforce deadline validity across all loaded catalog opportunities
+                    today = date.today()
+                    for item in self.catalog:
+                        dl = item.get("deadline", "")
+                        m = re.search(r"(\d{4}-\d{2}-\d{2})", str(dl))
+                        if m:
+                            try:
+                                if datetime.strptime(m.group(1), "%Y-%m-%d").date() < today:
+                                    item["is_active"] = False
+                                    item["status"] = "منتهية (Expired)"
+                                    item["statusClass"] = "sp-badge-danger"
+                            except Exception:
+                                pass
             except Exception as e:
                 logger.debug(f"Could not load dynamic scholarships file: {e}")
 
@@ -928,8 +964,9 @@ class AdvisorService:
             except Exception as e:
                 logger.debug(f"SubscriberService DB lookup failed in advisor: {e}")
 
-            # 3. Fallback to local files if database wasn't connected
-            if not profile.get("email") or profile.get("full_name") == "طالب مبادر":
+            # 3. Fallback to local files only in explicit dev mode
+            from services.db import can_use_local_json_storage
+            if can_use_local_json_storage() and (not profile.get("email") or profile.get("full_name") == "طالب مبادر"):
                 if os.path.exists(SUBSCRIBERS_FILE):
                     try:
                         with open(SUBSCRIBERS_FILE, "r", encoding="utf-8") as f:
@@ -2081,11 +2118,13 @@ Student in {major}
         - Closing within 7 days (Urgent / Closing this week)
         - Closing within 30 days
         - Open and upcoming opportunities
+        - Expired opportunities (past deadline)
         """
         today = date.today()
         closing_this_week: List[Dict[str, Any]] = []
         closing_in_30_days: List[Dict[str, Any]] = []
         open_opportunities: List[Dict[str, Any]] = []
+        expired_opportunities: List[Dict[str, Any]] = []
 
         for sch in self.catalog:
             dl_str = sch.get("deadline", "")
@@ -2105,7 +2144,11 @@ Student in {major}
                         "status": sch.get("status", "مفتوح")
                     }
 
-                    if 0 <= days <= 7:
+                    if days < 0 or sch.get("is_active") is False:
+                        item_card["urgency"] = "انتهى موعد التقديم (Expired)"
+                        item_card["status"] = "منتهية (Expired)"
+                        expired_opportunities.append(item_card)
+                    elif 0 <= days <= 7:
                         item_card["urgency"] = "أسبوع واحد للإغلاق (عاجل جداً)"
                         closing_this_week.append(item_card)
                     elif 7 < days <= 30:
@@ -2118,13 +2161,17 @@ Student in {major}
 
         closing_this_week.sort(key=lambda x: x["days_remaining"])
         closing_in_30_days.sort(key=lambda x: x["days_remaining"])
+        total_active = len(closing_this_week) + len(closing_in_30_days) + len(open_opportunities)
 
         return {
             "success": True,
             "closing_this_week": closing_this_week,
             "closing_in_30_days": closing_in_30_days,
+            "open_opportunities": open_opportunities,
+            "expired_opportunities": expired_opportunities,
             "total_monitored": len(self.catalog),
-            "total_active": len(self.catalog)
+            "total_active": total_active,
+            "total_expired": len(expired_opportunities)
         }
 
     # ==========================================================================
@@ -2134,20 +2181,36 @@ Student in {major}
         self,
         query: str,
         student_profile: Optional[Dict[str, Any]] = None,
-        limit: int = 4
+        limit: int = 4,
+        active_only: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Strict Python-first search engine:
         - Filters and ranks using deterministic relevance algorithms.
+        - Enforces deadline and status validation to prevent expired records from appearing in active search results.
         - Calculates match scores in Python.
         - Only sends top ranked results to Gemini for explanation, optimizing tokens by 80%.
         """
         prof = student_profile or self.resolve_student_profile()
         query_tokens = [t.lower() for t in query.split() if len(t) > 2]
+        today = date.today()
 
         scored_candidates = []
 
         for sch in self.catalog:
+            # Prevent expired records from appearing in active search results
+            if active_only:
+                if sch.get("is_active") is False:
+                    continue
+                dl_str = sch.get("deadline", "")
+                m_dl = re.search(r"(\d{4}-\d{2}-\d{2})", str(dl_str))
+                if m_dl:
+                    try:
+                        if datetime.strptime(m_dl.group(1), "%Y-%m-%d").date() < today:
+                            continue
+                    except Exception:
+                        pass
+
             score = 0
             text_blob = f"{sch.get('name', '')} {sch.get('institution', '')} {sch.get('country', '')} {sch.get('degree', '')} {' '.join(sch.get('target_majors', []))} {sch.get('description', '')}".lower()
 
@@ -2167,6 +2230,9 @@ Student in {major}
             sch_copy = dict(sch)
             sch_copy["calculated_match"] = smart_match
             scored_candidates.append((sch_copy, score))
+
+        scored_candidates.sort(key=lambda x: x[1], reverse=True)
+        return [item[0] for item in scored_candidates[:limit]]
 
         scored_candidates.sort(key=lambda x: x[1], reverse=True)
         return [item[0] for item in scored_candidates[:limit]]
@@ -2225,22 +2291,35 @@ Student in {major}
 
         # 2. Smart Context Injection (Token Optimization: >60% savings)
         top_candidates = []
+        today = date.today()
         if target_sch:
             top_candidates = [target_sch]
             m_info = self.calculate_smart_match(student_profile, target_sch)
+            is_target_expired = target_sch.get("is_active") is False
+            m_dl = re.search(r"(\d{4}-\d{2}-\d{2})", str(target_sch.get("deadline", "")))
+            if m_dl:
+                try:
+                    if datetime.strptime(m_dl.group(1), "%Y-%m-%d").date() < today:
+                        is_target_expired = True
+                except Exception:
+                    pass
+            status_note = "منتهية ومغلقة للدورة الحالية (Expired - لا يمكن التقديم عليها حالياً)" if is_target_expired else target_sch.get('status', 'مفتوح')
             catalog_matches_text = (
-                f"[المنحة المستهدفة حصراً (Focused Target)]\n"
+                f"[المنحة المستهدفة حصراً (Focused Target{' - تنبيه: فرصة منتهية ومغلقة' if is_target_expired else ''})]\n"
                 f"- الاسم الرسمي: {target_sch.get('name')}\n"
                 f"- الدولة والجامعة: {target_sch.get('country')} ({target_sch.get('institution')})\n"
                 f"- الدرجة العلمية: {target_sch.get('degree')}\n"
+                f"- الحالة: {status_note}\n"
                 f"- التغطية: {target_sch.get('funding')} | الراتب والسكن: {target_sch.get('living_allowance', '')}\n"
                 f"- متطلبات اللغة: {target_sch.get('language_req', '')}\n"
                 f"- الموعد النهائي: {target_sch.get('deadline')}\n"
                 f"- نسبة التوافق لملف الطالب: {m_info.get('match_score', 90)}%\n"
                 f"- رابط التقديم المعتمد: {target_sch.get('link')}\n"
             )
+            if is_target_expired:
+                catalog_matches_text += "- توجيه إلزامي: انتهى موعد التقديم لهذه المنحة، أكد للطالب بوضوح أنها منتهية واقترح عليه بدائل نشطة ومفتوحة وموثقة.\n"
         else:
-            top_candidates = self.python_search_and_rank(clean_query, student_profile, limit=2)
+            top_candidates = self.python_search_and_rank(clean_query, student_profile, limit=2, active_only=True)
             catalog_matches_text = ""
             for i, sch in enumerate(top_candidates, 1):
                 m_info = sch.get("calculated_match") or self.calculate_smart_match(student_profile, sch)
@@ -2620,16 +2699,24 @@ Opportunity Interests: {opp_interests_str}
             target_sch_obj = next((s for s in self.catalog if s.get("id", "").lower() == target_sch_ref), None)
 
         now_ts = datetime.now().timestamp()
-        user_scope = (prof.get("email") or email or "guest").lower()
+        trusted_email = (email or "").strip().lower()
+        user_scope = hashlib.sha256(trusted_email.encode("utf-8")).hexdigest() if trusted_email else None
 
-        # 4. QUESTION CACHE: Check Exact Canonical & Normalized Keys (Scoped per user/guest for privacy)
-        cache_intent_key = f"{user_scope}::{target_sch_ref}::{canonical_intent}" if canonical_intent != "canonical_general" else None
-        cache_exact_key = f"{user_scope}::{target_sch_ref}::{normalized_q}"
+        # 4. Cache personalized answers only for callers with a trusted account identity.
+        cache_intent_key = (
+            f"{user_scope}::{target_sch_ref}::{canonical_intent}"
+            if user_scope and canonical_intent != "canonical_general"
+            else None
+        )
+        cache_exact_key = f"{user_scope}::{target_sch_ref}::{normalized_q}" if user_scope else None
 
         for test_key in [cache_intent_key, cache_exact_key]:
             if test_key and test_key in _advisor_response_cache:
                 entry = _advisor_response_cache[test_key]
-                if now_ts - entry.get("timestamp", 0) < CACHE_TTL_SECONDS:
+                if (
+                    entry.get("user_scope") == user_scope
+                    and now_ts - entry.get("timestamp", 0) < CACHE_TTL_SECONDS
+                ):
                     advisor_telemetry.record_cache_hit()
                     logger.info(f"⚡ Token Optimization: Exact Cache HIT for '{test_key}'. Zero AI tokens used.")
                     return {
@@ -2655,11 +2742,9 @@ Opportunity Interests: {opp_interests_str}
         for cache_k, entry in _advisor_response_cache.items():
             if now_ts - entry.get("timestamp", 0) > CACHE_TTL_SECONDS:
                 continue
-            entry_user = entry.get("user_scope")
-            if entry_user and entry_user != user_scope and entry_user not in ("guest", "all"):
-                continue  # Never cross-serve cached responses between different authenticated users!
-            entry_sch = entry.get("scholarship_id", "")
-            if target_sch_ref and entry_sch and target_sch_ref != entry_sch:
+            if not user_scope or entry.get("user_scope") != user_scope:
+                continue
+            if entry.get("scholarship_id", "") != target_sch_ref:
                 continue
             cached_orig_q = entry.get("original_query", "")
             if not cached_orig_q:
@@ -2764,9 +2849,11 @@ Opportunity Interests: {opp_interests_str}
             "advice": gemini_response,
             "follow_ups": follow_ups
         }
-        if cache_intent_key:
-            _advisor_response_cache[cache_intent_key] = cache_data
-        _advisor_response_cache[cache_exact_key] = cache_data
+        if user_scope:
+            cache_data["user_scope"] = user_scope
+            if cache_intent_key:
+                _advisor_response_cache[cache_intent_key] = cache_data
+            _advisor_response_cache[cache_exact_key] = cache_data
 
         return {
             "success": True,

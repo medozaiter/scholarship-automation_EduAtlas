@@ -214,11 +214,62 @@ class TestCriticalSecurityFixes(unittest.TestCase):
             bad_sec_resp = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": "scholarpilot-cron-secret-2026"})
             self.assertEqual(bad_sec_resp.status_code, 403, "Old hardcoded secret must return 403")
 
-            # 3. Valid secret configured in environment -> 202 Accepted
+            # 3. Valid secret configured in environment -> 202 Accepted via X-Cron-Secret header
             test_secret = "secret_for_automated_test_123"
             os.environ["CRON_SECRET"] = test_secret
             good_resp = client.post("/api/cron/trigger-scan", headers={"X-Cron-Secret": test_secret})
             self.assertEqual(good_resp.status_code, 202, "Valid CRON_SECRET must return 202 Accepted")
+
+            # 4. Query parameter authentication is strictly rejected with 403 Forbidden
+            res_query_sec = client.post(f"/api/cron/trigger-scan?secret={test_secret}")
+            self.assertEqual(res_query_sec.status_code, 403, "Query parameter ?secret= must be rejected with 403")
+
+            res_query_cron = client.post(f"/api/cron/trigger-scan?cron_secret={test_secret}")
+            self.assertEqual(res_query_cron.status_code, 403, "Query parameter ?cron_secret= must be rejected with 403")
+
+            # GET method with query parameter secret also rejected
+            res_get_query = client.get(f"/api/cron/trigger-scan?secret={test_secret}")
+            self.assertEqual(res_get_query.status_code, 403, "GET ?secret= query parameter must be rejected with 403")
+        finally:
+            if old_cron:
+                os.environ["CRON_SECRET"] = old_cron
+            else:
+                os.environ.pop("CRON_SECRET", None)
+
+    @patch("fastapi.BackgroundTasks.add_task")
+    def test_query_parameter_authentication_strictly_rejected_across_all_automation_endpoints(self, mock_bg):
+        """Verifies all automation and cron endpoints reject credentials passed via query parameters."""
+        test_sec = "strict_test_cron_secret_888"
+        old_cron = os.environ.get("CRON_SECRET")
+        os.environ["CRON_SECRET"] = test_sec
+        try:
+            # 1. /api/automation/trigger-cycle rejects query parameters
+            res_cycle_query = client.post(f"/api/automation/trigger-cycle?secret={test_sec}")
+            self.assertEqual(res_cycle_query.status_code, 403, "trigger-cycle must reject ?secret=")
+
+            res_cycle_cron_query = client.post(f"/api/automation/trigger-cycle?cron_secret={test_sec}")
+            self.assertEqual(res_cycle_cron_query.status_code, 403, "trigger-cycle must reject ?cron_secret=")
+
+            # Valid X-Cron-Secret header succeeds
+            res_cycle_header = client.post("/api/automation/trigger-cycle", headers={"X-Cron-Secret": test_sec})
+            self.assertEqual(res_cycle_header.status_code, 200, "trigger-cycle must accept valid X-Cron-Secret header")
+
+            # 2. /api/email/test rejects query parameters
+            res_email_query = client.post(f"/api/email/test?secret={test_sec}", json={"email": "test@example.com"})
+            self.assertEqual(res_email_query.status_code, 403, "email test must reject ?secret=")
+
+            # 3. /api/news/sync rejects query parameters
+            res_news_query = client.post(f"/api/news/sync?cron_secret={test_sec}")
+            self.assertEqual(res_news_query.status_code, 403, "news sync must reject ?cron_secret=")
+
+            # 4. /api/health/diagnostics rejects query parameter secret and does not leak diagnostics
+            res_diag_query = client.get(f"/api/health/diagnostics?secret={test_sec}")
+            self.assertEqual(res_diag_query.json().get("status"), "ok")
+            self.assertNotIn("database", res_diag_query.json(), "Diagnostics must not be revealed for query param secret")
+
+            # 5. Missing X-Cron-Secret header returns proper authorization error (403)
+            res_missing_header = client.post("/api/automation/trigger-cycle")
+            self.assertEqual(res_missing_header.status_code, 403, "Missing header must return 403 authorization error")
         finally:
             if old_cron:
                 os.environ["CRON_SECRET"] = old_cron

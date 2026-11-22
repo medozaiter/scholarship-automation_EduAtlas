@@ -31,15 +31,15 @@
     ],
     "min_gpa_percentage": 85.0,
     "funding_type": "fully_funded",
-    "status": "مفتوح حالياً للتقديم",
-    "statusClass": "sp-badge-success",
+    "status": "منتهية (Expired)",
+    "statusClass": "sp-badge-danger",
     "deadline": "2026-11-06",
     "deadline_display": "6 نوفمبر 2026",
-    "deadlineDays": "متبقي أسبوع واحد",
+    "deadlineDays": "انتهى موعد التقديم",
     "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين الصحي",
     "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح رسمية من المدرسة، وإثبات التميز القيادي والمجتمعي",
     "link": "https://future.utoronto.ca/pearson/about/#apply",
-    "is_active": true
+    "is_active": false
   },
   {
     "id": "hungaricum",
@@ -163,15 +163,15 @@
     ],
     "min_gpa_percentage": 80.0,
     "funding_type": "fully_funded",
-    "status": "مفتوح حالياً",
-    "statusClass": "sp-badge-warning",
+    "status": "منتهية (Expired)",
+    "statusClass": "sp-badge-danger",
     "deadline": "2026-11-20",
     "deadline_display": "20 نوفمبر 2026",
-    "deadlineDays": "أيام معدودة للإغلاق",
+    "deadlineDays": "انتهى موعد التقديم",
     "coverage": "تمويل كامل 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة ورسوم التأشيرة",
     "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية (2800 ساعة)، 4 مقالات قيادية",
     "link": "https://www.chevening.org/apply/",
-    "is_active": true
+    "is_active": false
   },
   {
     "id": "gks",

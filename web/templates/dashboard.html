@@ -79,8 +79,12 @@
     <script>
         function applySavedTheme() {
             try {
-                const saved = localStorage.getItem('theme');
+                const saved = localStorage.getItem('theme') || localStorage.theme;
                 if (saved === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else if (saved === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
                     document.documentElement.classList.remove('dark');
                 } else {
                     document.documentElement.classList.add('dark');
@@ -97,6 +101,8 @@
                     ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
                     : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
             }
+            const allIcons = document.querySelectorAll('.ea-theme-toggle-icon');
+            allIcons.forEach(i => i.setAttribute('data-lucide', isDark ? 'sun' : 'moon'));
             if (window.lucide && typeof lucide.createIcons === 'function') {
                 try { lucide.createIcons(); } catch(e) {}
             }
@@ -104,13 +110,16 @@
 
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
+            const mode = isDark ? 'dark' : 'light';
             try {
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('theme', mode);
+                localStorage.theme = mode;
             } catch(e) {}
             updateThemeButton();
         }
 
         window.toggleTheme = toggleTheme;
+        window.toggleEduAtlasTheme = toggleTheme;
         window.updateThemeButton = updateThemeButton;
         window.updateThemeIcon = updateThemeButton;
         document.addEventListener('DOMContentLoaded', updateThemeButton);
@@ -1334,23 +1343,10 @@
                 .replace(/'/g, '&#039;');
         }
 
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        // Unified theme sync
+        if (typeof updateThemeButton === 'function') {
             updateThemeButton();
         }
-
-        function updateThemeButton() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const themeIcon = document.getElementById('themeIcon');
-            if (themeIcon) {
-                themeIcon.innerHTML = isDark 
-                    ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>' 
-                    : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
-            }
-            if (window.lucide) lucide.createIcons();
-        }
-        updateThemeButton();
 
         function switchAuthTab(tab) {
             const isLogin = tab === 'login';
@@ -1935,9 +1931,9 @@
                 name: "Lester B. Pearson International Scholarship",
                 university: "University of Toronto",
                 country: "كندا (Canada)",
-                status: "preparing",
+                status: "expired",
                 deadline: "2026-11-06",
-                daysLeft: 5,
+                daysLeft: 0,
                 matchScore: "95%",
                 coverage: "ممولة بالكامل (رسوم + سكن + تأمين)"
             },
@@ -2280,9 +2276,11 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            const token = localStorage.getItem('minha_token');
+            const token = localStorage.getItem('minha_token') || localStorage.getItem('session_token');
             const headers = {};
             if (token) headers['Authorization'] = `Bearer ${token}`;
+            const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+            if (csrfMatch) headers['X-CSRF-Token'] = decodeURIComponent(csrfMatch[1]);
 
             try {
                 const res = await fetch('/api/user/upload-avatar', {
@@ -2351,9 +2349,11 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            const token = localStorage.getItem('minha_token');
+            const token = localStorage.getItem('minha_token') || localStorage.getItem('session_token');
             const headers = {};
             if (token) headers['Authorization'] = `Bearer ${token}`;
+            const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+            if (csrfMatch) headers['X-CSRF-Token'] = decodeURIComponent(csrfMatch[1]);
 
             try {
                 const res = await fetch('/api/user/upload-cover', {
@@ -2592,9 +2592,11 @@
                 }
             };
 
-            const token = localStorage.getItem('minha_token');
+            const token = localStorage.getItem('minha_token') || localStorage.getItem('session_token');
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
+            const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+            if (csrfMatch) headers['X-CSRF-Token'] = decodeURIComponent(csrfMatch[1]);
 
             try {
                 const res = await fetch('/api/user/profile', {

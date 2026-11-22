@@ -27,6 +27,7 @@ jobs:
 
       - name: Run Scholarship Automation & Dispatch to All Subscribers
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}

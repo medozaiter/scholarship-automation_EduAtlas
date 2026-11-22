@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
 from services.subscriber_service import SubscriberService
 from services.scholarship_engine import ScholarshipEngine
@@ -20,7 +20,14 @@ from services.auth_service import AuthService
 from services.automation_service import AutomationService, start_automation_daemon, run_radar_scan_job
 from services.community_service import community_service
 from services.news_service import news_service
-from services.db import init_db_and_migrate, is_db_available, get_notification_history
+from services.db import (
+    init_db_and_migrate,
+    is_db_available,
+    get_notification_history,
+    validate_database_at_startup,
+    is_production_mode,
+    is_explicit_dev_mode,
+)
 from services.email_service import get_email_provider_info, dispatch_email, get_last_dispatch_meta, email_service
 from services.security_utils import (
     validate_email,
@@ -112,12 +119,21 @@ def get_authenticated_user(request: Request) -> Optional[Dict[str, Any]]:
 
 
 def require_cron_auth(request: Request):
-    """Protects webhook and cron automation endpoints with X-Cron-Secret verification."""
+    """
+    Protects webhook and cron automation endpoints strictly via the X-Cron-Secret HTTP header.
+    Query parameter credentials (?secret= or ?cron_secret=) are strictly forbidden
+    to prevent credential exposure in access logs, browser history, referrers, and diagnostic traces.
+    """
+    # Explicitly reject credentials passed via query parameters
+    if "secret" in request.query_params or "cron_secret" in request.query_params:
+        raise HTTPException(
+            status_code=403,
+            detail="غير مصرح: تمرير مفاتيح الأتمتة والجدولة عبر معاملات الاستعلام (query parameters) محظور أمنياً. يجب استخدام ترويسة X-Cron-Secret حصراً."
+        )
+
     cron_header = (
         request.headers.get("X-Cron-Secret")
         or request.headers.get("x-cron-secret")
-        or request.query_params.get("secret")
-        or request.query_params.get("cron_secret")
     )
     if cron_header and verify_cron_secret(cron_header):
         return True
@@ -191,7 +207,7 @@ async def rate_limiting_middleware(request: Request, call_next):
         category = "general"
         if path == "/api/auth/login":
             category = "login"
-        elif path.startswith("/api/auth/"):
+        elif path.startswith("/api/auth/") or path in ["/api/user/preferences", "/api/notifications/preferences"]:
             category = "auth"
         elif path in ["/api/contact", "/api/support", "/api/feedback"]:
             category = "contact"
@@ -309,15 +325,23 @@ EXEMPT_CSRF_PATHS = {
     "/api/auth/forgot-password",
     "/api/auth/reset-password",
     "/api/auth/verify-email",
+    "/api/auth/send-verification",
     "/api/auth/csrf-token",
     "/api/auth/refresh",
     "/api/subscribe",
     "/api/contact",
     "/api/cron/trigger-scan",
+    "/api/advisor/chat",
     "/api/advisor/consult",
     "/api/advisor/chances",
     "/api/advisor/compare",
-    "/api/match/calculate"
+    "/api/advisor/roadmap",
+    "/api/match/calculate",
+    "/api/user/upload-avatar",
+    "/api/user/upload-cover",
+    "/api/user/profile",
+    "/api/user/preferences",
+    "/api/notifications/preferences"
 }
 
 @app.middleware("http")
@@ -345,7 +369,7 @@ async def csrf_protection_middleware(request: Request, call_next):
             return await call_next(request)
 
         # 3. Exempt public onboarding endpoints
-        if path in EXEMPT_CSRF_PATHS:
+        if path in EXEMPT_CSRF_PATHS or path.startswith("/api/advisor/") or path.startswith("/api/user/upload-"):
             return await call_next(request)
 
         # 4. Check if ambient cookies (session_token, minha_token) are present
@@ -501,16 +525,22 @@ async def startup_event():
         env_report = validate_environment_at_startup()
         if env_report.get("issues"):
             for issue in env_report["issues"]:
-                logger.warning(f"Security validation notice: {issue}")
+                if issue.startswith("FATAL"):
+                    logger.critical(f"Configuration validation fatal: {issue}")
+                elif "CRITICAL" in issue:
+                    logger.error(f"Security validation error: {issue}")
+                else:
+                    logger.warning(f"Security validation notice: {issue}")
         else:
             logger.info("All required production environment variables and security controls verified successfully.")
     except Exception as e:
         logger.error(f"Environment validation error: {e}")
-    logger.info("Initializing database migrations and tables...")
-    try:
-        init_db_and_migrate()
-    except Exception as e:
-        logger.error(f"Database initialization warning: {e}")
+        if is_production_mode():
+            raise
+
+    logger.info("Validating Database Configuration & Initializing Database...")
+    # Strict validation: fails startup if DATABASE_URL missing or PostgreSQL connection fails in production mode
+    validate_database_at_startup()
 
     logger.info("Starting Asynchronous Notification Queue Worker...")
     try:
@@ -538,16 +568,28 @@ async def startup_event():
 async def health_check():
     """
     Ultra-fast (<5ms) liveness and readiness probe for Render, Cron-job.org, and uptime monitors.
-    Returns 200 OK with minimal status to prevent infrastructure fingerprinting and internal reconnaissance.
-    Full subsystem details require authenticated admin user or valid X-Cron-Secret header via /api/health/diagnostics.
+    In production mode, PostgreSQL connectivity is mandatory. Returns HTTP 503 if disconnected.
+    In explicit development mode, reflects local JSON fallback.
     """
-    return {
-        "status": "healthy",
+    db_ok = is_db_available()
+    if is_production_mode():
+        db_status = "connected" if db_ok else "disconnected"
+        overall_status = "healthy" if db_ok else "unhealthy"
+    else:
+        db_status = "connected" if db_ok else "dev_local_json"
+        overall_status = "healthy"
+
+    payload = {
+        "status": overall_status,
         "timestamp": datetime.now().isoformat(),
         "version": "2.5.0",
         "service": "EduAtlas",
-        "db": "connected" if is_db_available() else "fallback"
+        "db": db_status
     }
+    if is_production_mode() and not db_ok:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=503, content=payload)
+    return payload
 
 
 @app.get("/api/health/diagnostics", include_in_schema=False)
@@ -558,7 +600,14 @@ async def health_diagnostics(request: Request):
     Full subsystem details require authenticated admin user or valid X-Cron-Secret header.
     """
     user = get_authenticated_user(request)
-    cron_secret = request.headers.get("X-Cron-Secret") or request.query_params.get("secret")
+    cron_secret = (
+        request.headers.get("X-Cron-Secret")
+        or request.headers.get("x-cron-secret")
+    )
+    # Reject secret if passed via query parameters to prevent exposure in logs / URLs
+    if "secret" in request.query_params or "cron_secret" in request.query_params:
+        cron_secret = None
+
     is_admin = bool(user and user.get("role") == "admin")
     is_authorized_cron = bool(cron_secret and verify_cron_secret(cron_secret))
 
@@ -566,7 +615,10 @@ async def health_diagnostics(request: Request):
         return {"status": "ok"}
 
     raw_db = os.getenv("DATABASE_URL", "")
-    db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store"
+    if is_production_mode():
+        db_type = "Neon PostgreSQL (Mandatory)"
+    else:
+        db_type = "Neon PostgreSQL" if "postgres" in raw_db else "SQLite / JSON Store (Development Mode)"
     email_info = get_email_provider_info()
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
 
@@ -592,12 +644,11 @@ async def health_diagnostics(request: Request):
 async def trigger_cron_radar_scan(
     request: Request,
     background_tasks: BackgroundTasks,
-    x_cron_secret: Optional[str] = Header(None, alias="X-Cron-Secret"),
-    secret: Optional[str] = Query(None)
+    x_cron_secret: Optional[str] = Header(None, alias="X-Cron-Secret")
 ):
     """
     Dedicated cron trigger endpoint for Cron-job.org and external schedulers.
-    - Protected by CRON_SECRET token via X-Cron-Secret header or ?secret= query param.
+    - Protected by CRON_SECRET token strictly via X-Cron-Secret HTTP header.
     - Decoupled: Immediately returns 202 Accepted in <20ms and runs scan asynchronously.
     """
     require_cron_auth(request)
@@ -1102,12 +1153,23 @@ class DeleteAccountRequest(BaseModel):
 
 
 class AdvisorChatRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-    query: str = Field(..., min_length=2, max_length=2000)
+    model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
+    query: Optional[str] = Field(None, max_length=2000)
+    message: Optional[str] = Field(None, max_length=2000)
     email: Optional[str] = Field(None, max_length=120)
     scholarship_id: Optional[str] = Field(None, max_length=100)
     history: Optional[List[Dict[str, Any]]] = Field(None, max_length=15)
     profile: Optional[Dict[str, Any]] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_query(cls, values: Any) -> Any:
+        if isinstance(values, dict):
+            q = values.get("query") or values.get("message")
+            if not q or not str(q).strip():
+                raise ValueError("استفسار المستشار مطلوب ولا يمكن تركه فارغاً.")
+            values["query"] = str(q).strip()
+        return values
 
     @field_validator("query")
     @classmethod
@@ -1524,11 +1586,13 @@ def resolve_target_email(request: Request, requested_email: Optional[str] = None
     auth_email = user["email"].strip().lower()
     if requested_email:
         clean = requested_email.strip().lower()
-        if clean and clean != auth_email and user.get("role") != "admin":
-            raise HTTPException(
-                status_code=403,
-                detail="غير مصرح بالوصول إلى إشعارات أو تفضيلات حساب آخر (IDOR Protection)."
-            )
+        if clean and clean != auth_email:
+            if user.get("role") != "admin":
+                raise HTTPException(
+                    status_code=403,
+                    detail="غير مصرح بالوصول إلى بيانات حساب آخر (IDOR Protection)."
+                )
+            return clean
     return auth_email
 
 
@@ -1632,7 +1696,7 @@ async def serve_account_page(request: Request):
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def serve_dashboard(request: Request):
+async def serve_dashboard():
     """Serves the user account portal & admin control panel."""
     if os.path.exists(DASHBOARD_HTML_PATH):
         with open(DASHBOARD_HTML_PATH, "r", encoding="utf-8") as f:
@@ -2583,11 +2647,31 @@ async def get_live_scholarships(
     request: Request,
     type: Optional[str] = Query(None, description="Filter by opportunity type: scholarship, internship, conference, training_program"),
     country: Optional[str] = Query(None),
-    degree: Optional[str] = Query(None)
+    degree: Optional[str] = Query(None),
+    page: Optional[int] = Query(None, ge=1),
+    per_page: Optional[int] = Query(None, ge=1, le=200),
+    include_expired: Optional[bool] = Query(False, description="Include expired opportunities (default: False)")
 ):
     """Returns autonomous live opportunities automatically maintained with application links, requirements & dynamic matching."""
     try:
-        items = automation_service.get_live_scholarships()
+        # Enforce validation preventing expired records from appearing in active search results
+        items = automation_service.get_live_scholarships(active_only=not include_expired)
+        if not include_expired:
+            today = date.today()
+            def _is_valid_active(s):
+                if s.get("is_active", True) is False:
+                    return False
+                dl = s.get("deadline")
+                if dl:
+                    m = re.search(r"(\d{4}-\d{2}-\d{2})", str(dl))
+                    if m:
+                        try:
+                            return datetime.strptime(m.group(1), "%Y-%m-%d").date() >= today
+                        except Exception:
+                            pass
+                return True
+            items = [s for s in items if _is_valid_active(s)]
+
         if type and type.lower() != "all":
             items = [s for s in items if (s.get("opportunity_type") or "scholarship").lower() == type.lower()]
         if country and country.strip():
@@ -2604,9 +2688,26 @@ async def get_live_scholarships(
                 item["match_score"] = m_res["match_score"]
                 item["matchLabel"] = "توافق استثنائي" if m_res["match_score"] >= 85 else ("توافق مرتفع" if m_res["match_score"] >= 70 else "توافق مؤهل")
 
+        total = len(items)
+        if page is not None:
+            limit = per_page or 50
+            start = (page - 1) * limit
+            paginated = items[start:start + limit]
+            return {
+                "success": True,
+                "count": len(paginated),
+                "total": total,
+                "page": page,
+                "per_page": limit,
+                "total_pages": (total + limit - 1) // limit if limit else 1,
+                "source": "Automated Global Live Feed & Ingestion Engine",
+                "scholarships": paginated
+            }
+
         return {
             "success": True,
-            "count": len(items),
+            "count": total,
+            "total": total,
             "source": "Automated Global Live Feed & Ingestion Engine",
             "scholarships": items
         }
@@ -2621,8 +2722,8 @@ async def get_scholarship_by_id(scholarship_id: str):
     """Returns detailed attributes and application portal for a specific scholarship."""
     clean_id = sanitize_text(scholarship_id, max_length=100).lower()
     if clean_id == "live":
-        return await get_live_scholarships()
-    items = automation_service.get_live_scholarships()
+        return await get_live_scholarships(request=None)
+    items = automation_service.get_live_scholarships(active_only=False)
     matched = next((s for s in items if s.get("id", "").lower() == clean_id), None)
     if not matched:
         matched = next((s for s in advisor_service.catalog if s.get("id", "").lower() == clean_id), None)
@@ -2898,19 +2999,23 @@ async def subscribe_interests_api(
 
 
 @app.get("/api/user/preferences")
-async def get_user_preferences_api(email: str):
-    """Returns user notification & matching preferences."""
+async def get_user_preferences_api(request: Request, email: Optional[str] = None):
+    """Returns user notification & matching preferences with IDOR protection."""
     from services.db import get_user_preferences
-    if not email or "@" not in email:
-        raise HTTPException(status_code=400, detail="البريد الإلكتروني غير صالح")
-    prefs = get_user_preferences(email)
+    target_email = resolve_target_email(request, email)
+    if not target_email:
+        raise HTTPException(status_code=401, detail="يتطلب هذا الإجراء تسجيل الدخول.")
+    prefs = get_user_preferences(target_email)
     return {"success": True, "preferences": prefs}
 
 
 @app.post("/api/user/preferences")
-async def update_user_preferences_api(req: UpdatePreferencesRequest):
-    """Updates user notification & matching preferences."""
+async def update_user_preferences_api(request: Request, req: UpdatePreferencesRequest):
+    """Updates user notification & matching preferences with IDOR protection."""
     from services.db import update_user_preferences
+    target_email = resolve_target_email(request, req.email)
+    if not target_email:
+        raise HTTPException(status_code=401, detail="يتطلب هذا الإجراء تسجيل الدخول.")
     payload = {
         "preferred_countries": req.preferred_countries,
         "funding_type": req.funding_type,
@@ -2920,17 +3025,23 @@ async def update_user_preferences_api(req: UpdatePreferencesRequest):
         "degree": req.degree,
         "majors": req.majors
     }
-    ok = update_user_preferences(req.email, payload)
+    ok = update_user_preferences(target_email, payload)
     if not ok:
         raise HTTPException(status_code=400, detail="تعذر حفظ التفضيلات")
     return {"success": True, "message": "تم حفظ تفضيلاتك بنجاح!"}
 
 
 @app.get("/api/notifications/events")
-async def get_notification_events_api(email: Optional[str] = None, limit: int = 50):
-    """Returns notification lifecycle tracking events (created, sent, delivered, opened, clicked)."""
+async def get_notification_events_api(request: Request, email: Optional[str] = None, limit: int = 50):
+    """Returns notification lifecycle tracking events with strict IDOR protection."""
     from services.db import get_notification_events
-    events = get_notification_events(recipient=email, limit=limit)
+    user = get_authenticated_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="يتطلب هذا الإجراء تسجيل الدخول.")
+    target_email = resolve_target_email(request, email)
+    if user.get("role") != "admin":
+        target_email = user["email"].strip().lower()
+    events = get_notification_events(recipient=target_email, limit=limit)
     return {"success": True, "events": events}
 
 
@@ -3325,9 +3436,14 @@ async def save_scholarship(req: SaveScholarshipRequest, request: Request):
 @app.get("/api/stats")
 async def get_stats():
     """Public stats on total active subscribers."""
-    subs = sub_service.get_all(active_only=True)
+    try:
+        subs = sub_service.get_all(active_only=True)
+        count = len(subs)
+    except Exception as e:
+        logger.warning(f"Unable to fetch active subscribers count: {e}")
+        count = 0
     return {
-        "active_subscribers_count": len(subs),
+        "active_subscribers_count": count,
         "status": "online",
         "engine_model": os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     }
@@ -3535,8 +3651,10 @@ async def edit_comment_endpoint(comment_id: str, req: EditCommunityCommentReques
     try:
         updated = community_service.edit_comment(comment_id, user_email=user["email"], new_content=req.content)
         return {"success": True, "message": "تم تعديل التعليق بنجاح.", "comment": updated}
-    except (ValueError, PermissionError) as err:
-        raise HTTPException(status_code=400, detail=str(err))
+    except PermissionError as pe:
+        raise HTTPException(status_code=403, detail=str(pe))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
 
 
 @app.delete("/api/community/comments/{comment_id}")
@@ -3693,10 +3811,15 @@ async def submit_community_story_endpoint(payload: CommunityStorySubmit):
 
 
 @app.post("/api/community/stories/{story_id}/upvote")
-async def upvote_community_story_endpoint(story_id: str, payload: Dict[str, str]):
+async def upvote_community_story_endpoint(story_id: str, request: Request, payload: Optional[Dict[str, str]] = None):
     """Records an upvote indicating this student acceptance experience was helpful."""
-    email = payload.get("email", "").strip() or "anonymous_student@scholarpilot.ai"
-    result = community_service.upvote(story_id, email)
+    user = get_authenticated_user(request)
+    if user and user.get("email"):
+        voter_id = user["email"].strip().lower()
+    else:
+        peer_ip = request.client.host if request.client else "127.0.0.1"
+        voter_id = f"guest_ip_{peer_ip}"
+    result = community_service.upvote(story_id, voter_id)
     return result
 
 

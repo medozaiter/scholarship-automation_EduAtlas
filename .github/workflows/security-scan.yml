@@ -1,0 +1,54 @@
+name: Scheduled Dependency Vulnerability Scan
+
+on:
+  schedule:
+    # Runs every Monday at 04:00 UTC (proactive weekly vulnerability scan)
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit-dependencies:
+    name: Proactive Dependency Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit==2.7.3
+
+      - name: Audit Production Dependencies
+        id: python-audit
+        run: |
+          echo "Scanning production requirements for known CVEs..."
+          pip-audit -r requirements.txt --desc --format markdown > audit-report.md || echo "VULNERABILITIES_FOUND=true" >> $GITHUB_ENV
+
+      - name: Append Audit Report to Job Summary
+        if: always()
+        run: |
+          echo "## Dependency Vulnerability Audit Report" >> $GITHUB_STEP_SUMMARY
+          if [ -f audit-report.md ]; then
+            cat audit-report.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No report generated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Alert Maintainers if Vulnerabilities Detected
+        if: env.VULNERABILITIES_FOUND == 'true'
+        run: |
+          echo "::error ::Vulnerabilities discovered in production dependencies during scheduled audit."
+          exit 1

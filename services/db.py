@@ -14,6 +14,33 @@ from contextlib import contextmanager
 
 logger = logging.getLogger("scholarpilot.db")
 
+
+def is_explicit_dev_mode() -> bool:
+    """
+    Returns True ONLY when explicit development mode is enabled.
+    Explicit development mode requires:
+      - ENVIRONMENT or APP_ENV explicitly set to 'development', 'dev', 'local', 'test', or 'testing', OR
+      - DEV_MODE set to 'true', '1', or 'yes'.
+    In all other cases (including when ENVIRONMENT is 'production', 'prod', or unset),
+    production mode is enforced and PostgreSQL is strictly mandatory.
+    """
+    env = (os.getenv("ENVIRONMENT") or os.getenv("APP_ENV") or "").strip().lower()
+    dev_flag = os.getenv("DEV_MODE", "").strip().lower() in ("true", "1", "yes")
+    return dev_flag or env in ("development", "dev", "local", "test", "testing")
+
+
+def is_production_mode() -> bool:
+    """Returns True if the application is running in production mode."""
+    return not is_explicit_dev_mode()
+
+
+def can_use_local_json_storage() -> bool:
+    """Local JSON storage is strictly restricted to explicit development mode."""
+    return is_explicit_dev_mode()
+
+
+_db_init_error: Optional[str] = None
+
 # Detect database configuration
 raw_db_url = os.getenv("DATABASE_URL")
 if raw_db_url and raw_db_url.startswith("postgres://"):
@@ -788,21 +815,26 @@ try:
                 "created_at": self.created_at.isoformat() if hasattr(self.created_at, "isoformat") else str(self.created_at or "")
             }
 
-    # Connect to PostgreSQL (Neon) or fallback to SQLite
+    # Connect to PostgreSQL (Neon) or fallback to SQLite (only in explicit dev mode)
     active_url = raw_db_url
     if not active_url:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        sqlite_path = os.path.join(DATA_DIR, "scholarpilot.db").replace("\\", "/")
-        active_url = f"sqlite:///{sqlite_path}"
+        if is_explicit_dev_mode():
+            os.makedirs(DATA_DIR, exist_ok=True)
+            sqlite_path = os.path.join(DATA_DIR, "scholarpilot.db").replace("\\", "/")
+            active_url = f"sqlite:///{sqlite_path}"
+            logger.info("[DEV MODE] DATABASE_URL not set; initialized local SQLite engine for development.")
+        else:
+            _db_init_error = "DATABASE_URL environment variable is missing or empty."
+            logger.warning("[PRODUCTION] DATABASE_URL is not set. PostgreSQL engine cannot be initialized.")
 
     connect_args = {}
     engine_kwargs = {
         "pool_pre_ping": True,
         "pool_recycle": 300,
     }
-    if active_url.startswith("sqlite"):
+    if active_url and active_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False}
-    else:
+    elif active_url:
         # Neon Serverless PostgreSQL Connection Tuning:
         # 1. connect_timeout prevents indefinite hangs on cold-start
         # 2. keepalives maintain active TCP session across cloud proxies
@@ -821,29 +853,37 @@ try:
             "pool_timeout": 10
         })
 
-    try:
-        engine = create_engine(
-            active_url,
-            connect_args=connect_args,
-            **engine_kwargs
-        )
-    except Exception as d_err:
-        if "psycopg" in str(d_err).lower() and active_url.startswith("postgresql://") and not active_url.startswith("postgresql+"):
-            alt_url = active_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    if active_url:
+        try:
             engine = create_engine(
-                alt_url,
+                active_url,
                 connect_args=connect_args,
                 **engine_kwargs
             )
-        else:
-            raise d_err
+        except Exception as d_err:
+            if "psycopg" in str(d_err).lower() and active_url.startswith("postgresql://") and not active_url.startswith("postgresql+"):
+                alt_url = active_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+                engine = create_engine(
+                    alt_url,
+                    connect_args=connect_args,
+                    **engine_kwargs
+                )
+            else:
+                raise d_err
 
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    logger.info(f"Database Engine initialized for: {'Neon PostgreSQL' if 'postgres' in active_url else 'SQLite fallback'}")
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        logger.info(f"Database Engine initialized for: {'Neon PostgreSQL' if 'postgres' in active_url else 'SQLite fallback'}")
+    else:
+        engine = None
+        SessionLocal = None
 
 except Exception as e:
     HAS_SQLALCHEMY = False
-    logger.warning(f"SQLAlchemy / Database driver not active: {e}. Falling back to atomic JSON files.")
+    _db_init_error = str(e)
+    if is_explicit_dev_mode():
+        logger.warning(f"[DEV MODE] SQLAlchemy / Database driver not active: {e}. Falling back to atomic JSON files.")
+    else:
+        logger.error(f"[PRODUCTION] PostgreSQL database driver / engine creation failed: {e}. Local JSON fallback is disabled in production.")
 
 
 @contextmanager
@@ -906,13 +946,104 @@ def is_db_available(fast_check: bool = True) -> bool:
         return False
 
 
+def validate_database_at_startup() -> Dict[str, Any]:
+    """
+    Validates PostgreSQL database configuration and connectivity at application startup.
+    In production mode:
+      - DATABASE_URL is strictly mandatory and must be a PostgreSQL connection string.
+      - SQLAlchemy and PostgreSQL database driver must be functional.
+      - Database connection test ('SELECT 1') must succeed.
+      - Database schema tables and migrations must initialize successfully.
+      - Fails startup immediately (raises RuntimeError) if any check fails.
+    In explicit development mode:
+      - Allows fallback to local JSON storage / SQLite if DATABASE_URL is missing or PostgreSQL is unavailable.
+      - Emits clear warnings explaining the dev-mode fallback.
+    """
+    if is_production_mode():
+        url = os.getenv("DATABASE_URL", "").strip()
+        if not url:
+            msg = (
+                "FATAL [CONFIG ERROR]: DATABASE_URL environment variable is missing or empty. "
+                "PostgreSQL is strictly mandatory in production mode. Local JSON storage is disabled. "
+                "Startup aborted."
+            )
+            logger.critical(msg)
+            raise RuntimeError(msg)
+
+        if not (url.startswith("postgresql://") or url.startswith("postgres://") or url.startswith("postgresql+")):
+            msg = (
+                f"FATAL [CONFIG ERROR]: Invalid DATABASE_URL in production mode. "
+                "Must be a PostgreSQL connection string starting with 'postgresql://' or 'postgres://'. "
+                "Local JSON storage and SQLite are prohibited in production. Startup aborted."
+            )
+            logger.critical(msg)
+            raise RuntimeError(msg)
+
+        if not HAS_SQLALCHEMY or engine is None:
+            msg = (
+                f"FATAL [DRIVER ERROR]: SQLAlchemy or PostgreSQL database driver failed to initialize in production: "
+                f"{_db_init_error or 'Unknown driver initialization failure'}. Startup aborted."
+            )
+            logger.critical(msg)
+            raise RuntimeError(msg)
+
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+        except Exception as ping_err:
+            msg = (
+                f"FATAL [CONNECTION ERROR]: Failed to connect to PostgreSQL database in production mode: {ping_err}. "
+                "Ensure DATABASE_URL is accessible and PostgreSQL server is accepting connections. Startup aborted."
+            )
+            logger.critical(msg)
+            raise RuntimeError(msg)
+
+        success = init_db_and_migrate()
+        if not success:
+            msg = (
+                "FATAL [SCHEMA ERROR]: Failed to initialize or migrate PostgreSQL database schema in production. "
+                "Startup aborted."
+            )
+            logger.critical(msg)
+            raise RuntimeError(msg)
+
+        logger.info("✅ [PRODUCTION] PostgreSQL database verified, connected, and schema synchronized successfully.")
+        return {
+            "mode": "production",
+            "status": "connected",
+            "driver": "PostgreSQL",
+            "url_configured": True
+        }
+    else:
+        url = os.getenv("DATABASE_URL", "").strip()
+        if url and is_db_available(fast_check=False):
+            logger.info("[DEV MODE] PostgreSQL database connected successfully.")
+            init_db_and_migrate()
+            return {"mode": "development", "status": "connected", "driver": "PostgreSQL", "url_configured": True}
+        elif url:
+            logger.warning(
+                "[DEV MODE] PostgreSQL database configured but unreachable. "
+                "Falling back to local JSON storage for explicit development mode."
+            )
+            return {"mode": "development", "status": "fallback_json", "driver": "JSON Store", "url_configured": True}
+        else:
+            logger.warning(
+                "[DEV MODE] DATABASE_URL is not set. "
+                "Running with local JSON file storage (explicit development mode)."
+            )
+            return {"mode": "development", "status": "local_json", "driver": "JSON Store", "url_configured": False}
+
+
 def init_db_and_migrate():
     """
     Creates all database tables on PostgreSQL/Neon and auto-migrates initial
     records from JSON files if database tables are currently empty.
     """
     if not HAS_SQLALCHEMY or engine is None or Base is None:
-        logger.info("SQLAlchemy not available; using local JSON file store.")
+        if is_production_mode():
+            logger.critical("[PRODUCTION] SQLAlchemy / engine is unavailable for database migrations.")
+            return False
+        logger.info("[DEV MODE] SQLAlchemy not available; using local JSON file store.")
         return False
 
     try:
@@ -1181,7 +1312,7 @@ def is_notification_sent(recipient: str, notification_type: str, target_id: str)
             logger.debug(f"DB check notification history error: {e}")
 
     # Fallback to local JSON
-    if os.path.exists(NOTIFICATION_HISTORY_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
@@ -1241,7 +1372,7 @@ def record_notification(
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         logs = []
-        if os.path.exists(NOTIFICATION_HISTORY_JSON):
+        if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
             try:
                 with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                     logs = json.load(f)
@@ -1270,7 +1401,7 @@ def get_notification_history(limit: int = 50) -> List[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB load notification history error: {e}")
 
-    if os.path.exists(NOTIFICATION_HISTORY_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
@@ -1328,7 +1459,7 @@ def create_in_app_notification(
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         items = []
-        if os.path.exists(IN_APP_NOTIFICATIONS_JSON):
+        if can_use_local_json_storage() and os.path.exists(IN_APP_NOTIFICATIONS_JSON):
             try:
                 with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                     items = json.load(f)
@@ -1367,7 +1498,7 @@ def get_in_app_notifications(
         except Exception as e:
             logger.debug(f"DB load in-app notifications error: {e}")
 
-    if os.path.exists(IN_APP_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(IN_APP_NOTIFICATIONS_JSON):
         try:
             with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -1405,7 +1536,7 @@ def mark_notification_as_read(recipient: str, notification_id: Union[int, str]) 
         except Exception as e:
             logger.error(f"DB mark notification read error: {e}")
 
-    if os.path.exists(IN_APP_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(IN_APP_NOTIFICATIONS_JSON):
         try:
             with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -1445,7 +1576,7 @@ def mark_all_notifications_as_read(recipient: str) -> int:
         except Exception as e:
             logger.error(f"DB mark all notifications read error: {e}")
 
-    if os.path.exists(IN_APP_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(IN_APP_NOTIFICATIONS_JSON):
         try:
             with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -1480,7 +1611,7 @@ def get_unread_notification_count(recipient: str) -> int:
         except Exception as e:
             logger.debug(f"DB count unread notifications error: {e}")
 
-    if os.path.exists(IN_APP_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(IN_APP_NOTIFICATIONS_JSON):
         try:
             with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -1535,7 +1666,7 @@ def record_notification_event(
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         items = []
-        if os.path.exists(NOTIFICATION_EVENTS_JSON):
+        if can_use_local_json_storage() and os.path.exists(NOTIFICATION_EVENTS_JSON):
             try:
                 with open(NOTIFICATION_EVENTS_JSON, "r", encoding="utf-8") as f:
                     items = json.load(f)
@@ -1570,7 +1701,7 @@ def get_notification_events(recipient: Optional[str] = None, limit: int = 100) -
         except Exception as e:
             logger.debug(f"DB load notification events error: {e}")
 
-    if os.path.exists(NOTIFICATION_EVENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_EVENTS_JSON):
         try:
             with open(NOTIFICATION_EVENTS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -1619,7 +1750,7 @@ def get_user_preferences(email: str) -> Dict[str, Any]:
 
     # Fallback to subscribers.json / users.json
     for path in [USERS_JSON, SUBSCRIBERS_JSON]:
-        if os.path.exists(path):
+        if can_use_local_json_storage() and os.path.exists(path):
             try:
                 with open(path, "r", encoding="utf-8") as f:
                     records = json.load(f)
@@ -1682,7 +1813,7 @@ def update_user_preferences(email: str, preferences: Dict[str, Any]) -> bool:
 
     # Mirror update to JSON files
     for path in [USERS_JSON, SUBSCRIBERS_JSON]:
-        if os.path.exists(path):
+        if can_use_local_json_storage() and os.path.exists(path):
             try:
                 with open(path, "r", encoding="utf-8") as f:
                     records = json.load(f)
@@ -1758,7 +1889,7 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB get_user_by_email error: {e}")
 
-    if os.path.exists(USERS_JSON):
+    if can_use_local_json_storage() and os.path.exists(USERS_JSON):
         try:
             with open(USERS_JSON, "r", encoding="utf-8") as f:
                 users = json.load(f)
@@ -1792,7 +1923,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB get_user_by_username error: {e}")
 
-    if os.path.exists(USERS_JSON):
+    if can_use_local_json_storage() and os.path.exists(USERS_JSON):
         try:
             with open(USERS_JSON, "r", encoding="utf-8") as f:
                 users = json.load(f)
@@ -1886,7 +2017,7 @@ def save_or_update_user(user_data: Dict[str, Any]) -> bool:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         users = []
-        if os.path.exists(USERS_JSON):
+        if can_use_local_json_storage() and os.path.exists(USERS_JSON):
             try:
                 with open(USERS_JSON, "r", encoding="utf-8") as f:
                     users = json.load(f)
@@ -1927,7 +2058,7 @@ def delete_user_by_email(email: str) -> bool:
 
     # 2. Delete from JSON files
     for path in [USERS_JSON, SUBSCRIBERS_JSON]:
-        if os.path.exists(path):
+        if can_use_local_json_storage() and os.path.exists(path):
             try:
                 with open(path, "r", encoding="utf-8") as f:
                     items = json.load(f)
@@ -2000,7 +2131,7 @@ def save_community_story(story_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         stories = []
-        if os.path.exists(COMMUNITY_STORIES_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_STORIES_JSON):
             try:
                 with open(COMMUNITY_STORIES_JSON, "r", encoding="utf-8") as f:
                     stories = json.load(f)
@@ -2045,7 +2176,7 @@ def get_community_stories(scholarship_id: Optional[str] = None, degree: Optional
             logger.debug(f"DB load community stories error: {e}")
 
     # Fallback to JSON
-    if os.path.exists(COMMUNITY_STORIES_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_STORIES_JSON):
         try:
             with open(COMMUNITY_STORIES_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -2074,7 +2205,7 @@ def get_community_story_by_id(story_id: str) -> Optional[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB load story error: {e}")
 
-    if os.path.exists(COMMUNITY_STORIES_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_STORIES_JSON):
         try:
             with open(COMMUNITY_STORIES_JSON, "r", encoding="utf-8") as f:
                 stories = json.load(f)
@@ -2150,7 +2281,7 @@ def is_scholarship_published_to_telegram(scholarship_id: str) -> bool:
             logger.debug(f"DB check telegram published error: {e}")
 
     # 2. Check Notification History JSON Store
-    if os.path.exists(NOTIFICATION_HISTORY_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
@@ -2160,7 +2291,7 @@ def is_scholarship_published_to_telegram(scholarship_id: str) -> bool:
             pass
 
     # 3. Check live_scholarships.json file
-    if os.path.exists(SCHOLARSHIPS_JSON):
+    if can_use_local_json_storage() and os.path.exists(SCHOLARSHIPS_JSON):
         try:
             with open(SCHOLARSHIPS_JSON, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -2197,7 +2328,7 @@ def save_scholarship_telegram_post(scholarship_id: str, telegram_message_id: Any
             logger.warning(f"Error persisting telegram_message_id to LiveScholarshipDB: {e}")
 
     # 2. Update live_scholarships.json store
-    if os.path.exists(SCHOLARSHIPS_JSON):
+    if can_use_local_json_storage() and os.path.exists(SCHOLARSHIPS_JSON):
         try:
             with open(SCHOLARSHIPS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -2263,7 +2394,7 @@ def get_scholarship_telegram_post_id(scholarship_id: str) -> Optional[str]:
         except Exception:
             pass
 
-    if os.path.exists(SCHOLARSHIPS_JSON):
+    if can_use_local_json_storage() and os.path.exists(SCHOLARSHIPS_JSON):
         try:
             with open(SCHOLARSHIPS_JSON, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -2273,7 +2404,7 @@ def get_scholarship_telegram_post_id(scholarship_id: str) -> Optional[str]:
         except Exception:
             pass
 
-    if os.path.exists(NOTIFICATION_HISTORY_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
@@ -2390,7 +2521,7 @@ def save_community_post(post_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         posts = []
-        if os.path.exists(COMMUNITY_POSTS_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_POSTS_JSON):
             try:
                 with open(COMMUNITY_POSTS_JSON, "r", encoding="utf-8") as f:
                     posts = json.load(f)
@@ -2454,7 +2585,7 @@ def get_community_posts(filters: Optional[Dict[str, Any]] = None, limit: int = 1
             logger.debug(f"DB load community posts error: {e}")
 
     # JSON Fallback
-    if os.path.exists(COMMUNITY_POSTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_POSTS_JSON):
         try:
             with open(COMMUNITY_POSTS_JSON, "r", encoding="utf-8") as f:
                 posts = json.load(f)
@@ -2499,7 +2630,7 @@ def get_community_post_by_id(post_id: str) -> Optional[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB load post by ID error: {e}")
 
-    if os.path.exists(COMMUNITY_POSTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_POSTS_JSON):
         try:
             with open(COMMUNITY_POSTS_JSON, "r", encoding="utf-8") as f:
                 posts = json.load(f)
@@ -2525,7 +2656,7 @@ def delete_community_post(post_id: str) -> bool:
         except Exception as e:
             logger.error(f"DB delete post error: {e}")
 
-    if os.path.exists(COMMUNITY_POSTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_POSTS_JSON):
         try:
             with open(COMMUNITY_POSTS_JSON, "r", encoding="utf-8") as f:
                 posts = json.load(f)
@@ -2541,7 +2672,7 @@ def delete_community_post(post_id: str) -> bool:
             logger.error(f"JSON delete post error: {je}")
 
     # Remove comments
-    if os.path.exists(COMMUNITY_COMMENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
         try:
             with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
@@ -2613,7 +2744,7 @@ def save_community_comment(comment_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         comments = []
-        if os.path.exists(COMMUNITY_COMMENTS_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
             try:
                 with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                     comments = json.load(f)
@@ -2661,7 +2792,7 @@ def get_community_comments(post_id: str) -> List[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"DB load comments error: {e}")
 
-    if os.path.exists(COMMUNITY_COMMENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
         try:
             with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
@@ -2687,7 +2818,7 @@ def get_community_comment_by_id(comment_id: str) -> Optional[Dict[str, Any]]:
         except Exception:
             pass
 
-    if os.path.exists(COMMUNITY_COMMENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
         try:
             with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
@@ -2716,7 +2847,7 @@ def delete_community_comment(comment_id: str) -> bool:
         except Exception as e:
             logger.error(f"DB delete comment error: {e}")
 
-    if os.path.exists(COMMUNITY_COMMENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
         try:
             with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
@@ -2778,7 +2909,7 @@ def toggle_follow_user(follower_email: str, following_email: str, following_user
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         follows = []
-        if os.path.exists(COMMUNITY_FOLLOWS_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_FOLLOWS_JSON):
             try:
                 with open(COMMUNITY_FOLLOWS_JSON, "r", encoding="utf-8") as f:
                     follows = json.load(f)
@@ -2833,7 +2964,7 @@ def get_follow_status(follower_email: str, following_email: str) -> bool:
         except Exception:
             pass
 
-    if os.path.exists(COMMUNITY_FOLLOWS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_FOLLOWS_JSON):
         try:
             with open(COMMUNITY_FOLLOWS_JSON, "r", encoding="utf-8") as f:
                 follows = json.load(f)
@@ -2863,7 +2994,7 @@ def get_user_follow_counts(email_or_username: str) -> Dict[str, int]:
         except Exception:
             pass
 
-    if os.path.exists(COMMUNITY_FOLLOWS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_FOLLOWS_JSON):
         try:
             with open(COMMUNITY_FOLLOWS_JSON, "r", encoding="utf-8") as f:
                 follows = json.load(f)
@@ -2905,7 +3036,7 @@ def save_community_report(report_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         reports = []
-        if os.path.exists(COMMUNITY_REPORTS_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_REPORTS_JSON):
             try:
                 with open(COMMUNITY_REPORTS_JSON, "r", encoding="utf-8") as f:
                     reports = json.load(f)
@@ -2954,7 +3085,7 @@ def save_community_notification(notif_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         notifs = []
-        if os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
+        if can_use_local_json_storage() and os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
             try:
                 with open(COMMUNITY_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                     notifs = json.load(f)
@@ -2987,7 +3118,7 @@ def get_community_notifications(user_email: str, limit: int = 30) -> List[Dict[s
         except Exception as e:
             logger.debug(f"DB load notifications error: {e}")
 
-    if os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
         try:
             with open(COMMUNITY_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 notifs = json.load(f)
@@ -3014,7 +3145,7 @@ def mark_community_notifications_read(user_email: str) -> bool:
         except Exception as e:
             logger.error(f"DB mark notifications read error: {e}")
 
-    if os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(COMMUNITY_NOTIFICATIONS_JSON):
         try:
             with open(COMMUNITY_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 notifs = json.load(f)
@@ -3064,7 +3195,7 @@ def enforce_news_deadlines() -> int:
             logger.debug(f"DB enforce deadlines error: {e}")
 
     # 2. Update JSON fallback
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3188,7 +3319,7 @@ def get_news_articles(
             logger.debug(f"DB load news articles error: {e}")
 
     # 2. Query from JSON file
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3253,7 +3384,7 @@ def get_news_article_by_id(article_id: str, increment_views: bool = False) -> Op
         except Exception as e:
             logger.debug(f"DB get news article error: {e}")
 
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3343,7 +3474,7 @@ def save_news_article(article_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         articles = []
-        if os.path.exists(NEWS_ARTICLES_JSON):
+        if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
             try:
                 with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                     articles = json.load(f)
@@ -3455,7 +3586,7 @@ def save_news_comment(comment_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         comments = []
-        if os.path.exists(NEWS_COMMENTS_JSON):
+        if can_use_local_json_storage() and os.path.exists(NEWS_COMMENTS_JSON):
             try:
                 with open(NEWS_COMMENTS_JSON, "r", encoding="utf-8") as f:
                     comments = json.load(f)
@@ -3513,7 +3644,7 @@ def like_news_comment(comment_id: str, user_email: str) -> Dict[str, Any]:
         except Exception as e:
             logger.error(f"DB like comment error: {e}")
 
-    if os.path.exists(NEWS_COMMENTS_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_COMMENTS_JSON):
         try:
             with open(NEWS_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
@@ -3562,7 +3693,7 @@ def toggle_save_news_article(article_id: str, user_email: str) -> Dict[str, Any]
         except Exception as e:
             logger.error(f"DB toggle save news article error: {e}")
 
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3602,7 +3733,7 @@ def increment_news_shares(article_id: str) -> int:
         except Exception as e:
             logger.error(f"DB increment shares error: {e}")
 
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3643,7 +3774,7 @@ def is_news_published_to_telegram(article_id: str) -> bool:
         except Exception as e:
             logger.debug(f"DB check telegram news error: {e}")
 
-    if os.path.exists(NOTIFICATION_HISTORY_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
@@ -3652,7 +3783,7 @@ def is_news_published_to_telegram(article_id: str) -> bool:
         except Exception:
             pass
 
-    if os.path.exists(NEWS_ARTICLES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
@@ -3694,7 +3825,7 @@ def save_news_telegram_post(article_id: str, telegram_message_id: Any, channel_i
 
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
-        if os.path.exists(NEWS_ARTICLES_JSON):
+        if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
             with open(NEWS_ARTICLES_JSON, "r", encoding="utf-8") as f:
                 articles = json.load(f)
             for a in articles:
@@ -3708,7 +3839,7 @@ def save_news_telegram_post(article_id: str, telegram_message_id: Any, channel_i
 
         # Log into notification history
         logs = []
-        if os.path.exists(NOTIFICATION_HISTORY_JSON):
+        if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
             try:
                 with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                     logs = json.load(f)
@@ -3753,36 +3884,122 @@ def get_news_category_counts() -> Dict[str, int]:
     return res
 
 
-def get_all_scholarships():
-    import os, json
-    # 1. Query from SQL DB if available
+def enforce_scholarship_deadlines() -> int:
+    """
+    Audits all scholarship records for deadline validity against today's date.
+    Marks expired scholarship opportunities with is_active = False, status = 'منتهية (Expired)',
+    and statusClass = 'sp-badge-danger'.
+    Ensures expired items are never presented as active/verified scholarships.
+    """
+    today_str = datetime.now().date().isoformat()
+    updated_count = 0
+
+    # 1. Update in SQL DB if available
     if is_db_available() and LiveScholarshipDB is not None:
         try:
             with get_db_session() as db:
                 if db is not None:
                     rows = db.query(LiveScholarshipDB).all()
+                    for r in rows:
+                        if r.deadline:
+                            clean_dl = str(r.deadline).strip()
+                            if len(clean_dl) >= 10:
+                                dl_date = clean_dl[:10]
+                                if dl_date < today_str and r.is_active is not False:
+                                    r.is_active = False
+                                    r.status = "منتهية (Expired)"
+                                    r.status_class = "sp-badge-danger"
+                                    updated_count += 1
+        except Exception as e:
+            logger.debug(f"DB enforce scholarship deadlines error: {e}")
+
+    # 2. Update JSON storage
+    if os.path.exists(SCHOLARSHIPS_JSON):
+        try:
+            with open(SCHOLARSHIPS_JSON, "r", encoding="utf-8") as f:
+                items = json.load(f)
+            changed = False
+            for s in items:
+                dl = s.get("deadline")
+                if dl:
+                    clean_dl = str(dl).strip()
+                    if len(clean_dl) >= 10:
+                        dl_date = clean_dl[:10]
+                        if dl_date < today_str and s.get("is_active") is not False:
+                            s["is_active"] = False
+                            s["status"] = "منتهية (Expired)"
+                            s["statusClass"] = "sp-badge-danger"
+                            s["deadlineDays"] = "انتهى موعد التقديم"
+                            changed = True
+                            updated_count += 1
+            if changed:
+                temp_file = SCHOLARSHIPS_JSON + ".tmp"
+                with open(temp_file, "w", encoding="utf-8") as f:
+                    json.dump(items, f, ensure_ascii=False, indent=2)
+                os.replace(temp_file, SCHOLARSHIPS_JSON)
+        except Exception as je:
+            logger.debug(f"JSON enforce scholarship deadlines error: {je}")
+
+    return updated_count
+
+
+def get_all_scholarships(only_active: bool = False):
+    import os, json, re
+    from datetime import datetime, date
+    enforce_scholarship_deadlines()
+    items = []
+    # 1. Query from SQL DB if available
+    if is_db_available() and LiveScholarshipDB is not None:
+        try:
+            with get_db_session() as db:
+                if db is not None:
+                    query = db.query(LiveScholarshipDB)
+                    if only_active:
+                        query = query.filter(LiveScholarshipDB.is_active == True)
+                    rows = query.all()
                     if rows:
-                        return [r.to_dict() for r in rows]
+                        items = [r.to_dict() for r in rows]
         except Exception:
             pass
 
     # 2. Query from JSON files
-    for p in [SCHOLARSHIPS_JSON, os.path.join(DATA_DIR, "live_scholarships.json")]:
-        if p and os.path.exists(p):
-            try:
-                with open(p, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    if data:
-                        return data
-            except Exception:
-                pass
+    if not items:
+        for p in [SCHOLARSHIPS_JSON, os.path.join(DATA_DIR, "live_scholarships.json")]:
+            if p and os.path.exists(p):
+                try:
+                    with open(p, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        if data:
+                            items = data
+                            break
+                except Exception:
+                    pass
 
     # 3. Fallback to verified flagship roster
-    try:
-        from services.automation_service import DEFAULT_LIVE_SCHOLARSHIPS
-        return DEFAULT_LIVE_SCHOLARSHIPS
-    except Exception:
-        return []
+    if not items:
+        try:
+            from services.automation_service import DEFAULT_LIVE_SCHOLARSHIPS
+            items = list(DEFAULT_LIVE_SCHOLARSHIPS)
+        except Exception:
+            items = []
+
+    if only_active:
+        today = date.today()
+        def _is_active(s):
+            if s.get("is_active", True) is False:
+                return False
+            dl = s.get("deadline")
+            if dl:
+                m = re.search(r"(\d{4}-\d{2}-\d{2})", str(dl))
+                if m:
+                    try:
+                        return datetime.strptime(m.group(1), "%Y-%m-%d").date() >= today
+                    except Exception:
+                        pass
+            return True
+        items = [s for s in items if _is_active(s)]
+
+    return items
 
 
 # =====================================================================
@@ -3808,7 +4025,7 @@ def get_user_notification_preferences(email: str) -> Dict[str, Any]:
     clean_email = (email or "").strip().lower()
     prefs = dict(DEFAULT_NOTIFICATION_PREFERENCES)
 
-    if os.path.exists(NOTIFICATION_PREFERENCES_JSON):
+    if can_use_local_json_storage() and os.path.exists(NOTIFICATION_PREFERENCES_JSON):
         try:
             with open(NOTIFICATION_PREFERENCES_JSON, "r", encoding="utf-8") as f:
                 all_prefs = json.load(f)
@@ -3829,7 +4046,7 @@ def update_user_notification_preferences(email: str, new_prefs: Dict[str, Any]) 
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         all_prefs = {}
-        if os.path.exists(NOTIFICATION_PREFERENCES_JSON):
+        if can_use_local_json_storage() and os.path.exists(NOTIFICATION_PREFERENCES_JSON):
             try:
                 with open(NOTIFICATION_PREFERENCES_JSON, "r", encoding="utf-8") as f:
                     all_prefs = json.load(f)
@@ -3863,7 +4080,7 @@ def create_unified_notification(notif_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         items = []
-        if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+        if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
             try:
                 with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                     items = json.load(f)
@@ -3974,7 +4191,7 @@ def get_unified_notifications(
             logger.debug(f"DB load unified notifications error: {e}")
 
     # Fallback to JSON file
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4028,7 +4245,7 @@ def mark_unified_notification_read(notification_id: str, recipient_email: str) -
         except Exception as e:
             logger.debug(f"DB mark notification read error: {e}")
 
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4072,7 +4289,7 @@ def mark_all_unified_notifications_read(recipient_email: str, category: Optional
         except Exception as e:
             logger.debug(f"DB mark all read error: {e}")
 
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4114,7 +4331,7 @@ def archive_unified_notification(notification_id: str, recipient_email: str) -> 
         except Exception as e:
             logger.debug(f"DB archive notification error: {e}")
 
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4155,7 +4372,7 @@ def delete_unified_notification(notification_id: str, recipient_email: str) -> b
         except Exception as e:
             logger.debug(f"DB delete notification error: {e}")
 
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4204,7 +4421,7 @@ def get_unified_unread_counts(recipient_email: str) -> Dict[str, int]:
         except Exception as e:
             logger.debug(f"DB unread counts error: {e}")
 
-    if os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(UNIFIED_NOTIFICATIONS_JSON):
         try:
             with open(UNIFIED_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4222,7 +4439,7 @@ def get_unified_unread_counts(recipient_email: str) -> Dict[str, int]:
 
 def get_all_users():
     import os, json
-    if os.path.exists(USERS_JSON):
+    if can_use_local_json_storage() and os.path.exists(USERS_JSON):
         try:
             with open(USERS_JSON, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -4277,7 +4494,7 @@ def record_sent_notification(
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         items = []
-        if os.path.exists(SENT_NOTIFICATIONS_JSON):
+        if can_use_local_json_storage() and os.path.exists(SENT_NOTIFICATIONS_JSON):
             with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
         for item in items:
@@ -4316,7 +4533,7 @@ def is_scholarship_already_sent(
         except Exception as e:
             logger.debug(f"SQL check in is_scholarship_already_sent error: {e}")
 
-    if os.path.exists(SENT_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(SENT_NOTIFICATIONS_JSON):
         try:
             with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
@@ -4344,7 +4561,7 @@ def get_sent_notifications_for_user(user_id: str) -> List[Dict[str, Any]]:
         except Exception as e:
             logger.debug(f"SQL lookup in get_sent_notifications_for_user error: {e}")
 
-    if os.path.exists(SENT_NOTIFICATIONS_JSON):
+    if can_use_local_json_storage() and os.path.exists(SENT_NOTIFICATIONS_JSON):
         try:
             with open(SENT_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)

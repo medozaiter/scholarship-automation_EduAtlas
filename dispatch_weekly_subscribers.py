@@ -17,6 +17,8 @@ logger = logging.getLogger("scholarpilot.dispatcher")
 
 async def main():
     logger.info("Initializing ScholarPilotAI Weekly Dispatcher...")
+    from services.db import validate_database_at_startup
+    validate_database_at_startup()
     service = AutomationService()
     
     # 1. Run live scholarship discovery to refresh catalogue

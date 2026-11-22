@@ -776,9 +776,15 @@
             console.log("[EduAtlas Advisor] POST /api/advisor/chat payload:", payload);
 
             try {
+                const chatHeaders = { 'Content-Type': 'application/json' };
+                const sessionTok = localStorage.getItem('minha_token') || localStorage.getItem('session_token');
+                if (sessionTok) chatHeaders['Authorization'] = `Bearer ${sessionTok}`;
+                const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]+)/);
+                if (csrfMatch) chatHeaders['X-CSRF-Token'] = decodeURIComponent(csrfMatch[1]);
+
                 const res = await fetch('/api/advisor/chat', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: chatHeaders,
                     body: JSON.stringify(payload)
                 });
 
