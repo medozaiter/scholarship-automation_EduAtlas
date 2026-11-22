@@ -528,7 +528,7 @@
         },
 
         /**
-         * Validates password strength (8+ chars, letters + numbers).
+         * Validates password strength (8+ chars, uppercase, lowercase, numbers, special characters).
          */
         validatePassword: function (passwordStr) {
             if (!passwordStr) {
@@ -540,11 +540,14 @@
             if (passwordStr.length > 128) {
                 return { valid: false, message: "كلمة المرور طويلة جداً (الحد الأقصى 128 حرف)." };
             }
-            if (!/[a-zA-Z]/.test(passwordStr)) {
-                return { valid: false, message: "كلمة المرور يجب أن تحتوي على حرف واحد على الأقل." };
+            if (!/[a-z]/.test(passwordStr) || !/[A-Z]/.test(passwordStr)) {
+                return { valid: false, message: "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير على الأقل." };
             }
             if (!/[0-9]/.test(passwordStr)) {
                 return { valid: false, message: "كلمة المرور يجب أن تحتوي على رقم واحد على الأقل." };
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>\-_=+[\];'/`~]/.test(passwordStr)) {
+                return { valid: false, message: "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل." };
             }
             return { valid: true, value: passwordStr };
         },

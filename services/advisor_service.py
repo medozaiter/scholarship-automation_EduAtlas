@@ -1689,9 +1689,9 @@ Format your response in structured Markdown with these exact sections:
         sch = scholarship or {}
 
         today_str = datetime.now().strftime("%B %d, %Y")
-        full_name = prof.get("full_name") or prof.get("name") or "Mustafa AbuZaiter"
+        full_name = prof.get("full_name") or prof.get("name") or "Student Applicant"
         email = prof.get("email") or "applicant@scholarpilot.ai"
-        phone = prof.get("phone") or "+970-59-0000000"
+        phone = prof.get("phone") or "+000-00-0000000"
         country = prof.get("country") or "Palestine"
         major = (prof.get("majors") or ["Software Engineering"])[0] if isinstance(prof.get("majors"), list) else prof.get("major", "Software Engineering")
         degree = prof.get("degree") or prof.get("degree_level") or "Bachelor's Degree"

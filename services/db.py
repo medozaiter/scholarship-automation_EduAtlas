@@ -58,11 +58,13 @@ NewsArticleDB = None
 NewsCommentDB = None
 UnifiedNotificationDB = None
 SentNotificationDB = None
+RevokedTokenDB = None
 
 try:
     from sqlalchemy import (
-        create_engine, Column, Integer, String, Text, Boolean, JSON, inspect, text, Index
+        create_engine, Column, Integer, String, Text, Boolean, JSON, inspect, text, Index, Float, DateTime
     )
+    from sqlalchemy.sql import func
     from sqlalchemy.orm import declarative_base, sessionmaker
 
     HAS_SQLALCHEMY = True
@@ -110,13 +112,8 @@ try:
         social_links = Column(JSON, default=dict)
 
         # Decoupled Global Identity & Multi-Tier Preferences
-        nationality = Column(String(100), default="Global")
-        residence_country = Column(String(100), default="Global")
-        target_study_countries = Column(JSON, default=list)
         academic_level = Column(String(100), default="undergraduate_student")
         degree_level = Column(String(100), default="bachelors")
-        opportunity_interests = Column(JSON, default=lambda: ["scholarship", "internship", "conference", "training_program"])
-        funding_preference = Column(String(50), default="any")
 
         # Saved scholarships & Matching Preferences
         saved_scholarships = Column(JSON, default=list)
@@ -133,8 +130,8 @@ try:
         reset_token_expires = Column(String(50), nullable=True)
         privacy_settings = Column(JSON, default=dict)
 
-        created_at = Column(String(50), default=lambda: datetime.now().isoformat())
-        updated_at = Column(String(50), default=lambda: datetime.now().isoformat())
+        created_at = Column(DateTime(timezone=True), server_default=func.now())
+        updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
         def to_dict(self) -> Dict[str, Any]:
             uname = self.username
@@ -198,8 +195,8 @@ try:
                     "show_gpa": True,
                     "show_contact": True
                 },
-                "created_at": self.created_at,
-                "updated_at": getattr(self, "updated_at", None) or self.created_at
+                "created_at": self.created_at.isoformat() if hasattr(self.created_at, "isoformat") else str(self.created_at or ""),
+                "updated_at": (self.updated_at.isoformat() if hasattr(self.updated_at, "isoformat") else getattr(self, "updated_at", None)) or (self.created_at.isoformat() if hasattr(self.created_at, "isoformat") else str(self.created_at or ""))
             }
 
     class SubscriberDB(Base):
@@ -222,7 +219,7 @@ try:
         email_notifications = Column(Boolean, default=True)
         telegram_notifications = Column(Boolean, default=False)
         telegram_chat_id = Column(String(100), nullable=True)
-        created_at = Column(String(50), default=lambda: datetime.now().isoformat())
+        created_at = Column(DateTime(timezone=True), server_default=func.now())
         last_sent_at = Column(String(50), nullable=True)
         status = Column(String(50), default="active")
 
@@ -248,7 +245,7 @@ try:
                 "email_notifications": self.email_notifications if self.email_notifications is not None else True,
                 "telegram_notifications": self.telegram_notifications if self.telegram_notifications is not None else False,
                 "telegram_chat_id": self.telegram_chat_id,
-                "created_at": self.created_at,
+                "created_at": self.created_at.isoformat() if hasattr(self.created_at, "isoformat") else str(self.created_at or ""),
                 "last_sent_at": self.last_sent_at,
                 "status": self.status
             }
@@ -775,6 +772,22 @@ try:
                 "scholarship_name": self.scholarship_name or ""
             }
 
+    class RevokedTokenDB(Base):
+        __tablename__ = "revoked_tokens"
+
+        id = Column(Integer, primary_key=True, autoincrement=True)
+        token_hash = Column(String(64), unique=True, index=True, nullable=False)
+        expires_at = Column(DateTime(timezone=True), nullable=False)
+        created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+        def to_dict(self) -> Dict[str, Any]:
+            return {
+                "id": self.id,
+                "token_hash": self.token_hash,
+                "expires_at": self.expires_at.isoformat() if hasattr(self.expires_at, "isoformat") else str(self.expires_at or ""),
+                "created_at": self.created_at.isoformat() if hasattr(self.created_at, "isoformat") else str(self.created_at or "")
+            }
+
     # Connect to PostgreSQL (Neon) or fallback to SQLite
     active_url = raw_db_url
     if not active_url:
@@ -803,8 +816,8 @@ try:
         if "sslmode" not in active_url and "neon.tech" in active_url:
             connect_args["sslmode"] = "require"
         engine_kwargs.update({
-            "pool_size": 10,
-            "max_overflow": 20,
+            "pool_size": 2,
+            "max_overflow": 5,
             "pool_timeout": 10
         })
 
@@ -4339,3 +4352,41 @@ def get_sent_notifications_for_user(user_id: str) -> List[Dict[str, Any]]:
         except Exception:
             return []
     return []
+
+
+def add_revoked_token(token_hash: str, exp_timestamp: float) -> bool:
+    """Persists a revoked token hash with expiration to database or file."""
+    clean_hash = token_hash.strip().lower()
+    if is_db_available() and RevokedTokenDB is not None:
+        try:
+            exp_dt = datetime.fromtimestamp(exp_timestamp)
+            with get_db_session() as db:
+                if db is not None:
+                    existing = db.query(RevokedTokenDB).filter(RevokedTokenDB.token_hash == clean_hash).first()
+                    if not existing:
+                        db.add(RevokedTokenDB(token_hash=clean_hash, expires_at=exp_dt))
+                        db.commit()
+                    return True
+        except Exception as e:
+            logger.debug(f"DB add_revoked_token error: {e}")
+    return False
+
+
+def is_token_hash_revoked_in_db(token_hash: str) -> bool:
+    """Checks whether token hash is revoked in DB store."""
+    clean_hash = token_hash.strip().lower()
+    if is_db_available() and RevokedTokenDB is not None:
+        try:
+            with get_db_session() as db:
+                if db is not None:
+                    row = db.query(RevokedTokenDB).filter(RevokedTokenDB.token_hash == clean_hash).first()
+                    if row:
+                        now_dt = datetime.now(row.expires_at.tzinfo) if row.expires_at.tzinfo else datetime.now()
+                        if row.expires_at > now_dt:
+                            return True
+                        else:
+                            db.delete(row)
+                            db.commit()
+        except Exception as e:
+            logger.debug(f"DB is_token_hash_revoked error: {e}")
+    return False

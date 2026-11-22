@@ -1080,7 +1080,6 @@ class AuthService:
 
         # Dispatch account verification notification
         try:
-            from services.notification_service import notification_service
             notification_service.notify_account_verification(email_clean)
         except Exception as ne:
             logger.warning(f"Verification notification error: {ne}")

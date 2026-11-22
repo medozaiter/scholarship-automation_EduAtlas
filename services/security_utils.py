@@ -41,6 +41,11 @@ def _get_or_create_app_secret() -> str:
 
     if os.path.exists(secret_file):
         try:
+            try:
+                import stat
+                os.chmod(secret_file, stat.S_IRUSR | stat.S_IWUSR)
+            except Exception:
+                pass
             with open(secret_file, "r", encoding="utf-8") as f:
                 saved = f.read().strip()
                 if len(saved) >= 32:
@@ -52,6 +57,11 @@ def _get_or_create_app_secret() -> str:
     try:
         with open(secret_file, "w", encoding="utf-8") as f:
             f.write(new_secret)
+        try:
+            import stat
+            os.chmod(secret_file, stat.S_IRUSR | stat.S_IWUSR)
+        except Exception:
+            pass
     except Exception as e:
         logger.warning(f"Could not persist dynamic secret file: {e}")
 
@@ -711,7 +721,7 @@ def validate_talents_experience(val: Optional[str]) -> str:
 
 
 def validate_password(password_str: str) -> str:
-    """Enforces 8+ characters, letters + numbers, and rejects dictionary passwords."""
+    """Enforces 8+ characters, uppercase & lowercase letters, numbers, special characters, and rejects dictionary passwords."""
     if not password_str:
         raise ValueError("كلمة المرور مطلوبة.")
 
@@ -723,11 +733,14 @@ def validate_password(password_str: str) -> str:
     if len(clean_pw) > 128:
         raise ValueError("كلمة المرور طويلة جداً (الحد الأقصى 128 حرف).")
 
-    if not re.search(r"[a-zA-Z]", clean_pw):
-        raise ValueError("كلمة المرور يجب أن تحتوي على حرف واحد على الأقل.")
+    if not re.search(r"[a-z]", clean_pw) or not re.search(r"[A-Z]", clean_pw):
+        raise ValueError("يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير على الأقل.")
 
     if not re.search(r"[0-9]", clean_pw):
         raise ValueError("كلمة المرور يجب أن تحتوي على رقم واحد على الأقل.")
+
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>\-_=+[\];'/`~]", clean_pw):
+        raise ValueError("يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل.")
 
     if clean_pw.lower() in COMMON_WEAK_PASSWORDS:
         raise ValueError("كلمة المرور شائعة جداً وسهلة التخمين. يرجى اختيار كلمة مرور أقوى.")
@@ -856,11 +869,41 @@ def compute_dummy_pbkdf2(password: str):
 # Thread-safe in-memory revocation store to immediately invalidate logged-out tokens
 _revoked_tokens: Dict[str, float] = {}
 _revocation_lock = threading.Lock()
+REVOKED_TOKENS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "revoked_tokens.json")
+
+
+def _persist_revoked_token_file(token_hash: str, exp: float):
+    try:
+        data = {}
+        if os.path.exists(REVOKED_TOKENS_FILE):
+            with open(REVOKED_TOKENS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        now = time.time()
+        data = {k: v for k, v in data.items() if v > now}
+        data[token_hash] = exp
+        atomic_json_write(REVOKED_TOKENS_FILE, data)
+    except Exception as e:
+        logger.debug(f"Error persisting revoked token to file: {e}")
+
+
+def _is_token_revoked_file(token_hash: str) -> bool:
+    try:
+        if os.path.exists(REVOKED_TOKENS_FILE):
+            with open(REVOKED_TOKENS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            exp = data.get(token_hash)
+            if exp and exp > time.time():
+                return True
+    except Exception:
+        pass
+    return False
+
 
 def revoke_token(token: Optional[str]) -> bool:
     """
     Revokes a session or refresh token by recording its signature hash with expiration.
     Why: Prevents replay attacks where a copied token remains valid after user logout.
+    Persists to memory, Neon DB (if active), and JSON fallback file.
     """
     if not token or "." not in token:
         return False
@@ -877,12 +920,23 @@ def revoke_token(token: Optional[str]) -> bool:
         expired = [k for k, v in _revoked_tokens.items() if v < now]
         for k in expired:
             _revoked_tokens.pop(k, None)
+
+    # Persist to database if available
+    try:
+        from services.db import add_revoked_token
+        add_revoked_token(token_hash, exp)
+    except Exception:
+        pass
+
+    # Persist to JSON file store as fallback
+    _persist_revoked_token_file(token_hash, exp)
     return True
+
 
 def is_token_revoked(token: Optional[str]) -> bool:
     """
     Checks whether a token's signature has been explicitly invalidated upon logout.
-    Why: Ensures stateless HMAC tokens respect server-side session termination.
+    Why: Ensures stateless HMAC tokens respect server-side session termination across restarts.
     """
     if not token or "." not in token:
         return False
@@ -896,6 +950,23 @@ def is_token_revoked(token: Optional[str]) -> bool:
                 _revoked_tokens.pop(token_hash, None)
                 return False
             return True
+
+    # Check database store
+    try:
+        from services.db import is_token_hash_revoked_in_db
+        if is_token_hash_revoked_in_db(token_hash):
+            with _revocation_lock:
+                _revoked_tokens[token_hash] = time.time() + 1800
+            return True
+    except Exception:
+        pass
+
+    # Check persistent file store
+    if _is_token_revoked_file(token_hash):
+        with _revocation_lock:
+            _revoked_tokens[token_hash] = time.time() + 1800
+        return True
+
     return False
 
 def create_session_token(email: str, role: str = "student", expires_in_seconds: int = 1800) -> str:
