@@ -301,6 +301,14 @@ def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
     if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
         raise ValueError("الاسم يحتوي على رموز أو مدخلات غير مسموح بها أمنياً.")
 
+    # Strictly reject all numbers (ASCII & Arabic digits)
+    if re.search(r"[\d\u0660-\u0669\u06F0-\u06F9]", clean):
+        raise ValueError("الاسم لا يمكن أن يحتوي على أي أرقام.")
+
+    # Strictly reject injection characters and special symbols
+    if re.search(r"[!@#$%^&*()_+={}\[\]|\\:;\"<>,.?/~`؟،؛٪\x00-\x1f]", clean):
+        raise ValueError("الاسم يحتوي على رموز خاصة أو علامات غير مسموح بها.")
+
     clean = re.sub(r"\s+", " ", clean)
 
     if len(clean) < 2:
@@ -309,10 +317,10 @@ def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
     if len(clean) > 100:
         clean = clean[:100]
 
-    if not re.match(r"^[\u0600-\u06FFa-zA-Z\s\.\-']{2,100}$", clean):
+    if not re.match(r"^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s'\-]{2,100}$", clean):
         raise ValueError("يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون رموز خاصة أو أرقام.")
 
-    letter_count = len(re.findall(r"[\u0600-\u06FFa-zA-Z]", clean))
+    letter_count = len(re.findall(r"[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]", clean))
     if letter_count < 2:
         raise ValueError("الاسم يجب أن يتضمن حرفين حقيقيين على الأقل.")
 
@@ -322,6 +330,44 @@ def validate_name(name_str: Optional[str], is_required: bool = True) -> str:
     return html.escape(clean, quote=True)
 
 validate_full_name = validate_name
+
+
+def validate_city(city_str: Optional[str], is_required: bool = False) -> str:
+    """
+    Validates student city name. Text only: Arabic/English letters and spaces.
+    Strictly forbids numbers, symbols, and injection characters.
+    """
+    if not city_str or not str(city_str).strip():
+        if is_required:
+            raise ValueError("اسم المدينة مطلوب ولا يمكن تركه فارغاً.")
+        return ""
+
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(city_str)).strip()
+    if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
+        raise ValueError("اسم المدينة يحتوي على رموز غير مسموح بها أمنياً.")
+
+    # Strictly reject numbers
+    if re.search(r"[\d\u0660-\u0669\u06F0-\u06F9]", clean):
+        raise ValueError("اسم المدينة لا يمكن أن يحتوي على أي أرقام.")
+
+    # Strictly letters and spaces only
+    if re.search(r"[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]", clean):
+        raise ValueError("اسم المدينة يجب أن يتكون من أحرف ومسافات فقط دون أرقام أو رموز.")
+
+    clean = re.sub(r"\s+", " ", clean)
+    if len(clean) < 2:
+        raise ValueError("اسم المدينة قصير جداً (حرفان على الأقل).")
+    if len(clean) > 60:
+        clean = clean[:60]
+
+    letter_count = len(re.findall(r"[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]", clean))
+    if letter_count < 2:
+        raise ValueError("اسم المدينة يجب أن يتضمن حرفين نصيين على الأقل.")
+
+    if detect_gibberish_and_spam(clean):
+        raise ValueError("اسم المدينة المدخل يحتوي على تكرار عشوائي.")
+
+    return html.escape(clean, quote=True)
 
 
 def validate_university(univ_str: Optional[str], is_required: bool = False) -> str:
@@ -374,6 +420,14 @@ def validate_field_of_study(major_str: Optional[str], is_required: bool = False)
     if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
         raise ValueError("اسم التخصص يحتوي على رموز غير مسموح بها أمنياً.")
 
+    # Strictly reject numbers
+    if re.search(r"[\d\u0660-\u0669\u06F0-\u06F9]", clean):
+        raise ValueError("اسم التخصص لا يمكن أن يحتوي على أي أرقام.")
+
+    # Allow letters, spaces, and clean academic connectors like / & -
+    if re.search(r"[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s/&,\u060C\-()]", clean):
+        raise ValueError("اسم التخصص يحتوي على رموز غير مقبولة.")
+
     clean = re.sub(r"\s+", " ", clean)
 
     if len(clean) < 2:
@@ -382,10 +436,7 @@ def validate_field_of_study(major_str: Optional[str], is_required: bool = False)
     if len(clean) > 100:
         clean = clean[:100]
 
-    if not re.match(r"^[\u0600-\u06FFa-zA-Z0-9\s\.\-/,()&\u060C]{2,100}$", clean):
-        raise ValueError("اسم التخصص يحتوي على رموز غير مقبولة.")
-
-    letter_count = len(re.findall(r"[\u0600-\u06FFa-zA-Z]", clean))
+    letter_count = len(re.findall(r"[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]", clean))
     if letter_count < 2:
         raise ValueError("اسم التخصص يجب أن يحتوي على أحرف حقيقية.")
 
@@ -393,6 +444,8 @@ def validate_field_of_study(major_str: Optional[str], is_required: bool = False)
         raise ValueError("اسم التخصص يحتوي على تكرار عشوائي.")
 
     return html.escape(clean, quote=True)
+
+validate_major = validate_field_of_study
 
 
 def validate_country(country_str: Optional[str], is_required: bool = True) -> str:
@@ -406,24 +459,47 @@ def validate_country(country_str: Optional[str], is_required: bool = True) -> st
         return "Palestine"
 
     raw = str(country_str).strip()
-    clean = raw.lower()
-    clean = re.sub(r"\s*\(.*?\)", "", clean).strip()
-    clean = clean.split("-")[0].strip()
 
-    if clean in OFFICIAL_COUNTRIES_MAP:
-        return OFFICIAL_COUNTRIES_MAP[clean]
+    # Reject obvious injection attempts or scripts
+    if "<" in raw or ">" in raw or "script" in raw.lower() or "alert(" in raw.lower():
+        raise ValueError("اسم الدولة يحتوي على رموز غير مسموح بها.")
 
+    norm = raw.lower()
+    base_part = norm.split("-")[0].strip()
+    base_no_paren = re.sub(r"\s*\(.*?\)", "", base_part).strip()
+
+    # 1. Exact match in catalogue
+    if norm in OFFICIAL_COUNTRIES_MAP:
+        return OFFICIAL_COUNTRIES_MAP[norm]
+    if base_no_paren in OFFICIAL_COUNTRIES_MAP:
+        return OFFICIAL_COUNTRIES_MAP[base_no_paren]
+    if base_part in OFFICIAL_COUNTRIES_MAP:
+        return OFFICIAL_COUNTRIES_MAP[base_part]
+
+    # 2. Check if any key in OFFICIAL_COUNTRIES_MAP is in base_part or norm
+    for key, canonical in OFFICIAL_COUNTRIES_MAP.items():
+        if len(key) >= 3 and (key == base_no_paren or key in norm.split() or f"({key})" in norm):
+            return canonical
+
+    # If it didn't match any official country in catalogue:
     raise ValueError(f"الدولة المدخلة ({raw}) غير معتمدة أو غير موجودة في قائمة الدول الرسمية.")
 
 
 def validate_bio(bio_str: Optional[str], max_length: int = 600) -> str:
     """
     Validates and sanitizes student biography (max 600 chars).
-    Strips script tags, invisible characters, and escapes HTML to prevent XSS.
+    Strips script tags, invisible characters, injection quotes and symbols, and escapes HTML.
     """
     if not bio_str or not str(bio_str).strip():
         return ""
-    return sanitize_text(bio_str, max_length=max_length)
+    clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(bio_str)).strip()
+    if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
+        raise ValueError("النبذة التعريفية تحتوي على وسوم أو رموز غير مسموح بها أمنياً.")
+    # Strip dangerous injection characters
+    clean = re.sub(r'[<>"\'`;\\]', "", clean)
+    if len(clean) > max_length:
+        clean = clean[:max_length]
+    return sanitize_text(clean, max_length=max_length)
 
 
 def validate_search_query(q_str: Optional[str], max_length: int = 120) -> str:
@@ -1511,6 +1587,18 @@ def sanitize_llm_output(output_text: str) -> str:
         sanitized = sanitized.replace(marker, "[REDACTED]")
 
     return sanitized
+
+
+def audit_and_sanitize_response(output_text: str, verified_context: str = "") -> str:
+    """Audits and sanitizes AI advisor output against leaked secrets, script tags, and prompt leakage."""
+    if not output_text:
+        return ""
+    clean = sanitize_llm_output(output_text)
+    # Strip dangerous HTML or script tags
+    clean = re.sub(r'<\s*script[^>]*>.*?<\s*/\s*script\s*>', '', clean, flags=re.DOTALL | re.IGNORECASE)
+    clean = re.sub(r'<\s*(iframe|embed|object|form)[^>]*>.*?<\s*/\s*\1\s*>', '', clean, flags=re.DOTALL | re.IGNORECASE)
+    clean = re.sub(r'javascript:', '', clean, flags=re.IGNORECASE)
+    return clean
 
 def validate_uploaded_image(filename: str, content_bytes: bytes, max_size_mb: int = 5) -> Tuple[str, str, bytes]:
     """

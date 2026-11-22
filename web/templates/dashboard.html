@@ -321,81 +321,131 @@
                     </button>
                 </form>
 
-                <!-- REGISTER FORM -->
+                <!-- REGISTER FORM (2-Step Email Verification Gate) -->
                 <form id="regForm" class="hidden space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم الكامل</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                <i data-lucide="user" class="w-4 h-4"></i>
-                            </span>
-                            <input type="text" id="regName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z\u0600-\u06FF\s.\-']/g, '')"
-                                class="sp-input pr-9">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                <i data-lucide="mail" class="w-4 h-4"></i>
-                            </span>
-                            <input type="email" id="regEmail" required maxlength="100" placeholder="name@example.com"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._-]/g, '')"
-                                class="sp-input pr-9 font-latin">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم للملف الأكاديمي (اختياري)</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 font-latin text-xs">
-                                @
-                            </span>
-                            <input type="text" id="regUsername" maxlength="35" placeholder="ahmed-cs"
-                                oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')"
-                                class="sp-input pr-9 font-latin text-xs">
-                        </div>
-                        <p class="text-[10px] text-slate-400 mt-0.5">سيكون رابط ملفك العام: eduatlas.org/profile/username</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                                <i data-lucide="lock" class="w-4 h-4"></i>
-                            </span>
-                            <input type="password" id="regPassword" required minlength="6" maxlength="128" placeholder="••••••••"
-                                class="sp-input pr-9 font-latin">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Step 1: Account & Profile Details -->
+                    <div id="regStepFields" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المرحلة الدراسية</label>
-                            <select id="regDegree" class="sp-input text-xs">
-                                <option value="ثانوية عامة (High School)">ثانوية عامة (High School)</option>
-                                <option value="Undergraduate (Bachelor's)" selected>بكالوريوس (Bachelor's)</option>
-                                <option value="Master's Degree">ماجستير (Master's)</option>
-                                <option value="PhD / Doctorate">دكتوراه (PhD / Doctorate)</option>
-                            </select>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم الكامل <span class="text-emerald-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                </span>
+                                <input type="text" id="regName" required minlength="2" maxlength="60" placeholder="مثال: أحمد محمد"
+                                    data-type="fullname" data-validate="fullname"
+                                    oninput="if(window.EduAtlasValidator) EduAtlasValidator.sanitizeFullNameInput(this);"
+                                    class="sp-input pr-9">
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المعدل التراكمي (GPA)</label>
-                            <input type="text" id="regGpa" maxlength="8" placeholder="3.75 أو 85.5"
-                                onkeypress="return /[0-9.%/]/.test(event.key)"
-                                oninput="this.value = this.value.replace(/[^0-9.%/]/g, '')"
-                                class="sp-input text-xs font-latin tabular-nums">
-                            <p class="text-[10px] text-slate-400 mt-0.5">من 4 أو نسبة مئوية بحد أقصى منزلتين عشريتين</p>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني الأكاديمي <span class="text-emerald-500">* (إلزامي لتلقي المنح)</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                </span>
+                                <input type="email" id="regEmail" required maxlength="100" placeholder="name@example.com"
+                                    data-type="email" data-validate="email"
+                                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._-]/g, '')"
+                                    class="sp-input pr-9 font-latin">
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">سيصلك رمز تحقق مكون من 6 أرقام على هذا البريد لإتمام إنشاء الحساب وتفعيل الإشعارات.</p>
                         </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم للملف الأكاديمي (اختياري)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 font-latin text-xs">
+                                    @
+                                </span>
+                                <input type="text" id="regUsername" maxlength="35" placeholder="ahmed-cs"
+                                    data-type="username" data-validate="username"
+                                    oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')"
+                                    class="sp-input pr-9 font-latin text-xs">
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">سيكون رابط ملفك العام: eduatlas.org/profile/username</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور <span class="text-emerald-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>
+                                </span>
+                                <input type="password" id="regPassword" required minlength="8" maxlength="128" placeholder="••••••••"
+                                    class="sp-input pr-9 font-latin">
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">على الأقل 8 أحرف وأرقام</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المرحلة الدراسية</label>
+                                <select id="regDegree" class="sp-input text-xs">
+                                    <option value="ثانوية عامة (High School)">ثانوية عامة (High School)</option>
+                                    <option value="Undergraduate (Bachelor's)" selected>بكالوريوس (Bachelor's)</option>
+                                    <option value="Master's Degree">ماجستير (Master's)</option>
+                                    <option value="PhD / Doctorate">دكتوراه (PhD / Doctorate)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المعدل التراكمي (GPA)</label>
+                                <input type="text" id="regGpa" maxlength="8" placeholder="3.75 أو 85.5"
+                                    data-type="gpa" data-validate="gpa"
+                                    onkeypress="return /[0-9.%/]/.test(event.key)"
+                                    oninput="this.value = this.value.replace(/[^0-9.%/]/g, '')"
+                                    class="sp-input text-xs font-latin tabular-nums">
+                                <p class="text-[10px] text-slate-400 mt-0.5">من 4 أو نسبة مئوية بحد أقصى منزلتين عشريتين</p>
+                            </div>
+                        </div>
+
+                        <button type="button" id="regSubmitStep1Btn" onclick="submitRegistrationStep1()" class="sp-btn-primary w-full py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>إرسال رمز التحقق إلى بريدي</span>
+                        </button>
                     </div>
 
-                    <button type="submit" class="sp-btn-primary w-full py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
-                        <i data-lucide="check" class="w-4 h-4"></i>
-                        <span>إنشاء الحساب وتفعيل الهوية</span>
-                    </button>
+                    <!-- Step 2: OTP Email Verification Gate -->
+                    <div id="regStepVerify" class="hidden space-y-4">
+                        <div class="text-center py-2">
+                            <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10">
+                                <i data-lucide="mail-check" class="w-7 h-7"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">تحقق من بريدك الأكاديمي</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                أرسلنا رمز تحقق مكوّن من 6 أرقام إلى:
+                                <br><span id="regVerifyEmailDisplay" class="font-bold text-emerald-600 dark:text-emerald-400 font-latin text-sm inline-block mt-1 dir-ltr"></span>
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 text-center">أدخل رمز التحقق (OTP)</label>
+                            <input type="text" id="regOtpCode" maxlength="6" placeholder="000000"
+                                inputmode="numeric" autocomplete="one-time-code"
+                                onkeypress="return /[0-9]/.test(event.key)"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) confirmRegistrationOtp();"
+                                class="sp-input text-center text-2xl font-black font-latin tracking-[0.4em] py-3 text-emerald-500 dark:text-emerald-400 bg-slate-50 dark:bg-slate-900/90 border-2 border-emerald-500/40 focus:border-emerald-500 rounded-xl">
+                            <p class="text-[11px] text-slate-400 text-center mt-1">تفقد صندوق الوارد أو البريد غير المرغوب به (Spam)</p>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                            <span id="regOtpTimer" class="font-latin text-emerald-500 dark:text-emerald-400 font-bold">ينتهي خلال: 15:00</span>
+                            <button type="button" id="regResendBtn" onclick="resendRegistrationOtp()" class="text-emerald-600 dark:text-emerald-400 hover:underline font-bold transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                إعادة إرسال الرمز
+                            </button>
+                        </div>
+
+                        <button type="button" id="regConfirmBtn" onclick="confirmRegistrationOtp()" class="sp-btn-primary w-full py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            <span>تأكيد الرمز وإنشاء الحساب الأكاديمي</span>
+                        </button>
+
+                        <button type="button" onclick="backToRegStep1()" class="w-full py-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center gap-1.5 transition">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            <span>تعديل البريد الإلكتروني أو البيانات</span>
+                        </button>
+                    </div>
                 </form>
 
                 <div id="authAlert" class="hidden mt-4 p-3 rounded-xl text-xs font-bold"></div>
@@ -531,25 +581,29 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم الكامل</label>
-                                <input type="text" id="editFullName" required class="sp-input text-xs w-full">
+                                <input type="text" id="editFullName" required data-type="fullname" data-validate="fullname" maxlength="100" class="sp-input text-xs w-full" placeholder="مثال: أحمد عبد الله">
+                                <p class="text-[10px] text-slate-400 mt-0.5">نصوص فقط: أحرف ومسافات بدون أرقام أو رموز خاصة</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم (المعرّف العام)</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 font-latin text-xs">@</span>
-                                    <input type="text" id="editUsername" required maxlength="40" class="sp-input pr-8 text-xs font-latin w-full">
+                                    <input type="text" id="editUsername" required maxlength="40" data-type="username" data-validate="username" class="sp-input pr-8 text-xs font-latin w-full" placeholder="username">
                                 </div>
+                                <p class="text-[10px] text-slate-400 mt-0.5">أحرف إنجليزية صغيرة وأرقام ونقاط أو شرطات فقط</p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الدولة</label>
-                                <input type="text" id="editCountry" class="sp-input text-xs w-full" placeholder="Palestine">
+                                <input type="text" id="editCountry" data-type="country" data-validate="country" maxlength="60" class="sp-input text-xs w-full" placeholder="Palestine">
+                                <p class="text-[10px] text-slate-400 mt-0.5">نصوص فقط: اسم الدولة بأحرف فقط دون أرقام أو رموز</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المدينة</label>
-                                <input type="text" id="editCity" class="sp-input text-xs w-full" placeholder="مثال: غزة، رام الله، القدس">
+                                <input type="text" id="editCity" data-type="city" data-validate="city" maxlength="60" class="sp-input text-xs w-full" placeholder="مثال: غزة، رام الله، القدس">
+                                <p class="text-[10px] text-slate-400 mt-0.5">نصوص فقط: اسم المدينة بأحرف ومسافات دون أرقام أو رموز</p>
                             </div>
                         </div>
 
@@ -613,7 +667,8 @@
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">النبذة التعريفية والأكاديمية (Bio / About Me)</label>
                                 <span id="editBioCounter" class="text-[11px] font-mono text-slate-400">0 / 600</span>
                             </div>
-                            <textarea id="editBio" rows="3" maxlength="600" data-counter="true" class="sp-input text-xs w-full" placeholder="اكتب نبذة مختصرة عن اهتماماتك الأكاديمية، طموحك البحثي، ومشاريعك..."></textarea>
+                            <textarea id="editBio" rows="3" maxlength="600" data-type="safe-text" data-validate="bio" data-counter="true" class="sp-input text-xs w-full" placeholder="اكتب نبذة مختصرة عن اهتماماتك الأكاديمية، طموحك البحثي، ومشاريعك..."></textarea>
+                            <p class="text-[10px] text-slate-400 mt-0.5">نصوص آمنة تخلو من شفرات الحقن البرمجية</p>
                         </div>
                     </div>
 
@@ -627,7 +682,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الجامعة / المؤسسة التعليمية</label>
-                                <input type="text" id="editUniversity" class="sp-input text-xs w-full" placeholder="مثال: الجامعة الإسلامية بغزة">
+                                <input type="text" id="editUniversity" data-type="university" data-validate="university" maxlength="150" class="sp-input text-xs w-full" placeholder="مثال: الجامعة الإسلامية بغزة">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المرحلة الدراسية</label>
@@ -640,15 +695,16 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سنة التخرج المتوقعة</label>
-                                <input type="number" id="editGradYear" min="1970" max="2040" step="1" class="sp-input text-xs font-latin w-full" placeholder="2027">
-                                <p class="text-[10px] text-slate-400 mt-0.5">سنة واقعية بين 1970 و 2040</p>
+                                <input type="number" id="editGradYear" min="1970" max="2040" step="1" data-type="digits" data-validate="gradyear" class="sp-input text-xs font-latin w-full" placeholder="2027">
+                                <p class="text-[10px] text-slate-400 mt-0.5">سنة واقعية بين 1970 و 2040 (أرقام فقط)</p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">التخصص الأكاديمي</label>
-                                <input type="text" id="editMajor" class="sp-input text-xs w-full" placeholder="Software Engineering">
+                                <input type="text" id="editMajor" data-type="major" data-validate="major" maxlength="100" class="sp-input text-xs w-full" placeholder="Software Engineering">
+                                <p class="text-[10px] text-slate-400 mt-0.5">أحرف فقط دون أرقام</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">المعدل التراكمي (GPA)</label>
@@ -659,12 +715,12 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">العمر (سنوات)</label>
-                                <input type="number" id="editAge" min="10" max="100" step="1" class="sp-input text-xs font-latin w-full" placeholder="21">
+                                <input type="number" id="editAge" min="10" max="100" step="1" data-type="digits" data-validate="age" class="sp-input text-xs font-latin w-full" placeholder="21">
                                 <p class="text-[10px] text-slate-400 mt-0.5">أرقام فقط (10 - 100 سنة)</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">مستوى اللغة الإنجليزية</label>
-                                <input type="text" id="editEnglish" class="sp-input text-xs w-full" placeholder="IELTS 6.5+ / Advanced">
+                                <input type="text" id="editEnglish" data-type="safe-text" maxlength="60" class="sp-input text-xs w-full" placeholder="IELTS 6.5+ / Advanced">
                             </div>
                         </div>
                     </div>
@@ -1394,9 +1450,59 @@
             }
         });
 
-        // Register Form
-        document.getElementById('regForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // 2-Step Registration with OTP Email Verification Gate
+        let regPendingEmail = '';
+        let regOtpTimerInterval = null;
+        let regResendCooldownInterval = null;
+
+        function startOtpTimer(durationSeconds = 900) {
+            clearInterval(regOtpTimerInterval);
+            let rem = durationSeconds;
+            const timerEl = document.getElementById('regOtpTimer');
+            function update() {
+                const m = Math.floor(rem / 60).toString().padStart(2, '0');
+                const s = (rem % 60).toString().padStart(2, '0');
+                if (timerEl) timerEl.textContent = `ينتهي خلال: ${m}:${s}`;
+                if (rem <= 0) {
+                    clearInterval(regOtpTimerInterval);
+                    if (timerEl) timerEl.textContent = "انتهت صلاحية الرمز";
+                }
+                rem--;
+            }
+            update();
+            regOtpTimerInterval = setInterval(update, 1000);
+        }
+
+        function startResendCooldown(cooldownSeconds = 60) {
+            clearInterval(regResendCooldownInterval);
+            const btn = document.getElementById('regResendBtn');
+            if (!btn) return;
+            btn.disabled = true;
+            let rem = cooldownSeconds;
+            function update() {
+                btn.textContent = `إعادة الإرسال بعد (${rem}ث)`;
+                if (rem <= 0) {
+                    clearInterval(regResendCooldownInterval);
+                    btn.disabled = false;
+                    btn.textContent = "إعادة إرسال الرمز";
+                }
+                rem--;
+            }
+            update();
+            regResendCooldownInterval = setInterval(update, 1000);
+        }
+
+        function backToRegStep1() {
+            clearInterval(regOtpTimerInterval);
+            clearInterval(regResendCooldownInterval);
+            document.getElementById('regStepVerify').classList.add('hidden');
+            document.getElementById('regStepFields').classList.remove('hidden');
+            const alertBox = document.getElementById('authAlert');
+            if (alertBox) alertBox.classList.add('hidden');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function submitRegistrationStep1() {
             const alertBox = document.getElementById('authAlert');
             alertBox.classList.add('hidden');
 
@@ -1406,6 +1512,14 @@
             const degreeVal = document.getElementById('regDegree').value;
             const gpaVal = document.getElementById('regGpa').value.trim() || "85%";
             const usernameVal = document.getElementById('regUsername').value.trim();
+
+            if (!emailVal) {
+                alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                alertBox.textContent = "البريد الإلكتروني مطلوب ولا يمكن تركه فارغاً لإنشاء الحساب.";
+                alertBox.classList.remove('hidden');
+                document.getElementById('regEmail').focus();
+                return;
+            }
 
             if (typeof EduAtlasValidator !== 'undefined') {
                 const nameCheck = EduAtlasValidator.validateFullName(nameVal, true);
@@ -1454,6 +1568,11 @@
                 }
             }
 
+            const btn = document.getElementById('regSubmitStep1Btn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> جاري إرسال رمز التحقق...`;
+
             const payload = {
                 full_name: nameVal,
                 email: emailVal,
@@ -1465,28 +1584,127 @@
             };
 
             try {
-                const res = await fetch('/api/auth/register', {
+                const res = await fetch('/api/auth/register-request', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+
                 if (res.ok && data.success) {
+                    regPendingEmail = emailVal;
+                    document.getElementById('regVerifyEmailDisplay').textContent = emailVal;
+                    document.getElementById('regStepFields').classList.add('hidden');
+                    document.getElementById('regStepVerify').classList.remove('hidden');
+                    document.getElementById('regOtpCode').value = '';
+                    document.getElementById('regOtpCode').focus();
+                    startOtpTimer(data.expires_in || 900);
+                    startResendCooldown(60);
+                    if (window.lucide) lucide.createIcons();
+                    showToast("info", "تم إرسال رمز التحقق!", `تفقد بريدك ${emailVal} وأدخل رمز التحقق (6 أرقام) لإتمام التسجيل.`);
+                } else {
+                    alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                    alertBox.textContent = data.detail || "تعذر إرسال رمز التحقق.";
+                    alertBox.classList.remove('hidden');
+                }
+            } catch(err) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                alertBox.textContent = "خطأ في الاتصال: " + err.message;
+                alertBox.classList.remove('hidden');
+            }
+        }
+
+        async function confirmRegistrationOtp() {
+            const alertBox = document.getElementById('authAlert');
+            alertBox.classList.add('hidden');
+
+            const codeVal = document.getElementById('regOtpCode').value.trim();
+            if (!codeVal || codeVal.length < 6) {
+                alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                alertBox.textContent = "يرجى إدخال رمز التحقق كاملاً المكوّن من 6 أرقام.";
+                alertBox.classList.remove('hidden');
+                document.getElementById('regOtpCode').focus();
+                return;
+            }
+
+            const btn = document.getElementById('regConfirmBtn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> جاري تفعيل الحساب...`;
+
+            try {
+                const res = await fetch('/api/auth/register-confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: regPendingEmail, code: codeVal })
+                });
+                const data = await res.json();
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+
+                if (res.ok && data.success) {
+                    clearInterval(regOtpTimerInterval);
+                    clearInterval(regResendCooldownInterval);
                     currentUser = data.user;
                     localStorage.setItem('minha_user', JSON.stringify(currentUser));
                     if (data.token) localStorage.setItem('minha_token', data.token);
                     renderDashboard(currentUser);
-                    showToast("success", "تم إنشاء الحساب بنجاح!", "أهلاً بك في منصة EduAtlas، تم تفعيل هويتك الأكاديمية وتتبع المنح فوراً.");
-                    confetti({ particleCount: 80, spread: 60 });
+                    showToast("success", "تم إنشاء وتأكيد الحساب بنجاح! 🎓", "تم تفعيل هويتك الأكاديمية واشتراكك برادار المنح، وسيصلك التقرير والفرص مباشرة على بريدك.");
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 } else {
                     alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
-                    alertBox.textContent = data.detail || "تعذر إتمام التسجيل.";
+                    alertBox.textContent = data.detail || "رمز التحقق غير صحيح أو انتهت صلاحيته.";
+                    alertBox.classList.remove('hidden');
+                }
+            } catch(err) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                alertBox.textContent = "خطأ: " + err.message;
+                alertBox.classList.remove('hidden');
+            }
+        }
+
+        async function resendRegistrationOtp() {
+            if (!regPendingEmail) return;
+            const alertBox = document.getElementById('authAlert');
+            alertBox.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/register-resend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: regPendingEmail })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    startOtpTimer(900);
+                    startResendCooldown(60);
+                    showToast("success", "تم إرسال رمز جديد!", "يرجى التحقق من صندوق الوارد أو البريد غير المرغوب به.");
+                } else {
+                    alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
+                    alertBox.textContent = data.detail || "تعذر إعادة إرسال الرمز.";
                     alertBox.classList.remove('hidden');
                 }
             } catch(err) {
                 alertBox.className = "mt-4 p-3 rounded-xl text-xs font-bold sp-badge-danger block";
                 alertBox.textContent = "خطأ: " + err.message;
                 alertBox.classList.remove('hidden');
+            }
+        }
+
+        // Form Submit Handler
+        document.getElementById('regForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const isStep2 = !document.getElementById('regStepVerify').classList.contains('hidden');
+            if (isStep2) {
+                confirmRegistrationOtp();
+            } else {
+                submitRegistrationStep1();
             }
         });
 
@@ -2171,6 +2389,7 @@
             const usernameVal = document.getElementById('editUsername').value.trim();
             const univVal = document.getElementById('editUniversity').value.trim();
             const countryVal = document.getElementById('editCountry').value.trim();
+            const cityVal = document.getElementById('editCity') ? document.getElementById('editCity').value.trim() : '';
             const majorVal = document.getElementById('editMajor').value.trim();
             const gpaVal = document.getElementById('editGpa').value.trim();
             const bioVal = document.getElementById('editBio').value.trim();
@@ -2192,19 +2411,27 @@
                         return;
                     }
                 }
-                if (univVal) {
-                    const res = EduAtlasValidator.validateUniversity(univVal, false);
-                    if (!res.valid) {
-                        showToast("error", "اسم مؤسسة غير صالح", res.message);
-                        document.getElementById('editUniversity').focus();
-                        return;
-                    }
-                }
                 if (countryVal) {
                     const res = EduAtlasValidator.validateCountry(countryVal, false);
                     if (!res.valid) {
                         showToast("error", "دولة غير معتمدة", res.message);
                         document.getElementById('editCountry').focus();
+                        return;
+                    }
+                }
+                if (cityVal) {
+                    const res = EduAtlasValidator.validateCity(cityVal, false);
+                    if (!res.valid) {
+                        showToast("error", "اسم مدينة غير صالح", res.message);
+                        document.getElementById('editCity').focus();
+                        return;
+                    }
+                }
+                if (univVal) {
+                    const res = EduAtlasValidator.validateUniversity(univVal, false);
+                    if (!res.valid) {
+                        showToast("error", "اسم مؤسسة غير صالح", res.message);
+                        document.getElementById('editUniversity').focus();
                         return;
                     }
                 }

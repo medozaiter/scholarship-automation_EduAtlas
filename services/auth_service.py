@@ -3,6 +3,8 @@ import re
 import json
 import secrets
 import logging
+import threading
+import copy
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 
@@ -13,6 +15,10 @@ from services.security_utils import (
     validate_social_url,
     validate_email,
     validate_name,
+    validate_city,
+    validate_country,
+    validate_university,
+    validate_bio,
     validate_username,
     slugify_username,
     validate_gpa,
@@ -42,6 +48,7 @@ from services.db import (
     delete_user_by_email
 )
 from services.email_service import dispatch_email
+from services.notification_service import notification_service
 
 logger = logging.getLogger(__name__)
 
@@ -69,66 +76,115 @@ def _safe_dispatch_email(email: str, subject: str, html_msg: str, plain_msg: str
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
+PENDING_REG_FILE = os.path.join(DATA_DIR, "pending_registrations.json")
+
+
+def _ensure_pending_reg_file():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    if not os.path.exists(PENDING_REG_FILE):
+        atomic_json_write(PENDING_REG_FILE, {})
+
+
+def _load_pending_registrations() -> Dict[str, Any]:
+    _ensure_pending_reg_file()
+    try:
+        with open(PENDING_REG_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception as e:
+        logger.error(f"Error loading pending registrations: {e}")
+        return {}
+
+
+def _save_pending_registrations(data: Dict[str, Any]):
+    atomic_json_write(PENDING_REG_FILE, data)
+
+
+def _get_pending_registration(email: str) -> Optional[Dict[str, Any]]:
+    clean_email = email.strip().lower()
+    regs = _load_pending_registrations()
+    return regs.get(clean_email)
+
+
+def _save_pending_registration(email: str, reg_data: Dict[str, Any]):
+    clean_email = email.strip().lower()
+    regs = _load_pending_registrations()
+    regs[clean_email] = reg_data
+    _save_pending_registrations(regs)
+
+
+def _remove_pending_registration(email: str):
+    clean_email = email.strip().lower()
+    regs = _load_pending_registrations()
+    if clean_email in regs:
+        del regs[clean_email]
+        _save_pending_registrations(regs)
 
 
 def _ensure_users_file():
     os.makedirs(DATA_DIR, exist_ok=True)
     if not os.path.exists(USERS_FILE):
-        hashed_pw, salt_hex = hash_password_secure("SafeAdminPass2026!")
-        default_users = [
-            {
-                "email": "medo.msz.2006@gmail.com",
-                "username": "mustafa-zaiter",
-                "full_name": "Mustafa AbuZaiter",
-                "role": "student",
-                "salt": salt_hex,
-                "password_hash": hashed_pw,
-                "avatar_url": "",
-                "cover_url": "",
-                "city": "Gaza / Jerusalem",
-                "university": "Faculty of Information Technology",
-                "degree": "Undergraduate (Bachelor's)",
-                "majors": ["Cybersecurity", "Software Engineering", "AI"],
-                "graduation_year": "2027",
-                "bio": "طالب هندسة برمجيات وأمن سيبراني مهتم بنظم الذكاء الاصطناعي وباحث عن منح دراسية دولية ممولة بالكامل.",
-                "gpa": "90%+",
-                "english_level": "IELTS 6.5+ / Advanced",
-                "country": "Palestine",
-                "talents_experience": "Full Stack Engineering, Cloud Security, AI Systems",
-                "languages": [
-                    {"name": "العربية", "level": "اللغة الأم"},
-                    {"name": "English", "level": "Advanced (IELTS 6.5+)"}
-                ],
-                "skills": ["Python", "FastAPI", "Cybersecurity", "Machine Learning", "System Architecture", "React"],
-                "interests": ["الذكاء الاصطناعي", "أمن المعلومات", "الحوسبة السحابية", "المنح الدولية"],
-                "target_countries": ["Germany", "Canada", "Turkey", "United Kingdom", "Hungary"],
-                "scholarship_interests": ["DAAD", "Chevening", "Stipendium Hungaricum", "Türkiye Bursları", "Lester B. Pearson"],
-                "social_links": {
-                    "whatsapp": "+970590000000",
-                    "linkedin": "https://linkedin.com",
-                    "github": "https://github.com",
-                    "facebook": "",
-                    "instagram": "",
-                    "twitter": "",
-                    "telegram": "",
-                    "portfolio": "",
-                    "website": ""
-                },
-                "saved_scholarships": ["Lester B. Pearson", "Stipendium Hungaricum"],
-                "email_verified": True,
-                "verification_code": "",
-                "reset_token": "",
-                "reset_token_expires": "",
-                "privacy_settings": {
-                    "public_profile": True,
-                    "show_gpa": True,
-                    "show_contact": True
-                },
-                "created_at": datetime.now().isoformat(),
-                "updated_at": datetime.now().isoformat()
-            }
-        ]
-        atomic_json_write(USERS_FILE, default_users)
+        admin_email = os.getenv("DEFAULT_ADMIN_EMAIL", "").strip().lower()
+        admin_password = os.getenv("DEFAULT_ADMIN_PASSWORD", "").strip()
+        if not admin_email or not admin_password:
+            atomic_json_write(USERS_FILE, [])
+            return
+
+        hashed_pw, salt_hex = hash_password_secure(admin_password)
+        admin_name = os.getenv("DEFAULT_ADMIN_NAME", "System Administrator").strip()
+        admin_user = {
+            "email": admin_email,
+            "username": slugify_username(admin_name, admin_email),
+            "full_name": admin_name,
+            "role": "admin",
+            "salt": salt_hex,
+            "password_hash": hashed_pw,
+            "avatar_url": "",
+            "cover_url": "",
+            "city": "",
+            "university": "",
+            "degree": "Undergraduate (Bachelor's)",
+            "majors": ["Computer Science & IT"],
+            "graduation_year": "2026",
+            "bio": "مسؤول النظام لمنصة EduAtlas",
+            "gpa": "90%+",
+            "english_level": "Advanced",
+            "country": "Palestine",
+            "talents_experience": "System Administration",
+            "languages": [
+                {"name": "العربية", "level": "اللغة الأم"},
+                {"name": "English", "level": "Fluent"}
+            ],
+            "skills": ["Administration", "Security"],
+            "interests": ["الذكاء الاصطناعي", "أمن المعلومات"],
+            "target_countries": [],
+            "scholarship_interests": [],
+            "social_links": {},
+            "saved_scholarships": [],
+            "email_verified": True,
+            "verification_code": "",
+            "reset_token": "",
+            "reset_token_expires": "",
+            "privacy_settings": {
+                "public_profile": False,
+                "show_gpa": False,
+                "show_contact": False
+            },
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat()
+        }
+        atomic_json_write(USERS_FILE, [admin_user])
+
+
+_users_cache: Optional[List[Dict[str, Any]]] = None
+_users_cache_lock = threading.Lock()
+_users_cache_mtime: float = 0.0
+
+def _invalidate_users_cache():
+    global _users_cache, _users_cache_mtime
+    with _users_cache_lock:
+        _users_cache = None
+        _users_cache_mtime = 0.0
 
 
 class AuthService:
@@ -213,7 +269,7 @@ class AuthService:
             "email_notifications": u.get("email_notifications", True),
             "telegram_notifications": u.get("telegram_notifications", False),
             "telegram_chat_id": u.get("telegram_chat_id") or "",
-            "email_verified": bool(u.get("email_verified", True if email == "medo.msz.2006@gmail.com" else False)),
+            "email_verified": bool(u.get("email_verified", False)),
             "verification_code": str(u.get("verification_code") or ""),
             "reset_token": str(u.get("reset_token") or ""),
             "reset_token_expires": str(u.get("reset_token_expires") or ""),
@@ -223,6 +279,7 @@ class AuthService:
         }
 
     def _load_users(self) -> List[Dict[str, Any]]:
+        global _users_cache, _users_cache_mtime
         _ensure_users_file()
         if is_db_available():
             try:
@@ -233,16 +290,24 @@ class AuthService:
                             return [self._normalize_user_dict(u.to_dict()) for u in db_users]
             except Exception as e:
                 logger.debug(f"DB load users failed, falling back to JSON: {e}")
-        try:
-            with open(USERS_FILE, "r", encoding="utf-8") as f:
-                raw = json.load(f)
-                return [self._normalize_user_dict(u) for u in raw]
-        except Exception as e:
-            logger.error(f"Error loading users: {e}")
-            return []
+        with _users_cache_lock:
+            try:
+                current_mtime = os.path.getmtime(USERS_FILE) if os.path.exists(USERS_FILE) else 0.0
+                if _users_cache is not None and current_mtime == _users_cache_mtime:
+                    return copy.deepcopy(_users_cache)
+                with open(USERS_FILE, "r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                    norm = [self._normalize_user_dict(u) for u in raw]
+                    _users_cache = norm
+                    _users_cache_mtime = current_mtime
+                    return copy.deepcopy(norm)
+            except Exception as e:
+                logger.error(f"Error loading users: {e}")
+                return []
 
     def _save_users(self, users: List[Dict[str, Any]]):
         atomic_json_write(USERS_FILE, users)
+        _invalidate_users_cache()
 
     def generate_unique_username(self, full_name: str, email: str, current_email: Optional[str] = None) -> str:
         """Generates a non-conflicting unique handle slug for public profile URLs."""
@@ -259,9 +324,368 @@ class AuthService:
         candidate = base_slug
         counter = 1
         while candidate in taken:
-            counter += 1
             candidate = f"{base_slug}-{counter}"
+            counter += 1
         return candidate
+
+    def _load_pending_registrations(self) -> Dict[str, Any]:
+        return _load_pending_registrations()
+
+    def _save_pending_registrations(self, data: Dict[str, Any]):
+        _save_pending_registrations(data)
+
+    def _get_pending_registration(self, email: str) -> Optional[Dict[str, Any]]:
+        return _get_pending_registration(email)
+
+    def _save_pending_registration(self, email: str, reg_data: Dict[str, Any]):
+        _save_pending_registration(email, reg_data)
+
+    def _remove_pending_registration(self, email: str):
+        _remove_pending_registration(email)
+
+    def initiate_registration(
+        self,
+        email: str,
+        password: str,
+        full_name: str,
+        username: Optional[str] = None,
+        degree: str = "Undergraduate (Bachelor's)",
+        majors: Optional[List[str]] = None,
+        gpa: str = "85%",
+        english_level: str = "Intermediate",
+        country: str = "Palestine",
+        nationality: Optional[str] = None,
+        residence_country: Optional[str] = None,
+        city: str = "",
+        university: str = "",
+        graduation_year: str = "",
+        bio: str = "",
+        talents_experience: str = "",
+        languages: Optional[List[Any]] = None,
+        skills: Optional[List[str]] = None,
+        interests: Optional[List[str]] = None,
+        target_countries: Optional[List[str]] = None,
+        scholarship_interests: Optional[List[str]] = None,
+        social_links: Optional[Dict[str, str]] = None,
+        privacy_settings: Optional[Dict[str, Any]] = None,
+        age: Optional[Any] = None
+    ) -> Dict[str, Any]:
+        """
+        Step 1 of 2-Step Registration:
+        Validates all inputs, generates a 6-digit OTP code, stores pending registration,
+        and dispatches verification email to the user.
+        Account is NOT created until OTP is verified.
+        """
+        if not email or not str(email).strip():
+            raise ValueError("البريد الإلكتروني مطلوب ولا يمكن تركه فارغاً.")
+        email_clean = validate_email(email)
+        name_clean = validate_name(full_name)
+        gpa_clean = validate_gpa(gpa)
+        password_clean = validate_password(password)
+
+        users = self._load_users()
+        if any(u.get("email", "").lower() == email_clean for u in users) or get_user_by_email(email_clean):
+            raise ValueError("هذا البريد الإلكتروني مسجل بالفعل. يمكنك تسجيل الدخول مباشرة.")
+
+        # Resolve unique username
+        if username and username.strip():
+            candidate_uname = validate_username(username.strip())
+            if any(u.get("username", "").lower() == candidate_uname for u in users):
+                raise ValueError("اسم المستخدم هذا محجوز مسبقاً، يرجى اختيار اسم مستخدم آخر.")
+            final_username = candidate_uname
+        else:
+            final_username = self.generate_unique_username(name_clean, email_clean)
+
+        hashed_pw, salt_hex = hash_password_secure(password_clean)
+        now = datetime.now()
+        now_iso = now.isoformat()
+        expires_at = (now + timedelta(minutes=15)).isoformat()
+
+        sanitized_majors = [sanitize_text(m, max_length=50) for m in (majors or ["Software Engineering"])]
+        sanitized_degree = sanitize_text(degree, max_length=50) or "Undergraduate (Bachelor's)"
+        sanitized_english = sanitize_text(english_level, max_length=50) or "Intermediate"
+        sanitized_country = sanitize_text(country, max_length=50) or "Palestine"
+        sanitized_nat = sanitize_text(nationality, max_length=50) if nationality else sanitized_country
+        sanitized_res = sanitize_text(residence_country, max_length=50) if residence_country else sanitized_country
+        sanitized_city = sanitize_text(city, max_length=50) if city else ""
+        sanitized_uni = sanitize_text(university, max_length=120) if university else ""
+        sanitized_grad = sanitize_text(graduation_year, max_length=20) if graduation_year else ""
+        sanitized_bio = sanitize_text(bio, max_length=500) if bio else ""
+        sanitized_talents = sanitize_text(talents_experience, max_length=300) if talents_experience else ""
+
+        # Generate 6-digit OTP verification code
+        v_code = str(secrets.randbelow(900000) + 100000)
+
+        pending_user = {
+            "email": email_clean,
+            "username": final_username,
+            "full_name": name_clean,
+            "role": "student",
+            "salt": salt_hex,
+            "password_hash": hashed_pw,
+            "avatar_url": "",
+            "cover_url": "",
+            "city": sanitized_city,
+            "university": sanitized_uni,
+            "degree": sanitized_degree,
+            "majors": sanitized_majors,
+            "graduation_year": sanitized_grad,
+            "bio": sanitized_bio,
+            "gpa": gpa_clean,
+            "english_level": sanitized_english,
+            "country": sanitized_country,
+            "nationality": sanitized_nat,
+            "residence_country": sanitized_res,
+            "talents_experience": sanitized_talents,
+            "languages": languages or [{"name": "العربية", "level": "اللغة الأم"}],
+            "skills": skills or [],
+            "interests": interests or [],
+            "target_countries": target_countries or [sanitized_country],
+            "scholarship_interests": scholarship_interests or [],
+            "social_links": social_links or {
+                "whatsapp": "", "linkedin": "", "github": "", "facebook": "",
+                "instagram": "", "twitter": "", "telegram": "", "portfolio": "", "website": ""
+            },
+            "saved_scholarships": [],
+            "preferred_countries": target_countries or [sanitized_country],
+            "funding_type": "Any",
+            "email_notifications": True,
+            "telegram_notifications": False,
+            "telegram_chat_id": "",
+            "email_verified": True,
+            "verification_code": "",
+            "reset_token": "",
+            "reset_token_expires": "",
+            "privacy_settings": privacy_settings or {
+                "public_profile": True, "show_gpa": True, "show_contact": True
+            },
+            "created_at": now_iso,
+            "updated_at": now_iso
+        }
+
+        pending_record = {
+            "email": email_clean,
+            "verification_code": v_code,
+            "created_at": now_iso,
+            "last_sent": now_iso,
+            "expires_at": expires_at,
+            "attempts": 0,
+            "user_data": pending_user
+        }
+
+        self._save_pending_registration(email_clean, pending_record)
+        logger.info(f"Initiated pending registration for: {email_clean} (OTP: {v_code})")
+
+        # Dispatch 6-digit OTP verification email
+        subject = f"رمز تأكيد بريدك الأكاديمي ({v_code}) - EduAtlas"
+        html_msg = f"""
+        <div dir="rtl" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 28px; background-color: #0F172A; color: #E2E8F0; max-width: 600px; margin: 0 auto; border-radius: 16px; border: 1px solid #1E293B;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h1 style="color: #FFFFFF; font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Edu<span style="color: #10E599;">Atlas</span></h1>
+                <p style="color: #94A3B8; font-size: 13px; margin: 6px 0 0 0;">رادار الملاحة الأكاديمية والمنح الدولية</p>
+            </div>
+            <div style="background-color: #1E293B; padding: 26px; border-radius: 12px; border: 1px solid #334155;">
+                <h2 style="font-size: 18px; color: #F8FAFC; margin-top: 0;">تأكيد البريد الإلكتروني وتفعيل الحساب</h2>
+                <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">مرحباً <strong style="color: #10E599;">{name_clean}</strong>،</p>
+                <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">لإتمام إنشاء حسابك الأكاديمي في EduAtlas وتفعيل استقبال إشعارات وتنبيهات المنح الدراسية المخصصة لمؤهلاتك مباشرة على بريدك، يرجى إدخال رمز التحقق التالي في الموقع:</p>
+                <div style="background: #090D16; padding: 20px; border-radius: 12px; margin: 24px 0; text-align: center; border: 1px solid #10E599;">
+                    <span style="font-size: 36px; font-weight: 900; letter-spacing: 10px; color: #10E599; font-family: monospace;">{v_code}</span>
+                </div>
+                <p style="font-size: 12px; color: #94A3B8; margin: 0;">⏱️ ينتهي هذا الرمز تلقائياً خلال <strong>15 دقيقة</strong>.</p>
+                <p style="font-size: 12px; color: #94A3B8; margin-top: 6px;">إذا لم تكن قد طلبت إنشاء حساب في EduAtlas، يمكنك تجاهل هذه الرسالة بأمان.</p>
+            </div>
+        </div>
+        """
+        plain_msg = f"""رمز تأكيد بريدك الأكاديمي في EduAtlas هو: {v_code}
+ينتهي هذا الرمز خلال 15 دقيقة."""
+
+        try:
+            _safe_dispatch_email(email_clean, subject, html_msg, plain_msg)
+        except Exception as e:
+            logger.warning(f"Error dispatching OTP registration email to {email_clean}: {e}")
+
+        return {
+            "success": True,
+            "message": "تم إرسال رمز التحقق المكون من 6 أرقام إلى بريدك الإلكتروني بنجاح.",
+            "email": email_clean,
+            "expires_in": 900
+        }
+
+    def confirm_registration(self, email: str, code: str) -> Dict[str, Any]:
+        """
+        Step 2 of 2-Step Registration:
+        Validates the 6-digit OTP code against pending registration.
+        If valid: creates the user account (verified), adds to SubscriberService,
+        dispatches welcome email, and returns session token.
+        """
+        if not email or not str(email).strip():
+            raise ValueError("البريد الإلكتروني مطلوب.")
+        email_clean = validate_email(email)
+        clean_code = str(code or "").strip()
+
+        if not clean_code or len(clean_code) < 4:
+            raise ValueError("يرجى إدخال رمز التحقق المكون من 6 أرقام.")
+
+        pending = self._get_pending_registration(email_clean)
+        if not pending:
+            raise ValueError("لا يوجد طلب تسجيل معلق لهذا البريد، أو انتهت صلاحيته. يرجى إعادة ملء النموذج.")
+
+        # Check expiration (15 minutes)
+        try:
+            exp_dt = datetime.fromisoformat(pending.get("expires_at", "2000-01-01T00:00:00"))
+            if datetime.now() > exp_dt:
+                self._remove_pending_registration(email_clean)
+                raise ValueError("انتهت صلاحية رمز التحقق (15 دقيقة). يرجى طلب رمز جديد.")
+        except Exception:
+            pass
+
+        # Check attempt count (max 5)
+        attempts = pending.get("attempts", 0)
+        if attempts >= 5:
+            self._remove_pending_registration(email_clean)
+            raise ValueError("تم تجاوز الحد الأقصى للمحاولات الخاطئة (5 محاولات). يرجى بدء التسجيل مجدداً.")
+
+        # Constant-time comparison
+        stored_code = str(pending.get("verification_code", "")).strip()
+        if not secrets.compare_digest(stored_code, clean_code):
+            pending["attempts"] = attempts + 1
+            self._save_pending_registration(email_clean, pending)
+            rem = max(0, 5 - pending["attempts"])
+            raise ValueError(f"رمز التحقق غير صحيح. يرجى التأكد من الرمز (متبقي {rem} محاولات).")
+
+        # Code is valid! Create account
+        user_data = pending.get("user_data", {})
+        user_data["email_verified"] = True
+        user_data["verification_code"] = ""
+        user_data["updated_at"] = datetime.now().isoformat()
+
+        save_or_update_user(user_data)
+        logger.info(f"Verified & registered student user: {email_clean} with handle @{user_data.get('username')}")
+
+        # Enroll in SubscriberService so opportunity alerts & digests reach this verified email
+        try:
+            from services.subscriber_service import SubscriberService
+            sub_service = SubscriberService()
+            sub_service.add_or_update(
+                email=email_clean,
+                full_name=user_data.get("full_name", ""),
+                degree=user_data.get("degree", "Undergraduate (Bachelor's)"),
+                majors=user_data.get("majors", ["Software Engineering"]),
+                gpa=user_data.get("gpa", "85%"),
+                english_level=user_data.get("english_level", "Intermediate"),
+                country=user_data.get("country", "Palestine"),
+                talents_experience=user_data.get("talents_experience", "")
+            )
+        except Exception as se_err:
+            logger.warning(f"Error subscribing verified user to SubscriberService: {se_err}")
+
+        # Send welcome email to verified email
+        welcome_subject = "مرحباً بك في EduAtlas - تم تفعيل حسابك ورصد المنح بنجاح! 🎓"
+        welcome_html = f"""
+        <div dir="rtl" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 28px; background-color: #0F172A; color: #E2E8F0; max-width: 600px; margin: 0 auto; border-radius: 16px; border: 1px solid #1E293B;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h1 style="color: #FFFFFF; font-size: 26px; font-weight: 800; margin: 0;">Edu<span style="color: #10E599;">Atlas</span></h1>
+                <p style="color: #94A3B8; font-size: 13px; margin: 6px 0 0 0;">رادار الملاحة الأكاديمية والمنح الدولية</p>
+            </div>
+            <div style="background-color: #1E293B; padding: 26px; border-radius: 12px; border: 1px solid #334155;">
+                <h2 style="font-size: 20px; color: #10E599; margin-top: 0;">تهانينا! تم تفعيل حسابك وتوثيق بريدك بنجاح 🎓</h2>
+                <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">عزيزنا الطالب <strong style="color: #FFFFFF;">{user_data.get('full_name')}</strong>،</p>
+                <p style="font-size: 14px; line-height: 1.6; color: #CBD5E1;">تم توثيق بريدك الإلكتروني بنجاح واكتمال تفعيل هويتك الأكاديمية في منصة EduAtlas.</p>
+                <div style="background: #090D16; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #10E599/40;">
+                    <p style="margin: 0; font-size: 13px; color: #E2E8F0;">✅ <strong>بريد الإشعارات الفوري:</strong> {email_clean}</p>
+                    <p style="margin: 6px 0 0 0; font-size: 13px; color: #E2E8F0;">✅ <strong>الملف الأكاديمي العام:</strong> eduatlas.org/profile/{user_data.get('username')}</p>
+                    <p style="margin: 6px 0 0 0; font-size: 13px; color: #E2E8F0;">✅ <strong>حالة الاشتراك:</strong> نشط - ستصلك تقارير المنح المطابقة وتنبيهات المواعيد أولاً بأول.</p>
+                </div>
+            </div>
+        </div>
+        """
+        welcome_plain = f"تهانينا {user_data.get('full_name')}! تم تفعيل حسابك الأكاديمي في EduAtlas بنجاح وسيصلك رادار المنح على بريدك {email_clean}."
+
+        try:
+            _safe_dispatch_email(email_clean, welcome_subject, welcome_html, welcome_plain)
+        except Exception as we_err:
+            logger.warning(f"Error sending welcome email: {we_err}")
+
+        # Send in-app notification
+        try:
+            from services.notification_service import notification_service
+            notification_service.notify_account_verification(email_clean)
+        except Exception:
+            pass
+
+        # Cleanup pending registration
+        self._remove_pending_registration(email_clean)
+
+        # Issue 30-minute session token and 7-day refresh token
+        token = create_session_token(email=email_clean, role="student", expires_in_seconds=1800)
+        refresh_tok = create_refresh_token(email=email_clean, role="student", expires_in_seconds=7 * 86400)
+        safe_copy = self.get_by_email(email_clean) or user_data
+        safe_copy["session_token"] = token
+        safe_copy["refresh_token"] = refresh_tok
+        safe_copy["completeness"] = self.calculate_profile_completeness(safe_copy)
+        return safe_copy
+
+    def resend_registration_code(self, email: str) -> Dict[str, Any]:
+        """Resends 6-digit verification code with 60-second cooldown protection."""
+        if not email or not str(email).strip():
+            raise ValueError("البريد الإلكتروني مطلوب.")
+        email_clean = validate_email(email)
+
+        pending = self._get_pending_registration(email_clean)
+        if not pending:
+            raise ValueError("لا يوجد طلب تسجيل معلق لهذا البريد الإلكتروني. يرجى ملء نموذج التسجيل أولاً.")
+
+        # Check 60-second cooldown
+        last_sent_str = pending.get("last_sent", "")
+        if last_sent_str:
+            try:
+                last_dt = datetime.fromisoformat(last_sent_str)
+                diff = (datetime.now() - last_dt).total_seconds()
+                if diff < 60:
+                    wait = int(60 - diff)
+                    raise ValueError(f"يرجى الانتظار {wait} ثانية قبل إعادة إرسال الرمز.")
+            except ValueError:
+                raise
+            except Exception:
+                pass
+
+        v_code = str(secrets.randbelow(900000) + 100000)
+        now = datetime.now()
+        pending["verification_code"] = v_code
+        pending["last_sent"] = now.isoformat()
+        pending["expires_at"] = (now + timedelta(minutes=15)).isoformat()
+        pending["attempts"] = 0
+        self._save_pending_registration(email_clean, pending)
+
+        name = pending.get("user_data", {}).get("full_name", "طالبنا العزيز")
+        subject = f"رمز تأكيد بريدك الأكاديمي الجديد ({v_code}) - EduAtlas"
+        html_msg = f"""
+        <div dir="rtl" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 28px; background-color: #0F172A; color: #E2E8F0; max-width: 600px; margin: 0 auto; border-radius: 16px; border: 1px solid #1E293B;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h1 style="color: #FFFFFF; font-size: 26px; font-weight: 800; margin: 0;">Edu<span style="color: #10E599;">Atlas</span></h1>
+            </div>
+            <div style="background-color: #1E293B; padding: 26px; border-radius: 12px; border: 1px solid #334155;">
+                <h2 style="font-size: 18px; color: #F8FAFC; margin-top: 0;">رمز التحقق الجديد</h2>
+                <p style="font-size: 14px; color: #CBD5E1;">مرحباً <strong>{name}</strong>، هذا هو رمز التحقق الجديد لتفعيل حسابك:</p>
+                <div style="background: #090D16; padding: 20px; border-radius: 12px; margin: 24px 0; text-align: center; border: 1px solid #10E599;">
+                    <span style="font-size: 36px; font-weight: 900; letter-spacing: 10px; color: #10E599; font-family: monospace;">{v_code}</span>
+                </div>
+                <p style="font-size: 12px; color: #94A3B8;">⏱️ صالح لمدة 15 دقيقة.</p>
+            </div>
+        </div>
+        """
+        plain_msg = f"رمز تأكيد بريدك الجديد في EduAtlas هو: {v_code}"
+
+        try:
+            _safe_dispatch_email(email_clean, subject, html_msg, plain_msg)
+        except Exception as e:
+            logger.warning(f"Error resending OTP email: {e}")
+
+        return {
+            "success": True,
+            "message": "تمت إعادة إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.",
+            "email": email_clean
+        }
 
     def register(
         self,
@@ -531,8 +955,7 @@ class AuthService:
         logger.info(f"Password reset token generated for: {email_clean}")
         return {
             "success": True,
-            "message": "تم إرسال رمز استعادة كلمة المرور إلى بريدك الإلكتروني.",
-            "reset_token": reset_token  # returned for testing/local automation
+            "message": "تم إرسال رمز استعادة كلمة المرور إلى بريدك الإلكتروني."
         }
 
     def reset_password(self, email: str, token: str, new_password: str) -> bool:
@@ -557,10 +980,10 @@ class AuthService:
         if expires_str:
             try:
                 exp_dt = datetime.fromisoformat(expires_str)
-                if datetime.now() > exp_dt:
-                    raise ValueError("انتهت صلاحية رمز استعادة كلمة المرور. يرجى طلب رمز جديد.")
-            except Exception:
-                pass
+            except (ValueError, TypeError):
+                raise ValueError("رمز الاستعادة غير صالح.")
+            if datetime.now() > exp_dt:
+                raise ValueError("انتهت صلاحية رمز استعادة كلمة المرور. يرجى طلب رمز جديد.")
 
         # Hash new password
         new_hash, new_salt = hash_password_secure(clean_new_pw)
@@ -793,9 +1216,11 @@ class AuthService:
         if "cover_url" in profile_data:
             user["cover_url"] = sanitize_text(profile_data["cover_url"], max_length=500)
         if "city" in profile_data:
-            user["city"] = sanitize_text(profile_data["city"], max_length=60)
+            c_val = str(profile_data["city"] or "").strip()
+            user["city"] = validate_city(c_val, is_required=False) if c_val else ""
         if "university" in profile_data:
-            user["university"] = sanitize_text(profile_data["university"], max_length=120)
+            u_val = str(profile_data["university"] or "").strip()
+            user["university"] = validate_university(u_val, is_required=False) if u_val else ""
         if "degree" in profile_data and profile_data["degree"]:
             user["degree"] = sanitize_text(profile_data["degree"], max_length=60)
         if "graduation_year" in profile_data:
@@ -808,9 +1233,9 @@ class AuthService:
             else:
                 user["age"] = None
         if "bio" in profile_data:
-            user["bio"] = sanitize_text(profile_data["bio"], max_length=600)
+            user["bio"] = validate_bio(profile_data["bio"], max_length=600)
         if "country" in profile_data and profile_data["country"]:
-            user["country"] = sanitize_text(profile_data["country"], max_length=60)
+            user["country"] = validate_country(profile_data["country"], is_required=False)
         if "nationality" in profile_data and profile_data["nationality"]:
             user["nationality"] = sanitize_text(profile_data["nationality"], max_length=80)
         if "residence_country" in profile_data and profile_data["residence_country"]:

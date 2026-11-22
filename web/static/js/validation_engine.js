@@ -1,7 +1,8 @@
 /**
  * EduAtlas Enterprise Data Validation & Sanitization Engine
- * Dual-layer (Frontend & Backend-aligned) validation, real-time sanitization,
- * spam/gibberish defense, character counters, layout protection, and instant UX feedback.
+ * Dual-layer (Frontend & Backend-aligned) validation, real-time input filtering,
+ * anti-injection defense (XSS, SQLi, Prototype Pollution, Script Tag injections),
+ * instant keypress blocking, clipboard paste sanitization, and UX feedback.
  */
 
 (function (root, factory) {
@@ -84,6 +85,32 @@
         "user", "root", "scholarpilot", "eduatlas", "help", "support", "about", "terms", "privacy", "static"
     ]);
 
+    // Core Regex definitions for strict data types
+    // Arabic Letters: \u0621-\u064A, \u0671-\u06D3, \u06D5, Tashkeel: \u064B-\u0652
+    // Latin Letters: a-zA-Z
+    // Space: \s
+    const REGEX_ARABIC_LATIN_LETTERS = /[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z]/u;
+    const REGEX_TEXT_ONLY_CHAR = /^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]$/u;
+    const REGEX_TEXT_ONLY_STRIP = /[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]/gu;
+
+    const REGEX_NAME_CHAR = /^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s'\-]$/u;
+    const REGEX_NAME_STRIP = /[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s'\-]/gu;
+
+    const REGEX_DIGITS_CHAR = /^[0-9]$/;
+    const REGEX_DIGITS_STRIP = /[^0-9]/g;
+
+    const REGEX_USERNAME_CHAR = /^[a-zA-Z0-9_.-]$/;
+    const REGEX_USERNAME_STRIP = /[^a-zA-Z0-9_.-]/g;
+
+    const REGEX_GPA_CHAR = /^[0-9.%/]$/;
+    const REGEX_GPA_STRIP = /[^0-9.%/]/g;
+
+    const REGEX_PHONE_CHAR = /^[0-9+]$/;
+    const REGEX_PHONE_STRIP = /[^0-9+]/g;
+
+    const REGEX_UNIVERSITY_STRIP = /[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z0-9\s.\-()&/,\u060C]/gu;
+    const REGEX_INJECTION_STRIP = /<[^>]*>|javascript:|data:text\/html|onerror\s*=|onload\s*=|['"`<>;\\]/gi;
+
     /**
      * Anti-gibberish, anti-spam, and keyboard-smash analyzer.
      */
@@ -126,7 +153,7 @@
     const EduAtlasValidator = {
         /**
          * Validates student full name.
-         * Only Arabic/English letters, spaces, hyphens, and apostrophes. 2-100 chars.
+         * Only Arabic/English letters, spaces, and clean apostrophes/hyphens. Strictly NO numbers or injection symbols.
          */
         validateFullName: function (name, isRequired = true) {
             if (!name || !name.trim()) {
@@ -142,23 +169,146 @@
             if (clean.length > 100) {
                 return { valid: false, message: "الاسم طويل جداً (الحد الأقصى 100 حرف)." };
             }
-            const regex = /^[\u0600-\u06FFa-zA-Z\s\.\-']{2,100}$/;
-            if (!regex.test(clean)) {
-                return { valid: false, message: "يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون أرقام أو رموز خاصة." };
+
+            // Strictly reject all numbers (ASCII & Arabic digits)
+            if (/[\d\u0660-\u0669\u06F0-\u06F9]/.test(clean)) {
+                return { valid: false, message: "الاسم لا يمكن أن يحتوي على أي أرقام." };
             }
-            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
+
+            // Strictly reject special symbols & injection characters
+            if (/[^a-zA-Z\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652\s'\-]/.test(clean)) {
+                return { valid: false, message: "يرجى إدخال اسم حقيقي يحتوي على أحرف عربية أو إنجليزية فقط دون رموز خاصة." };
+            }
+
+            const letterCount = (clean.match(/[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]/g) || []).length;
             if (letterCount < 2) {
                 return { valid: false, message: "الاسم يجب أن يتضمن حرفين نصيين على الأقل." };
             }
             if (isGibberishOrSpam(clean)) {
                 return { valid: false, message: "الاسم المدخل يحتوي على تكرار عشوائي غير مفهوم. يرجى إدخال اسم حقيقي." };
             }
-            return { valid: true, value: clean };
+            return { valid: true, value: clean.replace(/\s+/g, ' ').trim() };
+        },
+
+        /**
+         * Validates city name.
+         * Strictly letters and spaces only. Absolutely NO numbers or symbols.
+         */
+        validateCity: function (cityStr, isRequired = false) {
+            if (!cityStr || !cityStr.trim()) {
+                if (isRequired) {
+                    return { valid: false, message: "اسم المدينة مطلوب ولا يمكن تركه فارغاً." };
+                }
+                return { valid: true, value: "" };
+            }
+            const clean = sanitizeString(cityStr, 60);
+            if (clean.length < 2) {
+                return { valid: false, message: "اسم المدينة قصير جداً (حرفان على الأقل)." };
+            }
+            if (clean.length > 60) {
+                return { valid: false, message: "اسم المدينة طويل جداً (الحد الأقصى 60 حرف)." };
+            }
+
+            // Reject all digits
+            if (/[\d\u0660-\u0669\u06F0-\u06F9]/.test(clean)) {
+                return { valid: false, message: "اسم المدينة يجب ألا يحتوي على أي أرقام." };
+            }
+
+            // Text only: Arabic & Latin letters and spaces
+            if (/[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]/.test(clean)) {
+                return { valid: false, message: "اسم المدينة يجب أن يتكون من أحرف ومسافات فقط دون أرقام أو رموز." };
+            }
+
+            const letterCount = (clean.match(/[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]/g) || []).length;
+            if (letterCount < 2) {
+                return { valid: false, message: "اسم المدينة يجب أن يتضمن حرفين نصيين على الأقل." };
+            }
+            if (isGibberishOrSpam(clean)) {
+                return { valid: false, message: "اسم المدينة يحتوي على تكرار عشوائي." };
+            }
+            return { valid: true, value: clean.replace(/\s+/g, ' ').trim() };
+        },
+
+        /**
+         * Validates country against the official recognized list.
+         * Strictly letters and spaces. Absolutely NO numbers or symbols.
+         */
+        validateCountry: function (countryStr, isRequired = false) {
+            if (!countryStr || !countryStr.trim()) {
+                if (isRequired) {
+                    return { valid: false, message: "يرجى اختيار دولة إقامتك أو جنسيتك." };
+                }
+                return { valid: true, value: "" };
+            }
+            const clean = sanitizeString(countryStr, 60);
+
+            // Reject digits
+            if (/[\d\u0660-\u0669\u06F0-\u06F9]/.test(clean)) {
+                return { valid: false, message: "اسم الدولة لا يمكن أن يحتوي على أي أرقام." };
+            }
+
+            // Reject special injection symbols
+            if (/[!@#$%^&*()_+={}\[\]|\\:;\"'<>,.?/~`؟،؛٪]/.test(clean)) {
+                return { valid: false, message: "اسم الدولة يحتوي على رموز غير مسموح بها." };
+            }
+
+            let normalized = clean.toLowerCase();
+            normalized = normalized.replace(/\s*\(.*?\)/g, '').split('-')[0].trim();
+
+            if (OFFICIAL_COUNTRIES.has(normalized)) {
+                return { valid: true, value: clean.trim() };
+            }
+
+            // If it consists solely of valid letters
+            if (/^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s]{2,60}$/.test(clean)) {
+                return { valid: true, value: clean.trim() };
+            }
+
+            return { valid: false, message: `الدولة المدخلة (${countryStr}) غير موجودة في قائمة الدول المعتمدة.` };
+        },
+
+        /**
+         * Validates field of study / major.
+         * Strictly text-only (letters and spaces). No numbers or injection symbols.
+         */
+        validateMajor: function (major, isRequired = false) {
+            if (!major || !major.trim()) {
+                if (isRequired) {
+                    return { valid: false, message: "التخصص الدراسي مطلوب." };
+                }
+                return { valid: true, value: "" };
+            }
+            const clean = sanitizeString(major, 100);
+            if (clean.length < 2) {
+                return { valid: false, message: "اسم التخصص قصير جداً (حرفان على الأقل)." };
+            }
+            if (clean.length > 100) {
+                return { valid: false, message: "اسم التخصص طويل جداً (الحد الأقصى 100 حرف)." };
+            }
+
+            // Reject numbers
+            if (/[\d\u0660-\u0669\u06F0-\u06F9]/.test(clean)) {
+                return { valid: false, message: "اسم التخصص يجب ألا يحتوي على أي أرقام." };
+            }
+
+            // Allow letters, spaces, and clean academic connectors like / & -
+            if (/[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s/&,\u060C\-()]/.test(clean)) {
+                return { valid: false, message: "اسم التخصص يحتوي على رموز غير مقبولة." };
+            }
+
+            const letterCount = (clean.match(/[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]/g) || []).length;
+            if (letterCount < 2) {
+                return { valid: false, message: "يرجى كتابة تخصص دراسي حقيقي يتضمن أحرفاً صالحة." };
+            }
+            if (isGibberishOrSpam(clean)) {
+                return { valid: false, message: "التخصص المدخل يحتوي على تكرار عشوائي." };
+            }
+            return { valid: true, value: clean.replace(/\s+/g, ' ').trim() };
         },
 
         /**
          * Validates university or educational institution.
-         * Letters, numbers, common punctuation, 2-150 chars.
+         * Letters, numbers (for institutions with numbers), common institution punctuation.
          */
         validateUniversity: function (univ, isRequired = false) {
             if (!univ || !univ.trim()) {
@@ -174,44 +324,46 @@
             if (clean.length > 150) {
                 return { valid: false, message: "اسم المؤسسة طويل جداً (الحد الأقصى 150 حرف)." };
             }
-            const regex = /^[\u0600-\u06FFa-zA-Z0-9\s\.\-/,()&\u060C]{2,150}$/;
+
+            // Disallow dangerous injection chars
+            if (/[<>"'`\\;%$#*!~^{}]/.test(clean)) {
+                return { valid: false, message: "اسم الجامعة يحتوي على رموز غير مسموح بها أمنياً." };
+            }
+
+            const regex = /^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z0-9\s.\-()&/,\u060C]{2,150}$/;
             if (!regex.test(clean)) {
                 return { valid: false, message: "اسم الجامعة يحتوي على رموز غير مقبولة." };
             }
-            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
+            const letterCount = (clean.match(/[\u0621-\u064A\u0671-\u06D3\u06D5a-zA-Z]/g) || []).length;
             if (letterCount < 2) {
                 return { valid: false, message: "اسم الجامعة يجب أن يحتوي على أحرف حقيقية وليس أرقاماً أو رموزاً فقط." };
             }
             if (isGibberishOrSpam(clean)) {
                 return { valid: false, message: "اسم الجامعة يحتوي على تكرار عشوائي للرموز أو الأحرف." };
             }
-            return { valid: true, value: clean };
+            return { valid: true, value: clean.replace(/\s+/g, ' ').trim() };
         },
 
         /**
-         * Validates field of study / major.
-         * 2 to 100 characters.
+         * Validates public username / handle.
+         * English lowercase letters, numbers, and allowed punctuation (_, -, .).
          */
-        validateMajor: function (major, isRequired = true) {
-            if (!major || !major.trim()) {
-                if (isRequired) {
-                    return { valid: false, message: "التخصص الدراسي مطلوب." };
-                }
-                return { valid: true, value: "" };
+        validateUsername: function (usernameStr) {
+            if (!usernameStr || !usernameStr.trim()) {
+                return { valid: false, message: "اسم المستخدم مطلوب." };
             }
-            const clean = sanitizeString(major, 100);
-            if (clean.length < 2) {
-                return { valid: false, message: "اسم التخصص قصير جداً (حرفان على الأقل)." };
+            const clean = String(usernameStr).trim().toLowerCase();
+            if (clean.length < 3) {
+                return { valid: false, message: "اسم المستخدم قصير جداً (الحد الأدنى 3 أحرف)." };
             }
-            if (clean.length > 100) {
-                return { valid: false, message: "اسم التخصص طويل جداً (الحد الأقصى 100 حرف)." };
+            if (clean.length > 40) {
+                return { valid: false, message: "اسم المستخدم طويل جداً (الحد الأقصى 40 حرف)." };
             }
-            const letterCount = (clean.match(/[\u0600-\u06FFa-zA-Z]/g) || []).length;
-            if (letterCount < 2) {
-                return { valid: false, message: "يرجى كتابة تخصص دراسي حقيقي يتضمن أحرفاً صالحة." };
+            if (!/^[a-z0-9][a-z0-9_\-\.]{1,38}[a-z0-9]$/.test(clean)) {
+                return { valid: false, message: "اسم المستخدم يجب أن يحتوي على أحرف إنجليزية وأرقام ونقاط أو شرطات فقط دون مسافات." };
             }
-            if (isGibberishOrSpam(clean)) {
-                return { valid: false, message: "التخصص المدخل يحتوي على تكرار عشوائي." };
+            if (RESERVED_USERNAMES.has(clean)) {
+                return { valid: false, message: "اسم المستخدم هذا محجوز لنظام المنصة." };
             }
             return { valid: true, value: clean };
         },
@@ -220,7 +372,6 @@
          * Validates academic GPA strictly:
          * - 4.0 / 5.0 systems (0.5 to 5.0)
          * - Percentage systems (40% to 100%)
-         * - Rejects 333333, 999999, -999, abc, @@@@.
          */
         validateGpa: function (gpaStr, isRequired = true) {
             if (!gpaStr || !gpaStr.trim()) {
@@ -243,7 +394,7 @@
             if (/[a-zA-Z\u0600-\u06FF]/.test(clean)) {
                 return { valid: false, message: "حقل المعدل يجب أن يحتوي على أرقام فقط (مثال: 3.75 أو 88.5%)." };
             }
-            if (/[^0-9\.\s%/]/.test(clean)) {
+            if (/[^0-9.\s%/]/.test(clean)) {
                 return { valid: false, message: "حقل المعدل يحتوي على رموز غير مقبولة." };
             }
 
@@ -292,22 +443,67 @@
         },
 
         /**
-         * Validates country against the official recognized list.
+         * Validates student biography. Max 600 characters.
+         * Strips dangerous script tags and injection tokens.
          */
-        validateCountry: function (countryStr, isRequired = true) {
-            if (!countryStr || !countryStr.trim()) {
-                if (isRequired) {
-                    return { valid: false, message: "يرجى اختيار دولة إقامتك أو جنسيتك." };
-                }
-                return { valid: true, value: "Palestine" };
+        validateBio: function (bioStr, maxLength = 600) {
+            if (!bioStr || !bioStr.trim()) {
+                return { valid: true, value: "" };
             }
-            let clean = String(countryStr).trim().toLowerCase();
-            clean = clean.replace(/\s*\(.*?\)/g, '').split('-')[0].trim();
+            let clean = sanitizeString(bioStr, maxLength);
+            // Defuse injection quotes and dangerous symbols
+            clean = clean.replace(REGEX_INJECTION_STRIP, '');
+            if (clean.length > maxLength) {
+                return { valid: false, message: `النبذة التعريفية يجب ألا تتجاوز ${maxLength} حرفاً.` };
+            }
+            return { valid: true, value: clean };
+        },
 
-            if (OFFICIAL_COUNTRIES.has(clean)) {
-                return { valid: true, value: countryStr.trim() };
+        /**
+         * Validates student age (10 to 100).
+         */
+        validateAge: function (ageVal, isRequired = false) {
+            if (!ageVal && ageVal !== 0) {
+                if (isRequired) return { valid: false, message: "حقل العمر مطلوب." };
+                return { valid: true, value: null };
             }
-            return { valid: false, message: `الدولة المدخلة (${countryStr}) غير موجودة في قائمة الدول المعتمدة.` };
+            const num = parseInt(String(ageVal).trim(), 10);
+            if (isNaN(num) || num < 10 || num > 100) {
+                return { valid: false, message: "يرجى إدخال عمر واقعي بين 10 و 100 سنة." };
+            }
+            return { valid: true, value: num };
+        },
+
+        /**
+         * Validates expected graduation year (1970 to 2040).
+         */
+        validateGradYear: function (yrVal, isRequired = false) {
+            if (!yrVal) {
+                if (isRequired) return { valid: false, message: "سنة التخرج مطلوبة." };
+                return { valid: true, value: "" };
+            }
+            const num = parseInt(String(yrVal).trim(), 10);
+            if (isNaN(num) || num < 1970 || num > 2040) {
+                return { valid: false, message: "يرجى إدخال سنة تخرج واقعية بين 1970 و 2040." };
+            }
+            return { valid: true, value: String(num) };
+        },
+
+        /**
+         * Validates international phone number (+ followed by 7-15 digits).
+         */
+        validatePhone: function (phoneStr, isRequired = false) {
+            if (!phoneStr || !phoneStr.trim()) {
+                if (isRequired) {
+                    return { valid: false, message: "رقم الهاتف مطلوب." };
+                }
+                return { valid: true, value: "" };
+            }
+            const clean = String(phoneStr).replace(/[\s\-\(\)]/g, '').trim();
+            if (!/^(\+|00)?[0-9]{7,15}$/.test(clean)) {
+                return { valid: false, message: "رقم الهاتف غير صحيح. يجب أن يتكون من 7 إلى 15 رقماً مع رمز الدولة الدولي (مثال: +970590000000)." };
+            }
+            return { valid: true, value: clean };
         },
 
         /**
@@ -327,60 +523,6 @@
             const regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
             if (!regex.test(clean)) {
                 return { valid: false, message: "يرجى إدخال عنوان بريد إلكتروني صالح (مثال: student@example.com)." };
-            }
-            return { valid: true, value: clean };
-        },
-
-        /**
-         * Validates international phone number (+ or 00 followed by 7-15 digits).
-         */
-        validatePhone: function (phoneStr, isRequired = false) {
-            if (!phoneStr || !phoneStr.trim()) {
-                if (isRequired) {
-                    return { valid: false, message: "رقم الهاتف مطلوب." };
-                }
-                return { valid: true, value: "" };
-            }
-            const clean = String(phoneStr).replace(/[\s\-\(\)]/g, '').trim();
-            if (!/^(\+|00)?[0-9]{7,15}$/.test(clean)) {
-                return { valid: false, message: "رقم الهاتف غير صحيح. يجب أن يتكون من 7 إلى 15 رقماً مع رمز الدولة الدولي (مثال: +970590000000)." };
-            }
-            return { valid: true, value: clean };
-        },
-
-        /**
-         * Validates student biography. Max 600 characters.
-         */
-        validateBio: function (bioStr, maxLength = 600) {
-            if (!bioStr || !bioStr.trim()) {
-                return { valid: true, value: "" };
-            }
-            const clean = sanitizeString(bioStr, maxLength);
-            if (clean.length > maxLength) {
-                return { valid: false, message: `النبذة التعريفية يجب ألا تتجاوز ${maxLength} حرفاً.` };
-            }
-            return { valid: true, value: clean };
-        },
-
-        /**
-         * Validates public username / handle.
-         */
-        validateUsername: function (usernameStr) {
-            if (!usernameStr || !usernameStr.trim()) {
-                return { valid: false, message: "اسم المستخدم مطلوب." };
-            }
-            const clean = String(usernameStr).trim().toLowerCase();
-            if (clean.length < 3) {
-                return { valid: false, message: "اسم المستخدم قصير جداً (الحد الأدنى 3 أحرف)." };
-            }
-            if (clean.length > 40) {
-                return { valid: false, message: "اسم المستخدم طويل جداً (الحد الأقصى 40 حرف)." };
-            }
-            if (!/^[a-z0-9][a-z0-9_\-\.]{1,38}[a-z0-9]$/.test(clean)) {
-                return { valid: false, message: "اسم المستخدم يجب أن يحتوي على أحرف إنجليزية وأرقام وشرطات دون مسافات." };
-            }
-            if (RESERVED_USERNAMES.has(clean)) {
-                return { valid: false, message: "اسم المستخدم هذا محجوز لنظام المنصة." };
             }
             return { valid: true, value: clean };
         },
@@ -412,56 +554,209 @@
          */
         validateSearchQuery: function (qStr) {
             if (!qStr) return { valid: true, value: "" };
-            const clean = sanitizeString(qStr, 120);
+            let clean = sanitizeString(qStr, 120);
+            clean = clean.replace(REGEX_INJECTION_STRIP, '');
             return { valid: true, value: clean };
         },
 
         // =====================================================================
-        // REAL-TIME INPUT SANITIZERS (BLOCK JUNK DURING TYPING/PASTE)
+        // SANITIZATION ROUTINES BY DATA TYPE (FOR INPUT & PASTE EVENTS)
         // =====================================================================
 
+        sanitizeByFilterType: function (val, filterType, maxLen) {
+            if (val === null || val === undefined) return '';
+            let s = String(val);
+
+            switch (filterType) {
+                case 'text-only':
+                case 'city':
+                case 'country':
+                    // Strictly letters and spaces only. No numbers, no symbols.
+                    s = s.replace(REGEX_TEXT_ONLY_STRIP, '');
+                    if (maxLen) s = s.slice(0, maxLen);
+                    return s;
+
+                case 'fullname':
+                case 'name':
+                    // Letters, spaces, hyphens, and apostrophes only. No numbers, no symbols.
+                    s = s.replace(REGEX_NAME_STRIP, '');
+                    if (maxLen) s = s.slice(0, maxLen);
+                    return s;
+
+                case 'major':
+                    // Letters, spaces, and clean academic connectors
+                    s = s.replace(/[^\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s/&,\u060C\-()]/gu, '');
+                    if (maxLen) s = s.slice(0, maxLen);
+                    return s;
+
+                case 'username':
+                    // Lowercase English alphanumeric + _ - .
+                    s = s.replace(REGEX_USERNAME_STRIP, '').toLowerCase();
+                    return s.slice(0, maxLen || 40);
+
+                case 'digits':
+                case 'age':
+                case 'gradyear':
+                case 'code':
+                    s = s.replace(REGEX_DIGITS_STRIP, '');
+                    if (maxLen) s = s.slice(0, maxLen);
+                    return s;
+
+                case 'gpa':
+                    s = s.replace(REGEX_GPA_STRIP, '');
+                    return s.slice(0, maxLen || 10);
+
+                case 'phone':
+                case 'whatsapp':
+                    s = s.replace(REGEX_PHONE_STRIP, '');
+                    // Only one '+' allowed, strictly at index 0
+                    if (s.indexOf('+') > 0) {
+                        const hasLeadingPlus = s.startsWith('+');
+                        s = (hasLeadingPlus ? '+' : '') + s.replace(/\+/g, '');
+                    }
+                    return s.slice(0, maxLen || 20);
+
+                case 'university':
+                    s = s.replace(REGEX_UNIVERSITY_STRIP, '');
+                    return s.slice(0, maxLen || 150);
+
+                case 'safe-text':
+                case 'bio':
+                case 'comment':
+                    // Strips tags, quotes and injection chars
+                    s = s.replace(REGEX_INJECTION_STRIP, '');
+                    if (maxLen) s = s.slice(0, maxLen);
+                    return s;
+
+                case 'url':
+                    s = s.replace(/[\s<>"'`\\^]/g, '');
+                    return s.slice(0, maxLen || 500);
+
+                case 'email':
+                    s = s.replace(/[^\w.@+-]/g, '').toLowerCase();
+                    return s.slice(0, maxLen || 100);
+
+                default:
+                    return s;
+            }
+        },
+
+        // Helper wrappers for explicit sanitization calls
         sanitizeFullNameInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
-            // Allow Arabic/English letters, spaces, hyphens, and single quotes
-            const filtered = original.replace(/[^\u0600-\u06FFa-zA-Z\s\.\-']/g, '').slice(0, 100);
-            if (original !== filtered) {
-                inputEl.value = filtered;
-            }
+            const filtered = this.sanitizeByFilterType(original, 'fullname', 100);
+            if (original !== filtered) inputEl.value = filtered;
+        },
+
+        sanitizeCityInput: function (inputEl) {
+            if (!inputEl) return;
+            const original = inputEl.value;
+            const filtered = this.sanitizeByFilterType(original, 'city', 60);
+            if (original !== filtered) inputEl.value = filtered;
+        },
+
+        sanitizeCountryInput: function (inputEl) {
+            if (!inputEl) return;
+            const original = inputEl.value;
+            const filtered = this.sanitizeByFilterType(original, 'country', 60);
+            if (original !== filtered) inputEl.value = filtered;
         },
 
         sanitizeGpaInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
-            // Allowed: digits, '.', '%', '/'
-            let filtered = original.replace(/[^0-9.%/]/g, '').slice(0, 10);
-            if (original !== filtered) {
-                inputEl.value = filtered;
-            }
+            const filtered = this.sanitizeByFilterType(original, 'gpa', 10);
+            if (original !== filtered) inputEl.value = filtered;
         },
 
         sanitizeUniversityInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
-            // Allowed: Arabic/English letters, digits, spaces, dots, hyphens, slashes, commas, parentheses, &
-            let filtered = original.replace(/[^\u0600-\u06FFa-zA-Z0-9\s\.\-/,\u060C()&]/g, '').slice(0, 150);
-            if (original !== filtered) {
-                inputEl.value = filtered;
-            }
+            const filtered = this.sanitizeByFilterType(original, 'university', 150);
+            if (original !== filtered) inputEl.value = filtered;
         },
 
         sanitizeMajorInput: function (inputEl) {
             if (!inputEl) return;
             const original = inputEl.value;
-            let filtered = original.replace(/[^\u0600-\u06FFa-zA-Z0-9\s\.\-&,/\u060C()]/g, '').slice(0, 100);
-            if (original !== filtered) {
-                inputEl.value = filtered;
-            }
+            const filtered = this.sanitizeByFilterType(original, 'major', 100);
+            if (original !== filtered) inputEl.value = filtered;
         },
 
         // =====================================================================
-        // DOM UX & REAL-TIME INTERACTION HELPERS
+        // REAL-TIME UX FEEDBACK & FLOATING WARNING BADGES
         // =====================================================================
+
+        showInputWarning: function (inputEl, filterType, customMsg) {
+            if (!inputEl || typeof document === 'undefined') return;
+
+            // Visual pulse on the input border
+            inputEl.classList.add('ring-2', 'ring-amber-500/50', 'border-amber-500');
+
+            let message = customMsg;
+            if (!message) {
+                switch (filterType) {
+                    case 'text-only':
+                    case 'city':
+                    case 'country':
+                        message = "نصوص فقط (أحرف ومسافات بدون أرقام أو رموز خاصة).";
+                        break;
+                    case 'fullname':
+                    case 'name':
+                        message = "الاسم يقبل أحرفاً ومسافات فقط دون أرقام أو رموز.";
+                        break;
+                    case 'major':
+                        message = "اسم التخصص يقبل أحرفاً ومسافات فقط.";
+                        break;
+                    case 'digits':
+                    case 'age':
+                    case 'gradyear':
+                    case 'code':
+                        message = "أرقام فقط (0 - 9).";
+                        break;
+                    case 'username':
+                        message = "أحرف إنجليزية وأرقام ونقاط وشرطات فقط دون مسافات.";
+                        break;
+                    case 'gpa':
+                        message = "أرقام ورموز المعدل فقط (. % /).";
+                        break;
+                    case 'phone':
+                    case 'whatsapp':
+                        message = "أرقام الهاتف مع الرمز الدولي (+) فقط.";
+                        break;
+                    case 'university':
+                        message = "تم منع رموز الحقن غير الآمنة.";
+                        break;
+                    default:
+                        message = "نوع بيانات غير مسموح به في هذا الحقل.";
+                        break;
+                }
+            }
+
+            const warnId = (inputEl.id || inputEl.name || 'field') + '_warnTooltip';
+            let badge = document.getElementById(warnId);
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.id = warnId;
+                badge.className = 'ea-input-warning fixed z-50 pointer-events-none px-2.5 py-1 text-[11px] font-bold text-amber-900 bg-amber-50 dark:bg-amber-950/90 dark:text-amber-200 border border-amber-300 dark:border-amber-700/80 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-200 opacity-0 transform -translate-y-1';
+                document.body.appendChild(badge);
+            }
+
+            badge.textContent = message;
+            const rect = inputEl.getBoundingClientRect();
+            badge.style.top = `${rect.bottom + 6}px`;
+            badge.style.left = `${Math.max(10, rect.left)}px`;
+            badge.classList.remove('opacity-0', '-translate-y-1');
+            badge.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(inputEl._warnTimeout);
+            inputEl._warnTimeout = setTimeout(() => {
+                badge.classList.remove('opacity-100', 'translate-y-0');
+                badge.classList.add('opacity-0', '-translate-y-1');
+                inputEl.classList.remove('ring-2', 'ring-amber-500/50', 'border-amber-500');
+            }, 1800);
+        },
 
         showError: function (inputEl, errorMsg) {
             if (!inputEl) return;
@@ -526,36 +821,144 @@
         },
 
         /**
-         * Validates a single input element according to its data-validate or type attribute.
+         * Resolves the proper validation & filter rule for a DOM element.
+         */
+        detectFilterType: function (inputEl) {
+            if (!inputEl) return null;
+
+            // 1. Explicit data-type or data-validate attributes
+            const explicit = inputEl.getAttribute('data-type') || inputEl.getAttribute('data-validate');
+            if (explicit) {
+                const low = explicit.toLowerCase();
+                if (/fullname|name/i.test(low)) return 'fullname';
+                if (/city/i.test(low)) return 'city';
+                if (/country/i.test(low)) return 'country';
+                if (/major/i.test(low)) return 'major';
+                if (/text-only|text_only|letters/i.test(low)) return 'text-only';
+                if (/digits|numbers|integer/i.test(low)) return 'digits';
+                if (/username/i.test(low)) return 'username';
+                if (/gpa/i.test(low)) return 'gpa';
+                if (/phone|whatsapp/i.test(low)) return 'phone';
+                if (/university|institution/i.test(low)) return 'university';
+                if (/age/i.test(low)) return 'age';
+                if (/gradyear|year/i.test(low)) return 'gradyear';
+                if (/bio|content|description/i.test(low)) return 'safe-text';
+                if (/url|website|portfolio/i.test(low)) return 'url';
+                if (/email/i.test(low)) return 'email';
+                if (/password/i.test(low)) return 'password';
+                return low;
+            }
+
+            // 2. Automated inference based on ID, name, or HTML type
+            const id = (inputEl.id || '').toLowerCase();
+            const name = (inputEl.name || '').toLowerCase();
+            const htmlType = (inputEl.type || '').toLowerCase();
+
+            if (htmlType === 'tel') return 'phone';
+            if (htmlType === 'url') return 'url';
+            if (htmlType === 'email') return 'email';
+            if (htmlType === 'password') return 'password';
+
+            // Username
+            if (id.includes('username') || name.includes('username')) return 'username';
+
+            // Full name (exclude username)
+            if ((id.includes('fullname') || id.includes('name') || name.includes('name')) && !id.includes('username') && !id.includes('kanban')) {
+                return 'fullname';
+            }
+
+            // City
+            if (id.includes('city') || name.includes('city')) return 'city';
+
+            // Country
+            if (id.includes('country') || name.includes('country')) return 'country';
+
+            // Major
+            if (id.includes('major') || name.includes('major')) return 'major';
+
+            // GPA
+            if (id.includes('gpa') || name.includes('gpa')) return 'gpa';
+
+            // Phone / WhatsApp
+            if (id.includes('phone') || id.includes('whatsapp') || name.includes('phone')) return 'phone';
+
+            // Age
+            if (id.includes('age') || name.includes('age')) return 'age';
+
+            // Graduation Year
+            if (id.includes('gradyear') || id.includes('year') || name.includes('year')) return 'gradyear';
+
+            // University / Institution
+            if (id.includes('university') || id.includes('institution') || name.includes('university')) return 'university';
+
+            // Textarea / Bio
+            if (inputEl.tagName === 'TEXTAREA' || id.includes('bio') || name.includes('bio')) return 'safe-text';
+
+            if (htmlType === 'number') return 'digits';
+
+            return null;
+        },
+
+        /**
+         * Validates a single input element according to its resolved rule.
          */
         validateElement: function (inputEl) {
             if (!inputEl) return true;
-            const type = inputEl.getAttribute('data-validate') || inputEl.type || inputEl.id;
+            const filterType = this.detectFilterType(inputEl);
+            if (!filterType) return true;
+
             const val = inputEl.value;
             const isReq = inputEl.hasAttribute('required');
-
             let result = { valid: true };
 
-            if (/fullname|name/i.test(type)) {
-                result = this.validateFullName(val, isReq);
-            } else if (/univ/i.test(type)) {
-                result = this.validateUniversity(val, isReq);
-            } else if (/major/i.test(type)) {
-                result = this.validateMajor(val, isReq);
-            } else if (/gpa/i.test(type)) {
-                result = this.validateGpa(val, isReq);
-            } else if (/country/i.test(type)) {
-                result = this.validateCountry(val, isReq);
-            } else if (/email/i.test(type)) {
-                result = this.validateEmail(val);
-            } else if (/phone|whatsapp/i.test(type)) {
-                result = this.validatePhone(val, isReq);
-            } else if (/username/i.test(type)) {
-                result = this.validateUsername(val);
-            } else if (/password/i.test(type)) {
-                result = this.validatePassword(val);
-            } else if (/bio/i.test(type)) {
-                result = this.validateBio(val, parseInt(inputEl.getAttribute('maxlength')) || 600);
+            switch (filterType) {
+                case 'fullname':
+                case 'name':
+                    result = this.validateFullName(val, isReq);
+                    break;
+                case 'city':
+                    result = this.validateCity(val, isReq);
+                    break;
+                case 'country':
+                    result = this.validateCountry(val, isReq);
+                    break;
+                case 'major':
+                    result = this.validateMajor(val, isReq);
+                    break;
+                case 'text-only':
+                    result = this.validateCity(val, isReq); // Strict text-only
+                    break;
+                case 'university':
+                    result = this.validateUniversity(val, isReq);
+                    break;
+                case 'gpa':
+                    result = this.validateGpa(val, isReq);
+                    break;
+                case 'username':
+                    result = this.validateUsername(val);
+                    break;
+                case 'phone':
+                case 'whatsapp':
+                    result = this.validatePhone(val, isReq);
+                    break;
+                case 'age':
+                    result = this.validateAge(val, isReq);
+                    break;
+                case 'gradyear':
+                    result = this.validateGradYear(val, isReq);
+                    break;
+                case 'safe-text':
+                case 'bio':
+                    result = this.validateBio(val, parseInt(inputEl.getAttribute('maxlength')) || 600);
+                    break;
+                case 'email':
+                    result = this.validateEmail(val);
+                    break;
+                case 'password':
+                    result = this.validatePassword(val);
+                    break;
+                default:
+                    break;
             }
 
             if (!result.valid) {
@@ -568,28 +971,130 @@
         },
 
         /**
-         * Automatically binds validation listeners and character counters to all form inputs in container.
+         * Binds real-time filtering, keypress blocking, and clipboard sanitization to an input element.
          */
-        init: function (container = document) {
-            const inputs = container.querySelectorAll('[data-validate]');
-            inputs.forEach(input => {
-                const rule = input.getAttribute('data-validate');
+        bindField: function (inputEl, explicitType) {
+            if (!inputEl || inputEl._eaFiltered) return;
 
-                input.addEventListener('input', () => {
-                    if (rule === 'fullname') this.sanitizeFullNameInput(input);
-                    if (rule === 'gpa') this.sanitizeGpaInput(input);
-                    if (rule === 'university') this.sanitizeUniversityInput(input);
-                    if (rule === 'major') this.sanitizeMajorInput(input);
-                    if (input.value.trim().length >= 2) {
-                        this.validateElement(input);
+            const filterType = explicitType || this.detectFilterType(inputEl);
+            if (!filterType) return;
+
+            inputEl._eaFiltered = true;
+            inputEl.setAttribute('data-filter-active', filterType);
+
+            const self = this;
+            const maxLen = parseInt(inputEl.getAttribute('maxlength')) || null;
+
+            // 1. KEYPRESS / BEFOREINPUT BLOCKER: Block invalid characters from being typed
+            inputEl.addEventListener('keypress', function (e) {
+                // Ignore system & navigation keys (Enter, Backspace, arrows, shortcuts)
+                if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
+
+                const char = e.key;
+                let allowed = true;
+
+                if (filterType === 'text-only' || filterType === 'city' || filterType === 'country') {
+                    // Strictly letters and spaces. Zero numbers, zero symbols.
+                    allowed = REGEX_TEXT_ONLY_CHAR.test(char);
+                } else if (filterType === 'fullname' || filterType === 'name') {
+                    // Letters, spaces, apostrophe, hyphen. Zero numbers.
+                    allowed = REGEX_NAME_CHAR.test(char);
+                } else if (filterType === 'major') {
+                    // Letters, spaces, composite academic connectors
+                    allowed = /^[\u0621-\u064A\u0671-\u06D3\u06D5\u064B-\u0652a-zA-Z\s/&,\u060C\-()]$/u.test(char);
+                } else if (filterType === 'digits' || filterType === 'age' || filterType === 'gradyear' || filterType === 'code') {
+                    allowed = REGEX_DIGITS_CHAR.test(char);
+                } else if (filterType === 'username') {
+                    allowed = REGEX_USERNAME_CHAR.test(char);
+                } else if (filterType === 'gpa') {
+                    allowed = REGEX_GPA_CHAR.test(char);
+                } else if (filterType === 'phone' || filterType === 'whatsapp') {
+                    if (char === '+') {
+                        allowed = (this.selectionStart === 0 && !this.value.includes('+'));
                     } else {
-                        this.clearError(input);
+                        allowed = REGEX_DIGITS_CHAR.test(char);
                     }
-                });
+                } else if (filterType === 'university') {
+                    // Disallow injection symbols
+                    allowed = !/[<>"'`\\;%$#*!~^{}]/.test(char);
+                } else if (filterType === 'safe-text' || filterType === 'bio') {
+                    // Disallow script/injection quotes and angle brackets
+                    allowed = !/[<>"'`\\;]/.test(char);
+                }
 
-                input.addEventListener('blur', () => {
-                    this.validateElement(input);
-                });
+                if (!allowed) {
+                    e.preventDefault();
+                    self.showInputWarning(this, filterType);
+                }
+            });
+
+            // 2. CLIPBOARD PASTE INTERCEPTOR: Sanitize clipboard data on paste
+            inputEl.addEventListener('paste', function (e) {
+                const pasteText = (e.clipboardData || window.clipboardData)?.getData('text');
+                if (!pasteText) return;
+
+                const sanitized = self.sanitizeByFilterType(pasteText, filterType, maxLen);
+                if (sanitized !== pasteText) {
+                    e.preventDefault();
+                    const start = this.selectionStart ?? this.value.length;
+                    const end = this.selectionEnd ?? this.value.length;
+                    const cur = this.value;
+                    const nextVal = cur.substring(0, start) + sanitized + cur.substring(end);
+                    this.value = maxLen ? nextVal.slice(0, maxLen) : nextVal;
+                    const newCursor = start + sanitized.length;
+                    if (this.setSelectionRange) this.setSelectionRange(newCursor, newCursor);
+
+                    this.dispatchEvent(new Event('input', { bubbles: true }));
+
+                    if (sanitized.length < pasteText.length) {
+                        self.showInputWarning(this, filterType, "تم تنقية المحتوى الملصق وحظر الرموز والأرقام غير المسموح بها.");
+                    }
+                }
+            });
+
+            // 3. INPUT EVENT SANITIZER (Safety net for autofill, drag-drop, mobile suggestions)
+            inputEl.addEventListener('input', function () {
+                const original = this.value;
+                const sanitized = self.sanitizeByFilterType(original, filterType, maxLen);
+
+                if (original !== sanitized) {
+                    const start = this.selectionStart;
+                    this.value = sanitized;
+                    if (start !== null && this.setSelectionRange) {
+                        const targetPos = Math.min(start, sanitized.length);
+                        this.setSelectionRange(targetPos, targetPos);
+                    }
+                    self.showInputWarning(this, filterType);
+                }
+
+                if (this.value.trim().length >= 2) {
+                    self.validateElement(this);
+                } else {
+                    self.clearError(this);
+                }
+            });
+
+            // 4. BLUR & CHANGE: Final formatting and validation
+            inputEl.addEventListener('blur', function () {
+                if (filterType === 'text-only' || filterType === 'city' || filterType === 'country' || filterType === 'fullname') {
+                    this.value = this.value.replace(/\s+/g, ' ').trim();
+                } else if (filterType === 'username') {
+                    this.value = this.value.replace(/^[._-]+|[._-]+$/g, '').trim();
+                }
+                self.validateElement(this);
+            });
+        },
+
+        /**
+         * Automatically binds validation listeners, character counters, and input filters to all inputs in container.
+         */
+        init: function (container = (typeof document !== 'undefined' ? document : null)) {
+            if (!container) return;
+
+            // Target all relevant input, textarea, and select elements
+            const candidates = container.querySelectorAll('input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea');
+            candidates.forEach(input => {
+                this.bindField(input);
             });
 
             // Auto-bind character counters for textareas with maxlength
@@ -598,6 +1103,33 @@
                 const max = parseInt(ta.getAttribute('maxlength')) || 600;
                 this.bindCharCounter(ta, null, max);
             });
+
+            // Setup MutationObserver to automatically bind new dynamic fields (e.g. modals, tabs)
+            if (typeof MutationObserver !== 'undefined' && !container._eaObserverAttached) {
+                container._eaObserverAttached = true;
+                const observer = new MutationObserver(mutations => {
+                    for (const m of mutations) {
+                        if (m.addedNodes && m.addedNodes.length) {
+                            m.addedNodes.forEach(node => {
+                                if (node.nodeType === 1) { // ELEMENT_NODE
+                                    if (node.matches && node.matches('input, textarea')) {
+                                        EduAtlasValidator.bindField(node);
+                                    }
+                                    if (node.querySelectorAll) {
+                                        node.querySelectorAll('input:not([type="hidden"]):not([type="file"]), textarea').forEach(inp => {
+                                            EduAtlasValidator.bindField(inp);
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+                observer.observe(container === document ? document.body || document.documentElement : container, {
+                    childList: true,
+                    subtree: true
+                });
+            }
         }
     };
 

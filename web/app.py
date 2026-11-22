@@ -26,6 +26,7 @@ from services.security_utils import (
     validate_email,
     validate_name,
     validate_full_name,
+    validate_city,
     validate_university,
     validate_field_of_study,
     validate_country,
@@ -143,7 +144,16 @@ app.add_middleware(
     allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "X-CSRF-Token",
+        "X-CSRFToken",
+        "X-Cron-Secret",
+        "X-Requested-With",
+        "Accept",
+        "Accept-Language",
+    ],
 )
 
 # Application Rate Limiting Middleware with Anti-Spoofing Defense and RFC Metrics
@@ -293,6 +303,9 @@ async def rate_limiting_middleware(request: Request, call_next):
 EXEMPT_CSRF_PATHS = {
     "/api/auth/login",
     "/api/auth/register",
+    "/api/auth/register-request",
+    "/api/auth/register-confirm",
+    "/api/auth/register-resend",
     "/api/auth/forgot-password",
     "/api/auth/reset-password",
     "/api/auth/verify-email",
@@ -392,19 +405,22 @@ async def add_security_headers(request: Request, call_next):
     if "x-powered-by" in response.headers:
         del response.headers["x-powered-by"]
 
-    # 9. Hardened Content Security Policy (allows Tailwind CDN, Lucide, Fonts, and Google reCAPTCHA without unsafe-eval)
+    # 9. Hardened Content Security Policy with per-request nonce (eliminates unsafe-inline for scripts)
+    import secrets as _secrets
+    csp_nonce = _secrets.token_urlsafe(16)
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; "
-        "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com data:; "
-        "img-src 'self' data: https: blob:; "
-        "connect-src 'self' https:; "
-        "frame-ancestors 'none'; "
-        "object-src 'none'; "
-        "base-uri 'self';"
+        f"default-src 'self'; "
+        f"script-src 'self' 'nonce-{csp_nonce}' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; "
+        f"frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/; "
+        f"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        f"font-src 'self' https://fonts.gstatic.com data:; "
+        f"img-src 'self' data: https: blob:; "
+        f"connect-src 'self' https:; "
+        f"frame-ancestors 'none'; "
+        f"object-src 'none'; "
+        f"base-uri 'self';"
     )
+    response.headers["X-CSP-Nonce"] = csp_nonce
     return response
 
 
@@ -516,6 +532,7 @@ async def startup_event():
     asyncio.create_task(start_automation_daemon())
 
 
+@app.get("/health", include_in_schema=False)
 @app.get("/healthz", include_in_schema=False)
 @app.get("/api/health", include_in_schema=False)
 async def health_check():
@@ -528,7 +545,8 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
         "version": "2.5.0",
-        "service": "EduAtlas"
+        "service": "EduAtlas",
+        "db": "connected" if is_db_available() else "fallback"
     }
 
 
@@ -682,9 +700,31 @@ class SubscriptionRequest(BaseModel):
         return sanitize_text(v, max_length=60)
 
 
+class RegisterConfirmRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+    code: str = Field(..., min_length=4, max_length=10)
+
+    @field_validator("email")
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        return validate_email(v)
+
+
+class RegisterResendRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(..., max_length=120)
+
+    @field_validator("email")
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        return validate_email(v)
+
+
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     email: str = Field(..., max_length=120)
+    verification_code: Optional[str] = Field(None, max_length=10)
     password: str = Field(..., min_length=8, max_length=128)
     full_name: str = Field(..., min_length=2, max_length=100)
     username: Optional[str] = Field(None, max_length=50)
@@ -741,6 +781,13 @@ class RegisterRequest(BaseModel):
     @classmethod
     def check_university(cls, v: Optional[str]) -> str:
         return validate_university(v or "", is_required=False)
+
+    @field_validator("city")
+    @classmethod
+    def check_reg_city(cls, v: Optional[str]) -> str:
+        if v and v.strip():
+            return validate_city(v, is_required=False)
+        return ""
 
     @field_validator("country")
     @classmethod
@@ -954,7 +1001,14 @@ class UpdateProfileRequest(BaseModel):
             return [validate_field_of_study(m) for m in v if m.strip()][:10]
         return v
 
-    @field_validator("city", "degree", "english_level", "avatar_url", "cover_url")
+    @field_validator("city")
+    @classmethod
+    def check_city(cls, v: Optional[str]) -> Optional[str]:
+        if v and str(v).strip():
+            return validate_city(v, is_required=False)
+        return "" if v is not None else v
+
+    @field_validator("degree", "english_level", "avatar_url", "cover_url")
     @classmethod
     def sanitize_profile_strings(cls, v: Optional[str]) -> Optional[str]:
         if v is not None:
@@ -1613,6 +1667,141 @@ async def serve_notifications_page():
     return HTMLResponse(content="<h1>مركز التنبيهات - ScholarPilot AI</h1>")
 
 
+def _set_auth_cookies(response: Response, request: Request, token: str, refresh_tok: Optional[str] = None) -> str:
+    csrf_tok = generate_csrf_token()
+    is_secure = (
+        request.url.scheme == "https"
+        or request.headers.get("x-forwarded-proto") == "https"
+        or os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+        or os.getenv("SECURE_COOKIES", "false").lower() == "true"
+    )
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        max_age=1800,
+        httponly=True,
+        samesite="lax",
+        secure=is_secure
+    )
+    response.set_cookie(
+        key="minha_token",
+        value=token,
+        max_age=1800,
+        httponly=True,
+        samesite="lax",
+        secure=is_secure
+    )
+    if refresh_tok:
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_tok,
+            max_age=7 * 86400,
+            httponly=True,
+            samesite="lax",
+            secure=is_secure
+        )
+    response.set_cookie(
+        key="csrf_token",
+        value=csrf_tok,
+        max_age=7 * 86400,
+        httponly=False,
+        samesite="lax",
+        secure=is_secure
+    )
+    return csrf_tok
+
+
+@app.post("/api/auth/register-request")
+async def register_request_endpoint(req: RegisterRequest, request: Request):
+    """
+    Step 1: Validates student registration inputs, enforces CAPTCHA,
+    generates 6-digit OTP code, and dispatches verification email.
+    Account is NOT created until verified.
+    """
+    try:
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
+        if not captcha_ok:
+            raise HTTPException(status_code=400, detail=captcha_msg)
+
+        res = auth_service.initiate_registration(
+            email=req.email,
+            password=req.password,
+            full_name=req.full_name,
+            username=req.username,
+            degree=req.degree or "Undergraduate (Bachelor's)",
+            majors=req.majors or ["Software Engineering"],
+            gpa=req.gpa or "85%",
+            english_level=req.english_level or "Intermediate",
+            country=req.country or "Palestine",
+            nationality=req.nationality,
+            residence_country=req.residence_country,
+            city=req.city or "",
+            university=req.university or "",
+            graduation_year=req.graduation_year or "",
+            bio=req.bio or "",
+            talents_experience=req.talents_experience or "",
+            languages=req.languages,
+            skills=req.skills,
+            interests=req.interests,
+            target_countries=req.target_countries,
+            scholarship_interests=req.scholarship_interests,
+            social_links=req.social_links,
+            privacy_settings=req.privacy_settings,
+            age=req.age
+        )
+        return res
+    except HTTPException:
+        raise
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Register request error: {e}")
+        raise HTTPException(status_code=400, detail="تعذر إرسال رمز التحقق. يرجى التأكد من صحة البيانات.")
+
+
+@app.post("/api/auth/register-confirm")
+async def register_confirm_endpoint(req: RegisterConfirmRequest, request: Request, response: Response):
+    """
+    Step 2: Validates the 6-digit OTP code.
+    If valid: creates student account with email_verified=True, subscribes to emails, and logs in.
+    """
+    try:
+        user = auth_service.confirm_registration(email=req.email, code=req.code)
+        token = user.get("session_token", "")
+        refresh_tok = user.get("refresh_token", "")
+        csrf_tok = _set_auth_cookies(response, request, token, refresh_tok)
+        return {
+            "success": True,
+            "user": user,
+            "token": token,
+            "refresh_token": refresh_tok,
+            "csrf_token": csrf_tok,
+            "message": "تم تأكيد بريدك وتفعيل حسابك الأكاديمي بنجاح!"
+        }
+    except HTTPException:
+        raise
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Register confirm error: {e}")
+        raise HTTPException(status_code=400, detail="تعذر تأكيد الحساب. يرجى التأكد من الرمز وإعادة المحاولة.")
+
+
+@app.post("/api/auth/register-resend")
+async def register_resend_endpoint(req: RegisterResendRequest):
+    """Resends 6-digit OTP code with 60-second cooldown."""
+    try:
+        return auth_service.resend_registration_code(email=req.email)
+    except HTTPException:
+        raise
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Register resend error: {e}")
+        raise HTTPException(status_code=400, detail="تعذر إعادة إرسال الرمز. يرجى المحاولة بعد قليل.")
+
+
 @app.post("/api/auth/register")
 async def register_account(req: RegisterRequest, request: Request, response: Response):
     """Creates a new student account with full academic identity attributes and sets session cookie."""
@@ -1622,6 +1811,21 @@ async def register_account(req: RegisterRequest, request: Request, response: Res
         captcha_ok, captcha_msg = verify_recaptcha(req.recaptcha_token, client_ip)
         if not captcha_ok:
             raise HTTPException(status_code=400, detail=captcha_msg)
+
+        if req.verification_code:
+            user = auth_service.confirm_registration(email=req.email, code=req.verification_code)
+            token = user.get("session_token", "")
+            refresh_tok = user.get("refresh_token", "")
+            csrf_tok = _set_auth_cookies(response, request, token, refresh_tok)
+            return {
+                "success": True,
+                "user": user,
+                "token": token,
+                "refresh_token": refresh_tok,
+                "csrf_token": csrf_tok,
+                "message": "تم تأكيد بريدك وإنشاء حسابك الأكاديمي بنجاح!"
+            }
+
         user = auth_service.register(
             email=req.email,
             password=req.password,
