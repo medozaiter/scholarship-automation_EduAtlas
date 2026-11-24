@@ -23,7 +23,51 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # ==============================================================================
-# 0. DYNAMIC CRYPTOGRAPHIC SECRET MANAGEMENT
+# 0. SENSITIVE SECRET MASKING & LOG SANITIZATION
+# ==============================================================================
+
+def mask_secret(secret: Optional[str]) -> str:
+    """
+    Sanitizes sensitive secrets, tokens, API keys, and credentials for safe logging/display.
+    Example output for 'abcd1234efgh5678wxyz': 'abcd********wxyz'
+    """
+    if not secret or not isinstance(secret, str):
+        return ""
+    s = secret.strip()
+    if len(s) == 0:
+        return ""
+    if len(s) <= 4:
+        return "*" * len(s)
+    if len(s) <= 8:
+        return s[:1] + ("*" * (len(s) - 2)) + s[-1:]
+    return f"{s[:4]}********{s[-4:]}"
+
+
+class SensitiveDataFilter(logging.Filter):
+    """
+    Intercepts log records and automatically sanitizes secrets, API keys,
+    bearer tokens, and passwords to prevent credential leakage in log aggregation systems.
+    """
+    PATTERNS = [
+        (re.compile(r"(Bearer\s+)([A-Za-z0-9\-_\.]{8,})", re.IGNORECASE), lambda m: f"{m.group(1)}{mask_secret(m.group(2))}"),
+        (re.compile(r"(X-Cron-Secret:\s*)([^\s\r\n]{4,})", re.IGNORECASE), lambda m: f"{m.group(1)}{mask_secret(m.group(2))}"),
+        (re.compile(r"((?:password|secret|token|api_key|cron_secret)[\"']?\s*[:=]\s*[\"']?)([^\s\"',&]+)([\"']?)", re.IGNORECASE),
+         lambda m: f"{m.group(1)}{mask_secret(m.group(2))}{m.group(3)}"),
+        (re.compile(r"(postgres(?:ql)?://[^:]+:)([^@]+)(@)", re.IGNORECASE), lambda m: f"{m.group(1)}********{m.group(3)}")
+    ]
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.msg, str):
+            for pat, repl in self.PATTERNS:
+                record.msg = pat.sub(repl, record.msg)
+        return True
+
+
+# Attach SensitiveDataFilter to logger
+logger.addFilter(SensitiveDataFilter())
+
+# ==============================================================================
+# 0.1 DYNAMIC CRYPTOGRAPHIC SECRET MANAGEMENT
 # ==============================================================================
 
 def _get_or_create_app_secret() -> str:
@@ -44,8 +88,8 @@ def _get_or_create_app_secret() -> str:
             try:
                 import stat
                 os.chmod(secret_file, stat.S_IRUSR | stat.S_IWUSR)
-            except Exception:
-                pass
+            except OSError as err:
+                logger.debug(f"File permissions update not applicable on current OS: {err}")
             with open(secret_file, "r", encoding="utf-8") as f:
                 saved = f.read().strip()
                 if len(saved) >= 32:
@@ -60,8 +104,8 @@ def _get_or_create_app_secret() -> str:
         try:
             import stat
             os.chmod(secret_file, stat.S_IRUSR | stat.S_IWUSR)
-        except Exception:
-            pass
+        except OSError as err:
+            logger.debug(f"File permissions update not applicable on current OS: {err}")
     except Exception as e:
         logger.warning(f"Could not persist dynamic secret file: {e}")
 
@@ -88,8 +132,8 @@ def atomic_json_write(filepath: str, data: Any):
             f.flush()
             try:
                 os.fsync(f.fileno())
-            except Exception:
-                pass
+            except OSError as sync_err:
+                logger.debug(f"File fsync not supported: {sync_err}")
         for attempt in range(8):
             try:
                 os.replace(tmp_path, filepath)
@@ -102,7 +146,9 @@ def atomic_json_write(filepath: str, data: Any):
                         if os.path.exists(tmp_path):
                             os.remove(tmp_path)
                         break
-                    except Exception:
+                    except Exception as copy_err:
+                        logger.error(f"Failed to copy atomic file {tmp_path} to {filepath}: {copy_err}")
+                        raise
                         raise
                 time.sleep(0.05 * (attempt + 1))
 
@@ -353,6 +399,8 @@ def validate_city(city_str: Optional[str], is_required: bool = False) -> str:
         return ""
 
     clean = BIDI_AND_INVISIBLE_CHARS.sub("", str(city_str)).strip()
+    # Strip any HTML tags safely
+    clean = re.sub(r"<[^>]+>", "", clean).strip()
     if SCRIPT_TAG_PATTERN.search(clean) or SQL_INJECTION_PATTERN.search(clean):
         raise ValueError("اسم المدينة يحتوي على رموز غير مسموح بها أمنياً.")
 
@@ -855,12 +903,12 @@ def compute_dummy_pbkdf2(password: str):
         try:
             bcrypt.checkpw(password.encode("utf-8")[:72], DUMMY_BCRYPT_HASH)
             return
-        except Exception:
-            pass
+        except Exception as b_err:
+            logger.debug(f"Dummy bcrypt workload notice: {b_err}")
     try:
         hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), DUMMY_SALT, PBKDF2_ROUNDS)
-    except Exception:
-        pass
+    except Exception as h_err:
+        logger.debug(f"Dummy PBKDF2 workload notice: {h_err}")
 
 
 # ==============================================================================
@@ -895,8 +943,8 @@ def _is_token_revoked_file(token_hash: str) -> bool:
             exp = data.get(token_hash)
             if exp and exp > time.time():
                 return True
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Error checking revoked token file: {e}")
     return False
 
 
@@ -926,8 +974,8 @@ def revoke_token(token: Optional[str]) -> bool:
     try:
         from services.db import add_revoked_token
         add_revoked_token(token_hash, exp)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Error persisting revoked token to DB: {e}")
 
     # Persist to JSON file store as fallback only in explicit dev mode
     from services.db import can_use_local_json_storage
@@ -961,8 +1009,8 @@ def is_token_revoked(token: Optional[str]) -> bool:
             with _revocation_lock:
                 _revoked_tokens[token_hash] = time.time() + 1800
             return True
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Error checking revoked token in DB: {e}")
 
     # Check persistent file store only in explicit dev mode
     from services.db import can_use_local_json_storage
@@ -1209,6 +1257,9 @@ class SecurityRateLimiter:
         self._check_counter: int = 0
 
         self.LIMITS = {
+            "health": (120, 60),   # 120 requests / minute for health checks
+            "metrics": (60, 60),   # 60 requests / minute for system metrics
+            "cron": (30, 60),      # 30 requests / minute for cron automation triggers
             "login": (5, 900),     # Strict 5 requests / 15 minutes for authentication login
             "auth": (10, 900),     # 10 requests / 15 minutes for registration & password reset
             "search": (60, 60),    # 60 requests / minute for search operations
@@ -1241,6 +1292,43 @@ class SecurityRateLimiter:
                 logger.debug(f"Redis distributed rate limiter not active ({re_err}); using thread-safe sliding window.")
                 self.redis_client = None
 
+    def get_limit(self, category: str) -> Tuple[int, int]:
+        """
+        Dynamically resolves (max_requests, window_seconds) for a category.
+        Checks environment variables first:
+          - RATE_LIMIT_{CATEGORY} (e.g. '120' or '120,60')
+          - RATE_LIMIT_{CATEGORY}_LIMIT and RATE_LIMIT_{CATEGORY}_WINDOW
+        Falls back to self.LIMITS defaults.
+        """
+        env_key = f"RATE_LIMIT_{category.upper()}"
+        env_val = os.getenv(env_key)
+        default_max, default_win = self.LIMITS.get(category, self.LIMITS.get("general", (60, 60)))
+        if env_val:
+            try:
+                parts = [p.strip() for p in env_val.split(",")]
+                if len(parts) == 1:
+                    return (int(parts[0]), default_win)
+                elif len(parts) >= 2:
+                    return (int(parts[0]), int(parts[1]))
+            except ValueError as val_err:
+                logger.warning(f"Invalid rate limit format in env var {env_key}={env_val}: {val_err}")
+
+        env_limit = os.getenv(f"{env_key}_LIMIT")
+        env_win = os.getenv(f"{env_key}_WINDOW")
+        reqs = default_max
+        win = default_win
+        if env_limit:
+            try:
+                reqs = int(env_limit)
+            except ValueError as val_err:
+                logger.warning(f"Invalid limit format in env var {env_key}_LIMIT: {val_err}")
+        if env_win:
+            try:
+                win = int(env_win)
+            except ValueError as val_err:
+                logger.warning(f"Invalid window format in env var {env_key}_WINDOW: {val_err}")
+        return (reqs, win)
+
     def reset(self):
         """Resets all in-memory rate limiting state (useful for tests)."""
         with self._lock:
@@ -1255,7 +1343,7 @@ class SecurityRateLimiter:
         expired_req_keys = []
         for k, v in self._requests.items():
             cat = k.split(":")[-1] if ":" in k else "general"
-            window = self.LIMITS.get(cat, self.LIMITS["general"])[1]
+            window = self.get_limit(cat)[1]
             valid = [ts for ts in v if ts > (now - window)]
             if not valid:
                 expired_req_keys.append(k)
@@ -1273,7 +1361,7 @@ class SecurityRateLimiter:
             self._email_cooldowns.pop(k, None)
 
     def check_rate_limit(self, client_ip: str, category: str = "general") -> Tuple[bool, int]:
-        max_reqs, window = self.LIMITS.get(category, self.LIMITS["general"])
+        max_reqs, window = self.get_limit(category)
         key = f"{client_ip}:{category}"
         now = time.time()
 
@@ -1290,8 +1378,8 @@ class SecurityRateLimiter:
                 if cnt > max_reqs:
                     return False, max(1, ttl)
                 return True, 0
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Redis rate limiting error, falling back to local memory: {e}")
 
         with self._lock:
             self._check_counter += 1
@@ -1315,7 +1403,7 @@ class SecurityRateLimiter:
 
     def get_rate_limit_metrics(self, client_ip: str, category: str = "general") -> Tuple[bool, int, int, int]:
         """Returns (allowed, retry_after, limit, remaining) for standard HTTP rate limiting headers."""
-        max_reqs, window = self.LIMITS.get(category, self.LIMITS["general"])
+        max_reqs, window = self.get_limit(category)
         key = f"{client_ip}:{category}"
         now = time.time()
 

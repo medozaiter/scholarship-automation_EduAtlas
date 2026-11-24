@@ -163,12 +163,12 @@ class CommunityService:
         self._ensure_seed_stories()
 
     def _ensure_seed_stories(self):
-        """Pre-populates the community storage with real verified scholarship stories if empty."""
+        """Pre-populates the community storage with real verified scholarship stories if missing."""
         try:
-            stories = get_community_stories(limit=10)
-            if not stories:
-                logger.info("Initializing Community Story Seed Database with high-impact scholar stories...")
-                for story in SEED_STORIES:
+            stories = get_community_stories(limit=100)
+            existing_ids = {s.get("id") for s in stories}
+            for story in SEED_STORIES:
+                if story.get("id") not in existing_ids:
                     save_community_story(story)
         except Exception as e:
             logger.error(f"Error ensuring community seed stories: {e}")

@@ -251,8 +251,9 @@ class TestCriticalSecurityFixes(unittest.TestCase):
             self.assertEqual(res_cycle_cron_query.status_code, 403, "trigger-cycle must reject ?cron_secret=")
 
             # Valid X-Cron-Secret header succeeds
-            res_cycle_header = client.post("/api/automation/trigger-cycle", headers={"X-Cron-Secret": test_sec})
-            self.assertEqual(res_cycle_header.status_code, 200, "trigger-cycle must accept valid X-Cron-Secret header")
+            with patch("fastapi.BackgroundTasks.add_task") as mock_bg:
+                res_cycle_header = client.post("/api/automation/trigger-cycle", headers={"X-Cron-Secret": test_sec})
+                self.assertEqual(res_cycle_header.status_code, 200, "trigger-cycle must accept valid X-Cron-Secret header")
 
             # 2. /api/email/test rejects query parameters
             res_email_query = client.post(f"/api/email/test?secret={test_sec}", json={"email": "test@example.com"})

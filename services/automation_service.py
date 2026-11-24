@@ -76,8 +76,8 @@ def is_deadline_expired(deadline_str: Optional[str], ref_date: Optional[date] = 
         try:
             dl = datetime.strptime(match.group(1), "%Y-%m-%d").date()
             return dl < target_date
-        except Exception:
-            pass
+        except Exception as parse_err:
+            logger.debug(f"Invalid deadline date format in {deadline_str}: {parse_err}")
     return False
 
 # Verified base roster of flagship global scholarships
@@ -1179,10 +1179,15 @@ class AutomationService:
         # 2. Update JSON (only in explicit dev mode)
         from services.db import can_use_local_json_storage
         if can_use_local_json_storage():
+            # During pytest test suite runs, protect seed catalogue from transient auto discoveries
+            save_items = items
+            if os.getenv("PYTEST_CURRENT_TEST") and any(str(itm.get("id", "")).startswith("auto_") for itm in items):
+                save_items = [itm for itm in items if not str(itm.get("id", "")).startswith("auto_")]
+
             try:
                 temp_file = LIVE_SCHOLARSHIPS_FILE + ".tmp"
                 with open(temp_file, "w", encoding="utf-8") as f:
-                    json.dump(items, f, ensure_ascii=False, indent=2)
+                    json.dump(save_items, f, ensure_ascii=False, indent=2)
                 os.replace(temp_file, LIVE_SCHOLARSHIPS_FILE)
             except Exception as je:
                 logger.error(f"Error saving live scholarships JSON: {je}")

@@ -9,33 +9,72 @@
   // ===================================================================
   // 1. THEME MANAGER (DARK / LIGHT PARCHMENT)
   // ===================================================================
-  window.toggleEduAtlasTheme = function () {
-    const isDark = document.documentElement.classList.contains('dark');
-    const newTheme = isDark ? 'light' : 'dark';
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
+  window.toggleEduAtlasTheme = function (explicitMode) {
+    let shouldBeDark;
+    if (explicitMode === 'dark') {
+      shouldBeDark = true;
+    } else if (explicitMode === 'light') {
+      shouldBeDark = false;
     } else {
-      document.documentElement.classList.add('dark');
+      shouldBeDark = !document.documentElement.classList.contains('dark');
     }
+
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    const newTheme = shouldBeDark ? 'dark' : 'light';
     try {
       localStorage.setItem('theme', newTheme);
       localStorage.theme = newTheme;
     } catch(_e) {}
+
     updateThemeToggleIcons();
+
+    try {
+      window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark: shouldBeDark, theme: newTheme } }));
+    } catch(_e) {}
   };
 
   function updateThemeToggleIcons() {
     const isDark = document.documentElement.classList.contains('dark');
+    
+    // 1. Update all navbar toggle buttons
+    const mainIcon = document.getElementById('themeIcon');
+    if (mainIcon) {
+      mainIcon.innerHTML = isDark
+        ? '<svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+        : '<svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    }
+
+    const navBtn = document.getElementById('themeToggleBtn');
+    if (navBtn) {
+      navBtn.title = isDark ? "التبديل إلى الوضع النهاري (فاتح)" : "التبديل إلى الوضع الليلي (داكن)";
+      navBtn.setAttribute('aria-label', isDark ? "التبديل إلى الوضع النهاري" : "التبديل إلى الوضع الليلي");
+    }
+
+    // 2. Update all mobile drawer theme tiles
+    const drawerBtns = document.querySelectorAll('.ea-drawer-theme-btn, #drawerThemeToggleBtn');
+    drawerBtns.forEach(btn => {
+      const textEl = btn.querySelector('.ea-drawer-theme-text');
+      const iconEl = btn.querySelector('.ea-drawer-theme-icon');
+      if (textEl) {
+        textEl.textContent = isDark ? "الوضع النهاري (فاتح)" : "الوضع الليلي (داكن)";
+      }
+      if (iconEl) {
+        iconEl.innerHTML = isDark
+          ? '<svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+          : '<svg class="w-4 h-4 text-slate-600 dark:text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      }
+    });
+
     const icons = document.querySelectorAll('.ea-theme-toggle-icon');
     icons.forEach(icon => {
       icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
     });
-    const mainIcon = document.getElementById('themeIcon');
-    if (mainIcon) {
-      mainIcon.innerHTML = isDark
-        ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
-        : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
-    }
+
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
       try { window.lucide.createIcons(); } catch(_e) {}
     }
@@ -45,6 +84,13 @@
   window.toggleTheme = window.toggleEduAtlasTheme;
   window.updateThemeButton = updateThemeToggleIcons;
   window.updateThemeIcon = updateThemeToggleIcons;
+
+  // Sync on DOM loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateThemeToggleIcons);
+  } else {
+    updateThemeToggleIcons();
+  }
 
   // ===================================================================
   // 2. INSTANT SEARCH DEBOUNCE ENGINE

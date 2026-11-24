@@ -1,0 +1,116 @@
+name: Repository Policy & Security Gates Verification
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify-repository-policy:
+    name: Verify Repository Security Policies & Workflow Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate Workflow Files and Security Gates
+        run: |
+          python -c "
+          import os, sys, re
+
+          errors = []
+
+          # 1. Verify required workflow files exist
+          required_workflows = [
+              '.github/workflows/ci.yml',
+              '.github/workflows/deploy.yml',
+              '.github/workflows/security-scan.yml',
+              '.github/workflows/repository-policy.yml'
+          ]
+          for wf in required_workflows:
+              if not os.path.isfile(wf):
+                  errors.append(f'CRITICAL: Missing mandatory workflow file: {wf}')
+              else:
+                  print(f'✅ Found workflow: {wf}')
+
+          # 2. Verify deploy workflow requires successful CI stages
+          deploy_wf = '.github/workflows/deploy.yml'
+          if os.path.isfile(deploy_wf):
+              with open(deploy_wf, 'r', encoding='utf-8') as f:
+                  deploy_content = f.read()
+              # Check for needs dependency or CI status validation
+              if not re.search(r'needs:\s*\[?[^\]]*(?:ci|lint|test|typecheck|security-audit)', deploy_content, re.IGNORECASE):
+                  # Also check if ci.yml itself defines gated deployment job
+                  ci_wf = '.github/workflows/ci.yml'
+                  with open(ci_wf, 'r', encoding='utf-8') as cf:
+                      ci_content = cf.read()
+                  if 'needs: [lint, typecheck, security-audit, test]' not in ci_content:
+                      errors.append('CRITICAL: Production deployment is not gated behind upstream CI verification stages (needs: [lint, typecheck, security-audit, test]).')
+                  else:
+                      print('✅ Deployment gating verified in CI pipeline (needs: [lint, typecheck, security-audit, test])')
+              else:
+                  print('✅ Deployment gating verified in deploy.yml')
+
+          # 3. Verify security scanning gates exist
+          ci_wf = '.github/workflows/ci.yml'
+          if os.path.isfile(ci_wf):
+              with open(ci_wf, 'r', encoding='utf-8') as f:
+                  ci_content = f.read()
+              if 'pip-audit' not in ci_content:
+                  errors.append('CRITICAL: pip-audit dependency scanner is missing from CI workflow.')
+              else:
+                  print('✅ pip-audit dependency security scanner verified in CI')
+
+          # 4. Verify branch protection and security documentation exists
+          required_docs = [
+              'docs/BRANCH_PROTECTION.md',
+              'SECURITY_LOGGING.md',
+              'SECURITY.md'
+          ]
+          for doc in required_docs:
+              if not os.path.isfile(doc):
+                  errors.append(f'CRITICAL: Missing required security policy documentation: {doc}')
+              else:
+                  print(f'✅ Found policy documentation: {doc}')
+
+          # 5. Verify .dockerignore default-deny approach
+          if os.path.isfile('.dockerignore'):
+              with open('.dockerignore', 'r', encoding='utf-8') as df:
+                  docker_content = df.read()
+              if '**' not in docker_content.splitlines()[11:15]:
+                  if not re.search(r'^\s*\*\*\s*$', docker_content, re.MULTILINE):
+                      errors.append('CRITICAL: .dockerignore does not employ strict default-deny (**).')
+                  else:
+                      print('✅ .dockerignore default-deny verified')
+              else:
+                  print('✅ .dockerignore default-deny verified')
+
+          if errors:
+              print('\n❌ REPOSITORY POLICY VIOLATIONS DETECTED:')
+              for err in errors:
+                  print(f'   - {err}')
+              sys.exit(1)
+
+          print('\n🎉 All repository security policies and workflow gates verified successfully!')
+          "

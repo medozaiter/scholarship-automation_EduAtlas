@@ -63,15 +63,15 @@ def _safe_dispatch_email(email: str, subject: str, html_msg: str, plain_msg: str
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
-            pass
+            loop = None
 
         if loop and loop.is_running():
             asyncio.create_task(dispatch_email(email, subject, html_msg, plain_msg))
         else:
             try:
                 asyncio.run(dispatch_email(email, subject, html_msg, plain_msg))
-            except Exception:
-                pass
+            except Exception as dispatch_err:
+                logger.warning(f"Failed to dispatch email via asyncio.run: {dispatch_err}")
     except Exception as e:
         logger.warning(f"Error in _safe_dispatch_email: {e}")
 
@@ -416,8 +416,8 @@ class AuthService:
                         raise ValueError(f"يرجى الانتظار {wait_sec} ثانية قبل طلب رمز جديد.")
                 except ValueError:
                     raise
-                except Exception:
-                    pass
+                except Exception as dt_err:
+                    logger.debug(f"Could not parse last_sent datetime: {dt_err}")
 
         # Resolve unique username
         if username and username.strip():
@@ -568,8 +568,10 @@ class AuthService:
             if datetime.now() > exp_dt:
                 self._remove_pending_registration(email_clean)
                 raise ValueError("انتهت صلاحية رمز التحقق (15 دقيقة). يرجى طلب رمز جديد.")
-        except Exception:
-            pass
+        except ValueError:
+            raise
+        except Exception as exp_err:
+            logger.warning(f"Error checking pending registration expiry: {exp_err}")
 
         # Check attempt count (max 5)
         attempts = pending.get("attempts", 0)
@@ -642,8 +644,8 @@ class AuthService:
         try:
             from services.notification_service import notification_service
             notification_service.notify_account_verification(email_clean)
-        except Exception:
-            pass
+        except Exception as notif_err:
+            logger.warning(f"In-app notification for account verification failed: {notif_err}")
 
         # Cleanup pending registration
         self._remove_pending_registration(email_clean)
@@ -678,8 +680,8 @@ class AuthService:
                     raise ValueError(f"يرجى الانتظار {wait} ثانية قبل إعادة إرسال الرمز.")
             except ValueError:
                 raise
-            except Exception:
-                pass
+            except Exception as dt_err:
+                logger.debug(f"Could not parse resend cooldown datetime: {dt_err}")
 
         v_code = str(secrets.randbelow(900000) + 100000)
         now = datetime.now()

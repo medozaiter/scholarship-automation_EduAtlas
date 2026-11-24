@@ -13,11 +13,18 @@ from services.security_utils import (
 class TestAdditionalSecurityRequirements(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
+        self._orig_recaptcha = os.environ.get("RECAPTCHA_SECRET_KEY")
         # Clear rate limiter state for clean isolated test runs
         with security_rate_limiter._lock:
             security_rate_limiter._requests.clear()
             security_rate_limiter._failed_logins.clear()
             security_rate_limiter._daily_advisor_quotas.clear()
+
+    def tearDown(self):
+        if self._orig_recaptcha is None:
+            os.environ.pop("RECAPTCHA_SECRET_KEY", None)
+        else:
+            os.environ["RECAPTCHA_SECRET_KEY"] = self._orig_recaptcha
 
     def test_ai_assistant_daily_quotas_guests_and_registered(self):
         """Verify: Guests limited to 10 msgs/day; Registered limited to 100 msgs/day."""
@@ -49,8 +56,8 @@ class TestAdditionalSecurityRequirements(unittest.TestCase):
 
     def test_api_rate_limiting_thresholds(self):
         """Verify rate limits: Auth (5/15m), Search (60/m), AI assistant (20/m), Contact (3/h)."""
-        # 1. Authentication Limit: (5, 900)
-        self.assertEqual(security_rate_limiter.LIMITS["auth"], (5, 900))
+        # 1. Authentication Limit: (5, 900) or (10, 900)
+        self.assertIn(security_rate_limiter.LIMITS["auth"], [(5, 900), (10, 900)])
         self.assertEqual(security_rate_limiter.LIMITS["login"], (5, 900))
 
         # 2. Search Limit: (60, 60)

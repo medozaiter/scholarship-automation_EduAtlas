@@ -1323,8 +1323,8 @@ def is_notification_sent(recipient: str, notification_type: str, target_id: str)
                     and l.get("status") == "sent"
                     for l in logs
                 )
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during is_notification_sent: {err}")
 
     return False
 
@@ -1406,8 +1406,8 @@ def get_notification_history(limit: int = 50) -> List[Dict[str, Any]]:
             with open(NOTIFICATION_HISTORY_JSON, "r", encoding="utf-8") as f:
                 logs = json.load(f)
                 return logs[:limit]
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_notification_history: {err}")
 
     return []
 
@@ -1508,8 +1508,8 @@ def get_in_app_notifications(
                     and (not unread_only or not it.get("is_read", False))
                 ]
                 return matched[:limit]
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_in_app_notifications: {err}")
     return []
 
 
@@ -1531,8 +1531,8 @@ def mark_notification_as_read(recipient: str, notification_id: Union[int, str]) 
                         if db_notif:
                             db_notif.is_read = True
                             updated = True
-                    except (ValueError, TypeError):
-                        pass
+                    except (ValueError, TypeError) as conv_err:
+                        logger.debug(f"Type conversion notice in mark_notification_as_read: {conv_err}")
         except Exception as e:
             logger.error(f"DB mark notification read error: {e}")
 
@@ -1616,8 +1616,8 @@ def get_unread_notification_count(recipient: str) -> int:
             with open(IN_APP_NOTIFICATIONS_JSON, "r", encoding="utf-8") as f:
                 items = json.load(f)
                 return sum(1 for it in items if it.get("recipient", "").lower() == clean_rec and not it.get("is_read", False))
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_unread_notification_count: {err}")
     return 0
 
 
@@ -1708,8 +1708,8 @@ def get_notification_events(recipient: Optional[str] = None, limit: int = 100) -
                 if clean_rec:
                     items = [it for it in items if it.get("recipient", "").lower() == clean_rec]
                 return items[:limit]
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_notification_events: {err}")
     return []
 
 
@@ -1765,8 +1765,8 @@ def get_user_preferences(email: str) -> Dict[str, Any]:
                         "degree": matched.get("degree") or defaults["degree"],
                         "majors": matched.get("majors") or defaults["majors"]
                     }
-            except Exception:
-                pass
+            except Exception as err:
+                logger.warning(f"Error during get_user_preferences: {err}")
 
     return defaults
 
@@ -1896,8 +1896,8 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
             u = next((x for x in users if x.get("email", "").lower() == clean_rec), None)
             if u:
                 return dict(u)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_user_by_email: {err}")
     return None
 
 
@@ -1931,8 +1931,8 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
                 u_uname = (x.get("username") or x.get("email", "").split("@")[0]).lower()
                 if u_uname == clean_uname:
                     return dict(x)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_user_by_username: {err}")
     return None
 
 
@@ -2210,8 +2210,8 @@ def get_community_story_by_id(story_id: str) -> Optional[Dict[str, Any]]:
             with open(COMMUNITY_STORIES_JSON, "r", encoding="utf-8") as f:
                 stories = json.load(f)
             return next((s for s in stories if s.get("id") == clean_id), None)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_story_by_id: {err}")
     return None
 
 
@@ -2287,8 +2287,8 @@ def is_scholarship_published_to_telegram(scholarship_id: str) -> bool:
                 logs = json.load(f)
             if any(l.get("notification_type") == "telegram_channel_post" and l.get("target_id") == target_key for l in logs):
                 return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during is_scholarship_published_to_telegram: {err}")
 
     # 3. Check live_scholarships.json file
     if can_use_local_json_storage() and os.path.exists(SCHOLARSHIPS_JSON):
@@ -2298,8 +2298,8 @@ def is_scholarship_published_to_telegram(scholarship_id: str) -> bool:
             for s in data:
                 if str(s.get("id")) == clean_id and s.get("telegram_message_id"):
                     return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during is_scholarship_published_to_telegram: {err}")
 
     return False
 
@@ -2391,8 +2391,8 @@ def get_scholarship_telegram_post_id(scholarship_id: str) -> Optional[str]:
                         ).first()
                         if n_row and n_row.details:
                             return str(n_row.details.get("telegram_message_id", ""))
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_scholarship_telegram_post_id: {err}")
 
     if can_use_local_json_storage() and os.path.exists(SCHOLARSHIPS_JSON):
         try:
@@ -2401,8 +2401,8 @@ def get_scholarship_telegram_post_id(scholarship_id: str) -> Optional[str]:
             for s in data:
                 if str(s.get("id")) == clean_id and s.get("telegram_message_id"):
                     return str(s.get("telegram_message_id"))
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_scholarship_telegram_post_id: {err}")
 
     if can_use_local_json_storage() and os.path.exists(NOTIFICATION_HISTORY_JSON):
         try:
@@ -2413,8 +2413,8 @@ def get_scholarship_telegram_post_id(scholarship_id: str) -> Optional[str]:
                     details = l.get("details", {})
                     if details.get("telegram_message_id"):
                         return str(details.get("telegram_message_id"))
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_scholarship_telegram_post_id: {err}")
 
     return None
 
@@ -2635,8 +2635,8 @@ def get_community_post_by_id(post_id: str) -> Optional[Dict[str, Any]]:
             with open(COMMUNITY_POSTS_JSON, "r", encoding="utf-8") as f:
                 posts = json.load(f)
             return next((p for p in posts if p.get("id") == clean_id), None)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_post_by_id: {err}")
     return None
 
 
@@ -2681,8 +2681,8 @@ def delete_community_post(post_id: str) -> bool:
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(comments, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, COMMUNITY_COMMENTS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during delete_community_post: {err}")
 
     return deleted
 
@@ -2799,8 +2799,8 @@ def get_community_comments(post_id: str) -> List[Dict[str, Any]]:
             post_comments = [c for c in comments if c.get("post_id") == clean_id and not c.get("is_hidden", False)]
             post_comments.sort(key=lambda x: x.get("created_at", ""))
             return post_comments
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_comments: {err}")
 
     return []
 
@@ -2815,16 +2815,16 @@ def get_community_comment_by_id(comment_id: str) -> Optional[Dict[str, Any]]:
                     obj = db.query(CommunityCommentDB).filter(CommunityCommentDB.id == clean_id).first()
                     if obj:
                         return obj.to_dict()
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_comment_by_id: {err}")
 
     if can_use_local_json_storage() and os.path.exists(COMMUNITY_COMMENTS_JSON):
         try:
             with open(COMMUNITY_COMMENTS_JSON, "r", encoding="utf-8") as f:
                 comments = json.load(f)
             return next((c for c in comments if c.get("id") == clean_id), None)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_comment_by_id: {err}")
     return None
 
 
@@ -2856,8 +2856,8 @@ def delete_community_comment(comment_id: str) -> bool:
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(comments, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, COMMUNITY_COMMENTS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during delete_community_comment: {err}")
 
     if post_id:
         post = get_community_post_by_id(post_id)
@@ -2961,16 +2961,16 @@ def get_follow_status(follower_email: str, following_email: str) -> bool:
                     ).first()
                     if row:
                         return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_follow_status: {err}")
 
     if can_use_local_json_storage() and os.path.exists(COMMUNITY_FOLLOWS_JSON):
         try:
             with open(COMMUNITY_FOLLOWS_JSON, "r", encoding="utf-8") as f:
                 follows = json.load(f)
             return any(fl.get("follower_email") == f_email and fl.get("following_email") == target_email for fl in follows)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_follow_status: {err}")
     return False
 
 
@@ -2991,8 +2991,8 @@ def get_user_follow_counts(email_or_username: str) -> Dict[str, int]:
                         CommunityFollowDB.follower_email == key
                     ).count()
                     return {"followers": followers, "following": following}
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_user_follow_counts: {err}")
 
     if can_use_local_json_storage() and os.path.exists(COMMUNITY_FOLLOWS_JSON):
         try:
@@ -3000,8 +3000,8 @@ def get_user_follow_counts(email_or_username: str) -> Dict[str, int]:
                 follows = json.load(f)
             followers = sum(1 for fl in follows if fl.get("following_email") == key or fl.get("following_username") == key)
             following = sum(1 for fl in follows if fl.get("follower_email") == key)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_user_follow_counts: {err}")
 
     return {"followers": followers, "following": following}
 
@@ -3125,8 +3125,8 @@ def get_community_notifications(user_email: str, limit: int = 30) -> List[Dict[s
             user_notifs = [n for n in notifs if n.get("recipient_email", "").lower() == clean_rec]
             user_notifs.sort(key=lambda x: x.get("created_at", ""), reverse=True)
             return user_notifs[:limit]
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_community_notifications: {err}")
 
     return []
 
@@ -3157,8 +3157,8 @@ def mark_community_notifications_read(user_email: str) -> bool:
                 json.dump(notifs, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, COMMUNITY_NOTIFICATIONS_JSON)
             return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during mark_community_notifications_read: {err}")
 
     return True
 
@@ -3397,8 +3397,8 @@ def get_news_article_by_id(article_id: str, increment_views: bool = False) -> Op
                             json.dump(articles, wf, ensure_ascii=False, indent=2)
                         os.replace(temp_file, NEWS_ARTICLES_JSON)
                     return a
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_news_article_by_id: {err}")
 
     return None
 
@@ -3610,8 +3610,8 @@ def save_news_comment(comment_data: Dict[str, Any]) -> Dict[str, Any]:
                 with open(temp_art, "w", encoding="utf-8") as af:
                     json.dump(articles, af, ensure_ascii=False, indent=2)
                 os.replace(temp_art, NEWS_ARTICLES_JSON)
-            except Exception:
-                pass
+            except Exception as err:
+                logger.warning(f"Error during save_news_comment: {err}")
     except Exception as je:
         logger.error(f"JSON save news comment error: {je}")
 
@@ -3664,8 +3664,8 @@ def like_news_comment(comment_id: str, user_email: str) -> Dict[str, Any]:
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(comments, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, NEWS_COMMENTS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during like_news_comment: {err}")
 
     return {"success": True, "is_liked": is_liked, "likes_count": likes_count}
 
@@ -3711,8 +3711,8 @@ def toggle_save_news_article(article_id: str, user_email: str) -> Dict[str, Any]
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(articles, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, NEWS_ARTICLES_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during toggle_save_news_article: {err}")
 
     return {"success": True, "is_saved": is_saved}
 
@@ -3745,8 +3745,8 @@ def increment_news_shares(article_id: str) -> int:
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(articles, f, ensure_ascii=False, indent=2)
             os.replace(temp_file, NEWS_ARTICLES_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during increment_news_shares: {err}")
 
     return shares_count
 
@@ -3780,8 +3780,8 @@ def is_news_published_to_telegram(article_id: str) -> bool:
                 logs = json.load(f)
             if any(l.get("notification_type") == "telegram_channel_post" and l.get("target_id") == target_key for l in logs):
                 return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during is_news_published_to_telegram: {err}")
 
     if can_use_local_json_storage() and os.path.exists(NEWS_ARTICLES_JSON):
         try:
@@ -3790,8 +3790,8 @@ def is_news_published_to_telegram(article_id: str) -> bool:
             for a in articles:
                 if a.get("id") == clean_id and a.get("telegram_message_id"):
                     return True
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during is_news_published_to_telegram: {err}")
 
     return False
 
@@ -3959,8 +3959,8 @@ def get_all_scholarships(only_active: bool = False):
                     rows = query.all()
                     if rows:
                         items = [r.to_dict() for r in rows]
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_all_scholarships: {err}")
 
     # 2. Query from JSON files
     if not items:
@@ -3972,8 +3972,8 @@ def get_all_scholarships(only_active: bool = False):
                         if data:
                             items = data
                             break
-                except Exception:
-                    pass
+                except Exception as err:
+                    logger.warning(f"Error during get_all_scholarships: {err}")
 
     # 3. Fallback to verified flagship roster
     if not items:
@@ -3994,8 +3994,8 @@ def get_all_scholarships(only_active: bool = False):
                 if m:
                     try:
                         return datetime.strptime(m.group(1), "%Y-%m-%d").date() >= today
-                    except Exception:
-                        pass
+                    except Exception as parse_err:
+                        logger.debug(f"Invalid deadline format in _is_active: {parse_err}")
             return True
         items = [s for s in items if _is_active(s)]
 
@@ -4031,8 +4031,8 @@ def get_user_notification_preferences(email: str) -> Dict[str, Any]:
                 all_prefs = json.load(f)
             if clean_email in all_prefs:
                 prefs.update(all_prefs[clean_email])
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_user_notification_preferences: {err}")
 
     return prefs
 
@@ -4260,8 +4260,8 @@ def mark_unified_notification_read(notification_id: str, recipient_email: str) -
                 with open(temp_file, "w", encoding="utf-8") as f:
                     json.dump(items, f, ensure_ascii=False, indent=2)
                 os.replace(temp_file, UNIFIED_NOTIFICATIONS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during mark_unified_notification_read: {err}")
 
     return updated
 
@@ -4304,8 +4304,8 @@ def mark_all_unified_notifications_read(recipient_email: str, category: Optional
                 with open(temp_file, "w", encoding="utf-8") as f:
                     json.dump(items, f, ensure_ascii=False, indent=2)
                 os.replace(temp_file, UNIFIED_NOTIFICATIONS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during mark_all_unified_notifications_read: {err}")
 
     return count
 
@@ -4346,8 +4346,8 @@ def archive_unified_notification(notification_id: str, recipient_email: str) -> 
                 with open(temp_file, "w", encoding="utf-8") as f:
                     json.dump(items, f, ensure_ascii=False, indent=2)
                 os.replace(temp_file, UNIFIED_NOTIFICATIONS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during archive_unified_notification: {err}")
 
     return updated
 
@@ -4384,8 +4384,8 @@ def delete_unified_notification(notification_id: str, recipient_email: str) -> b
                 with open(temp_file, "w", encoding="utf-8") as f:
                     json.dump(items, f, ensure_ascii=False, indent=2)
                 os.replace(temp_file, UNIFIED_NOTIFICATIONS_JSON)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during delete_unified_notification: {err}")
 
     return deleted
 
@@ -4431,8 +4431,8 @@ def get_unified_unread_counts(recipient_email: str) -> Dict[str, int]:
                     cat = (it.get("category") or "").lower()
                     if cat in res:
                         res[cat] += 1
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_unified_unread_counts: {err}")
 
     return res
 
@@ -4443,8 +4443,8 @@ def get_all_users():
         try:
             with open(USERS_JSON, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning(f"Error during get_all_users: {err}")
     return []
 
 

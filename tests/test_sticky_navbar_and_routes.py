@@ -10,6 +10,9 @@ class TestStickyNavbarAndRoutingModifications(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = TestClient(app)
+        from services.security_utils import create_session_token
+        token = create_session_token("test_user_nav@eduatlas.org")
+        cls.client.cookies.set("session_token", token)
 
     def test_01_browser_tab_titles_and_favicon(self):
         """[REQ 1] Verifies dynamic browser tab titles and favicons across all routes."""

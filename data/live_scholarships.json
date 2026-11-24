@@ -39,7 +39,8 @@
     "coverage": "تغطية كاملة 100%: الرسوم الدراسية + السكن الجامعي الكامل 4 سنوات + تكلفة الكتب والتأمين الصحي",
     "requirements": "المعدل الأكاديمي 85%+، شهادة الثانوية العامة، رسالة ترشيح رسمية من المدرسة، وإثبات التميز القيادي والمجتمعي",
     "link": "https://future.utoronto.ca/pearson/about/#apply",
-    "is_active": false
+    "is_active": false,
+    "official_link": "https://future.utoronto.ca/pearson/about/#apply"
   },
   {
     "id": "hungaricum",
@@ -85,7 +86,8 @@
     "coverage": "إعفاء دراسي 100% + راتب شهري مجزي + سكن جامعي مجاني + تأمين صحي شامل طوال فترة الدراسة",
     "requirements": "معدل 75%+ للبكالوريوس و80%+ للدراسات العليا، شهادة التخرج السابقة، خطاب دافع أكاديمي وفحص طبي رسمي",
     "link": "https://apply.stipendiumhungaricum.hu/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://apply.stipendiumhungaricum.hu/"
   },
   {
     "id": "turkiye",
@@ -131,7 +133,8 @@
     "coverage": "رسوم دراسية مجانية 100% + راتب شهري + سكن جامعي مجاني + سنة تحضيرية كاملة للغة وتذاكر طيران",
     "requirements": "حد أدنى 70% للبكالوريوس (90% للطب البشري)، رسائل توصية، وخطاب نوايا أكاديمي قوي",
     "link": "https://tbbs.turkiyeburslari.gov.tr/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://tbbs.turkiyeburslari.gov.tr/"
   },
   {
     "id": "chevening",
@@ -171,7 +174,8 @@
     "coverage": "تمويل كامل 100% + راتب شهري للمعيشة في بريطانيا + تذاكر طيران ذهاب وعودة ورسوم التأشيرة",
     "requirements": "درجة البكالوريوس بتقدير جيد جداً على الأقل، سنتان خبرة مهنية (2800 ساعة)، 4 مقالات قيادية",
     "link": "https://www.chevening.org/apply/",
-    "is_active": false
+    "is_active": false,
+    "official_link": "https://www.chevening.org/apply/"
   },
   {
     "id": "gks",
@@ -217,7 +221,8 @@
     "coverage": "رسوم دراسية كاملة 100% + راتب شهري 1,000,000 وون + سنة لغة كورية وتذاكر طيران دولية",
     "requirements": "معدل تراكمي أعلى من 80%، فحص طبي شامل، خطة دراسية وبيان شخصي باللغة الإنجليزية",
     "link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.studyinkorea.go.kr/en/scholarship/gksNoticeList.do"
   },
   {
     "id": "daad",
@@ -261,7 +266,8 @@
     "coverage": "راتب شهري 934 يورو للماجستير و1,300 يورو للدكتوراه + تأمين صحي شامل + بدل سفر وتكاليف الأبحاث والمراجع",
     "requirements": "درجة بكالوريوس لا يتجاوز عمرها 6 سنوات، سنتان خبرة عمل، وخطاب دافع أكاديمي بالإنجليزية أو الألمانية",
     "link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/"
   },
   {
     "id": "erasmus",
@@ -300,7 +306,8 @@
     "coverage": "إعفاء دراسي كامل 100% + راتب شهري 1,400 يورو لمدة عامين + تذاكر سفر وبدل إقامة في دولتين أوروبيتين على الأقل",
     "requirements": "شهادة البكالوريوس، سيرة ذاتية Europass، رسالتا توصية، ومقال دافع لكل برنامج",
     "link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en"
   },
   {
     "id": "fulbright",
@@ -343,7 +350,8 @@
     "coverage": "تغطية الرسوم الجامعية بالكامل + راتب شهري للإعاشة + تذاكر طيران ذهاب وعودة + تأمين صحي شامل + فيزا J-1",
     "requirements": "درجة البكالوريوس بتقدير جيد جداً، كفاءة عالية في اللغة الإنجليزية، واجتياز المقابلة الشخصية",
     "link": "https://foreign.fulbrightonline.org/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://foreign.fulbrightonline.org/"
   },
   {
     "id": "cern_summer",
@@ -385,7 +393,8 @@
     "coverage": "تمويل كامل: بدل معيشة 90 فرنك سويسري يومياً (حوالي 2,700 CHF شهرياً) + تذاكر طيران + تأمين صحي شامل + تدريب متقدم في مصادم الهادرونات الكبير",
     "requirements": "إتمام 3 سنوات على الأقل من دراسة البكالوريوس أو الماجستير في تخصصات الفيزياء أو الحوسبة أو الهندسة، وإتقان اللغة الإنجليزية",
     "link": "https://careers.cern/summer",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://careers.cern/summer"
   },
   {
     "id": "world_bank_internship",
@@ -428,7 +437,8 @@
     "coverage": "راتب شهري ممول بالساعة لكافة ساعات العمل + بدل سفر دولي يصل إلى 3,000 دولار لمن يحتاج السفر إلى واشنطن",
     "requirements": "التسجيل في برنامج ماجستير أو دكتوراه معترف به، وإجادة تامة للغة الإنجليزية مع مهارات تحليلية كمية مثبتة",
     "link": "https://www.worldbank.org/en/about/careers/programs-and-internships/internship",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.worldbank.org/en/about/careers/programs-and-internships/internship"
   },
   {
     "id": "max_planck_internship",
@@ -470,7 +480,8 @@
     "coverage": "تمويل كامل: راتب شهري 900 يورو + سكن مجاني داخل مجمع المعهد + تغطية تذاكر السفر وتأمين صحي كامل لمدة 10 أسابيع",
     "requirements": "سجل أكاديمي متميز في مرحلة البكالوريوس أو الماجستير وشغف بالأبحاث المعملية والابتكار العلمي",
     "link": "https://www.imprs-ls.mpg.de/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.imprs-ls.mpg.de/"
   },
   {
     "id": "gsoc_fellowship",
@@ -519,7 +530,8 @@
     "coverage": "مكافأة مالية متدرجة (1,500$ إلى 3,300$) مدفوعة من جوجل حسب بلد إقامة الطالب + توجيه وإشراف مباشر من كبار مهندسي البرمجيات في العالم",
     "requirements": "مهارات برمجية جيدة في إحدى اللغات (Python, C++, JS, Rust) وتقديم مقترح مشروع متكامل لمنظمة مفتوحة المصدر",
     "link": "https://summerofcode.withgoogle.com/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://summerofcode.withgoogle.com/"
   },
   {
     "id": "riken_summer",
@@ -563,7 +575,8 @@
     "coverage": "تمويل كامل: سكن جامعي مجاني في طوكيو + تذاكر طيران ذهاب وعودة لليابان + مصروف معيشة يومي + العمل في أحدث مختبرات الدماغ والذكاء الاصطناعي",
     "requirements": "طلبة البكالوريوس والدراسات العليا ذوو الاهتمام بالعلوم العصبية والحوسبة الحيوية، ورسائل توصية أكاديمية",
     "link": "https://cbs.riken.jp/en/summer/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://cbs.riken.jp/en/summer/"
   },
   {
     "id": "harvard_hnmun",
@@ -606,7 +619,8 @@
     "coverage": "منحة سفر ومشاركة: تغطية رسوم المؤتمر بالكامل + دعم تذاكر الطيران والسكن لوفود الطلبة الدوليين المتميزين من الدول النامية",
     "requirements": "التسجيل كوفد أو مندوب فردي، كتابة أوراق سياسات موقفية، وشغف بالقضايا الدبلوماسية الدولية",
     "link": "https://www.harvardmun.org/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.harvardmun.org/"
   },
   {
     "id": "ieee_travel_grant",
@@ -651,7 +665,8 @@
     "coverage": "منحة سفر مالية من 500$ إلى 1,500$ لتغطية تذاكر السفر ورسوم التسجيل والإقامة للطلبة المقبولين لعرض أوراقهم البحثية في مؤتمرات IEEE المرموقة",
     "requirements": "عضوية طلابية في IEEE وقبول ورقة بحثية أصلية تم تحكيمها ونشرها في المؤتمر المستهدف",
     "link": "https://www.ieee.org/membership/students/scholarships-grants-awards.html",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.ieee.org/membership/students/scholarships-grants-awards.html"
   },
   {
     "id": "world_youth_forum",
@@ -697,7 +712,8 @@
     "coverage": "تمويل كامل 100%: تذاكر طيران ذهاب وعودة من أي دولة بالعالم + إقامة فندقية فاخرة كاملة + حضور جلسات قادة العالم وورش العمل التخصصية",
     "requirements": "الفئة العمرية من 18 إلى 35 عاماً، تقديم فيديو تعريفي أو مقال حول رؤية الطالب في القيادة والتنمية المستدامة",
     "link": "https://wyfegypt.com/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://wyfegypt.com/"
   },
   {
     "id": "lindau_nobel",
@@ -742,7 +758,8 @@
     "coverage": "منحة حضور كاملة: لقاء مباشر مع 30+ من حائزي جوائز نوبل + تغطية كاملة للإقامة الفندقية والسفر والوجبات في بافاريا الألمانية",
     "requirements": "علماء وباحثون شباب متميزون في مجالات العلوم الطبيعية أو الاقتصاد، مع توصيات بحثية رفيعة المستوى",
     "link": "https://www.lindau-nobel.org/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.lindau-nobel.org/"
   },
   {
     "id": "unitar_diplomacy",
@@ -788,7 +805,8 @@
     "coverage": "منحة دراسية وتدريبية كاملة من الأمم المتحدة مع شهادة رسمية معتمدة ورعاية كاملة للمشاركين المتميزين من الدول النامية",
     "requirements": "الاهتمام بالعمل الدبلوماسي والمفاوضات الدولية، شهادة جامعية أو قيد الدراسة، وإتقان اللغة الإنجليزية أو الفرنسية",
     "link": "https://unitar.org/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://unitar.org/"
   },
   {
     "id": "kaust_vsrp",
@@ -831,7 +849,8 @@
     "coverage": "تمويل كامل 100%: راتب شهري 1,000$ + غرفة خاصة مع حمام مستقل في السكن الجامعي + تذاكر طيران ذهاب وعودة + تأمين صحي وتكاليف الفيزا",
     "requirements": "إتمام السنة الثالثة من البكالوريوس أو دراسة الماجستير بمعدل GPA لا يقل عن 3.5 من 4 (أو 85%+)، وكفاءة لغة إنجليزية مثبتة",
     "link": "https://vsrp.kaust.edu.sa/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://vsrp.kaust.edu.sa/"
   },
   {
     "id": "oxford_climate_training",
@@ -879,7 +898,8 @@
     "coverage": "تدريب مكثف مع تغطية كاملة للرسوم والمواد البحثية وفرصة توجيه مباشر من أساتذة جامعة أكسفورد وشهادة إتمام معتمدة",
     "requirements": "سيرة ذاتية قوية ومقال يوضح مساهمة المتقدم في حلول الاستدامة وتغير المناخ",
     "link": "https://www.ox.ac.uk/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://www.ox.ac.uk/"
   },
   {
     "id": "iaeste_intern_training",
@@ -921,6 +941,7 @@
     "coverage": "تدريب مهني مدفوع الأجر في شركات وجامعات عالمية يغطي نفقات المعيشة وتأشيرات العمل والتدريب التقني الميداني لمدة 8 إلى 52 أسبوعاً",
     "requirements": "دراسة أحد تخصصات الهندسة أو العلوم أو الحاسوب، وإتمام عامين دراسيين على الأقل",
     "link": "https://iaeste.org/",
-    "is_active": true
+    "is_active": true,
+    "official_link": "https://iaeste.org/"
   }
 ]

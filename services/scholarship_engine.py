@@ -305,8 +305,8 @@ Ensure output is strictly valid JSON:
             try:
                 dl_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
                 return dl_date < date.today()
-            except Exception:
-                pass
+            except Exception as parse_err:
+                logger.debug(f"Invalid deadline date format in {dl_text}: {parse_err}")
         return False
 
     def _get_fallback_scholarships(self, degree: str, country: str, active_only: bool = True) -> List[Dict[str, Any]]:
@@ -420,8 +420,8 @@ Ensure output is strictly valid JSON:
                         countdown_badge = "<span style='background: #dc2626; color: #ffffff; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-right: 6px; font-weight: bold;'>اليوم الأخير للتقديم</span>"
                     else:
                         countdown_badge = "<span style='background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin-right: 6px; font-weight: bold;'>انتهى موعد التقديم</span>"
-                except Exception:
-                    pass
+                except Exception as parse_err:
+                    logger.debug(f"Could not parse countdown date {date_match.group(0)}: {parse_err}")
 
             rows_html += f"""
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
@@ -600,8 +600,8 @@ Ensure output is strictly valid JSON:
             if os.path.exists(temp_csv):
                 try:
                     os.remove(temp_csv)
-                except Exception:
-                    pass
+                except OSError as os_err:
+                    logger.warning(f"Could not remove temporary CSV file {temp_csv}: {os_err}")
 
     async def send_application_kit_email(
         self,

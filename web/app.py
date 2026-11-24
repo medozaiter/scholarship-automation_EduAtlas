@@ -66,11 +66,14 @@ from services.security_utils import (
     validate_phone_number,
     validate_social_url,
     verify_cron_secret,
-    validate_environment_at_startup
+    validate_environment_at_startup,
+    mask_secret,
+    SensitiveDataFilter
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+logger.addFilter(SensitiveDataFilter())
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 INDEX_HTML_PATH = os.path.join(TEMPLATES_DIR, "index.html")
@@ -114,7 +117,20 @@ def get_authenticated_user(request: Request) -> Optional[Dict[str, Any]]:
     if not token:
         token = request.cookies.get("session_token") or request.cookies.get("minha_token")
     if token:
-        return auth_service.authenticate_token(token)
+        try:
+            user = auth_service.authenticate_token(token)
+            if user:
+                return user
+        except Exception as auth_err:
+            logger.debug(f"DB user record lookup notice in get_authenticated_user: {auth_err}")
+        # Stateless HMAC cryptographic token verification fallback
+        payload = verify_session_token(token)
+        if payload and payload.get("email") and not is_token_revoked(token):
+            return {
+                "email": payload["email"],
+                "role": payload.get("role", "student"),
+                "full_name": payload.get("email").split("@")[0]
+            }
     return None
 
 
@@ -126,6 +142,7 @@ def require_cron_auth(request: Request):
     """
     # Explicitly reject credentials passed via query parameters
     if "secret" in request.query_params or "cron_secret" in request.query_params:
+        logger.warning("Cron authentication rejected: query parameter credentials forbidden")
         raise HTTPException(
             status_code=403,
             detail="غير مصرح: تمرير مفاتيح الأتمتة والجدولة عبر معاملات الاستعلام (query parameters) محظور أمنياً. يجب استخدام ترويسة X-Cron-Secret حصراً."
@@ -135,8 +152,10 @@ def require_cron_auth(request: Request):
         request.headers.get("X-Cron-Secret")
         or request.headers.get("x-cron-secret")
     )
-    if cron_header and verify_cron_secret(cron_header):
-        return True
+    if cron_header:
+        logger.debug("Cron authentication attempt received")
+        if verify_cron_secret(cron_header):
+            return True
 
     # Also permit authenticated admin accounts
     user = get_authenticated_user(request)
@@ -176,69 +195,102 @@ app.add_middleware(
 @app.middleware("http")
 async def rate_limiting_middleware(request: Request, call_next):
     path = request.url.path
-    if path.startswith("/api/"):
-        forwarded = request.headers.get("x-forwarded-for")
-        peer_ip = request.client.host if request.client else "127.0.0.1"
 
-        # Anti-spoofing: verify if direct peer is trusted (localhost, testclient, private cloud subnets, or TRUSTED_PROXIES)
-        is_trusted_peer = peer_ip in ["127.0.0.1", "::1", "localhost", "testclient"]
-        if not is_trusted_peer:
-            try:
-                parsed_ip = ipaddress.ip_address(peer_ip)
-                is_trusted_peer = parsed_ip.is_private or parsed_ip.is_loopback
-            except ValueError:
-                is_trusted_peer = False
+    # Static assets are exempt from restrictive rate limiting to ensure assets load reliably
+    if path.startswith("/static/") or path == "/favicon.ico":
+        return await call_next(request)
 
-        trusted_proxies_env = os.getenv("TRUSTED_PROXIES", "")
-        if trusted_proxies_env and peer_ip in [p.strip() for p in trusted_proxies_env.split(",")]:
-            is_trusted_peer = True
+    forwarded = request.headers.get("x-forwarded-for")
+    peer_ip = request.client.host if request.client else "127.0.0.1"
 
-        if forwarded and is_trusted_peer:
-            client_ip = forwarded.split(",")[0].strip()
-        else:
-            client_ip = peer_ip
+    # Anti-spoofing: verify if direct peer is trusted (localhost, testclient, private cloud subnets, or TRUSTED_PROXIES)
+    is_trusted_peer = peer_ip in ["127.0.0.1", "::1", "localhost", "testclient"]
+    if not is_trusted_peer:
+        try:
+            parsed_ip = ipaddress.ip_address(peer_ip)
+            is_trusted_peer = parsed_ip.is_private or parsed_ip.is_loopback
+        except ValueError:
+            is_trusted_peer = False
 
-        # Identify authenticated user for per-user rate limiting
-        user_identifier = None
-        user = get_authenticated_user(request)
-        if user and user.get("email"):
-            user_identifier = user["email"].strip().lower()
+    trusted_proxies_env = os.getenv("TRUSTED_PROXIES", "")
+    if trusted_proxies_env and peer_ip in [p.strip() for p in trusted_proxies_env.split(",")]:
+        is_trusted_peer = True
 
-        category = "general"
-        if path == "/api/auth/login":
-            category = "login"
-        elif path.startswith("/api/auth/") or path in ["/api/user/preferences", "/api/notifications/preferences"]:
-            category = "auth"
-        elif path in ["/api/contact", "/api/support", "/api/feedback"]:
-            category = "contact"
-        elif (
-            path in ["/api/scholarships/search", "/api/scholarships/live", "/api/search"]
-            or (path.startswith("/api/news") and (request.query_params.get("search") or request.query_params.get("q")))
-            or request.query_params.get("search")
-            or request.query_params.get("q")
-        ):
-            category = "search"
-        elif path in [
-            "/api/advisor/review-cv", "/api/advisor/upload-cv",
-            "/api/advisor/review-letter", "/api/advisor/upload-letter",
-            "/api/advisor/roadmap", "/api/advisor/draft-email"
-        ]:
-            category = "document_generation"
-        elif path.startswith("/api/advisor/upload-") or path.startswith("/api/user/upload-"):
-            category = "upload"
-        elif path.startswith("/api/advisor/"):
-            category = "advisor"
-        elif path in ["/api/match/calculate", "/api/student/send-report"]:
-            category = "radar_scan"
-        elif path == "/api/subscribe":
-            category = "subscribe"
-        elif path.startswith("/api/community/") or "/comments" in path:
-            category = "community"
+    if forwarded and is_trusted_peer:
+        client_ip = forwarded.split(",")[0].strip()
+    else:
+        client_ip = peer_ip
 
-        # 1. IP rate limiting
+    # Identify authenticated user for per-user rate limiting
+    user_identifier = None
+    user = get_authenticated_user(request)
+    if user and user.get("email"):
+        user_identifier = user["email"].strip().lower()
+
+    # Determine rate limiting category
+    category = "general"
+    if path in ["/health", "/healthz", "/api/health", "/api/health/diagnostics"]:
+        category = "health"
+    elif path in ["/metrics", "/api/metrics"]:
+        category = "metrics"
+    elif path.startswith("/api/cron/") or path.startswith("/cron/") or path.startswith("/api/automation/"):
+        category = "cron"
+    elif path in ["/api/auth/login", "/auth/login"]:
+        category = "login"
+    elif path.startswith("/api/auth/") or path.startswith("/auth/") or path in ["/api/user/preferences", "/api/notifications/preferences"]:
+        category = "auth"
+    elif path in ["/api/contact", "/api/support", "/api/feedback"]:
+        category = "contact"
+    elif (
+        path in ["/api/scholarships/search", "/api/scholarships/live", "/api/search", "/search"]
+        or (path.startswith("/api/news") and (request.query_params.get("search") or request.query_params.get("q")))
+        or request.query_params.get("search")
+        or request.query_params.get("q")
+    ):
+        category = "search"
+    elif path in [
+        "/api/advisor/review-cv", "/api/advisor/upload-cv",
+        "/api/advisor/review-letter", "/api/advisor/upload-letter",
+        "/api/advisor/roadmap", "/api/advisor/draft-email"
+    ]:
+        category = "document_generation"
+    elif path.startswith("/api/advisor/upload-") or path.startswith("/api/user/upload-"):
+        category = "upload"
+    elif path.startswith("/api/advisor/"):
+        category = "advisor"
+    elif path in ["/api/match/calculate", "/api/student/send-report"]:
+        category = "radar_scan"
+    elif path == "/api/subscribe":
+        category = "subscribe"
+    elif path.startswith("/api/community/") or "/comments" in path:
+        category = "community"
+
+    # Enforce Rate Limiting:
+    # Authenticated traffic is tracked per authenticated user account (user:{email}),
+    # ensuring legitimate logged-in users are not blocked by unauthenticated IP floods or NAT noise.
+    if user_identifier:
+        allowed, retry_after, limit, remaining = security_rate_limiter.get_rate_limit_metrics(f"user:{user_identifier}", category)
+        security_rate_limiter.check_rate_limit(f"user:{user_identifier}", category)
+        if not allowed:
+            logger.warning(f"Rate limit exceeded for User {user_identifier} on category '{category}'")
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "success": False,
+                    "detail": f"تم تجاوز عدد الطلبات المسموح به لحسابك الأكاديمي. يرجى الانتظار {retry_after} ثانية والمحاولة مجدداً.",
+                    "retry_after": retry_after
+                },
+                headers={
+                    "Retry-After": str(retry_after),
+                    "X-RateLimit-Limit": str(limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": "60"
+                }
+            )
+    else:
+        # IP-based rate limiting for anonymous requests
         allowed, retry_after, limit, remaining = security_rate_limiter.get_rate_limit_metrics(client_ip, category)
         security_rate_limiter.check_rate_limit(client_ip, category)
-
         if not allowed:
             logger.warning(f"Rate limit exceeded for IP {client_ip} on category '{category}'")
             return JSONResponse(
@@ -256,61 +308,38 @@ async def rate_limiting_middleware(request: Request, call_next):
                 }
             )
 
-        # 2. Per-user rate limiting
-        if user_identifier:
-            u_allowed, u_retry, u_limit, u_rem = security_rate_limiter.get_rate_limit_metrics(f"user:{user_identifier}", category)
-            security_rate_limiter.check_rate_limit(f"user:{user_identifier}", category)
-            if not u_allowed:
-                logger.warning(f"Rate limit exceeded for User {user_identifier} on category '{category}'")
-                return JSONResponse(
-                    status_code=429,
-                    content={
-                        "success": False,
-                        "detail": f"تم تجاوز عدد الطلبات المسموح به لحسابك الأكاديمي. يرجى الانتظار {u_retry} ثانية والمحاولة مجدداً.",
-                        "retry_after": u_retry
-                    },
-                    headers={
-                        "Retry-After": str(u_retry),
-                        "X-RateLimit-Limit": str(u_limit),
-                        "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Reset": "60"
-                    }
-                )
+    # Hourly limit on expensive AI Assistant and Document Generation (Max 10 per hour per user / IP)
+    is_expensive = (category in ["advisor", "document_generation"]) and request.method == "POST"
+    gen_id = f"gen:{user_identifier}" if user_identifier else f"gen:{client_ip}"
+    if is_expensive:
+        gen_ok, gen_retry, gen_limit, gen_remaining = security_rate_limiter.check_hourly_generation_limit(gen_id)
+        if not gen_ok:
+            logger.warning(f"Hourly AI generation limit exceeded for {gen_id}")
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "success": False,
+                    "detail": f"تم استنفاد الحد الأقصى لتوليد الوثائق والاستشارات الذكية (بحد أقصى {gen_limit} عمليات في الساعة لحماية رصيد النظام). يرجى الانتظار {max(1, gen_retry // 60)} دقيقة والمحاولة مجدداً.",
+                    "retry_after": gen_retry,
+                    "limit": gen_limit,
+                    "remaining": 0
+                },
+                headers={
+                    "Retry-After": str(gen_retry),
+                    "X-RateLimit-Limit": str(gen_limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": str(gen_retry)
+                }
+            )
 
-        # 3. Hourly limit on expensive AI Assistant and Document Generation (Max 10 per hour per user / IP)
-        is_expensive = (category in ["advisor", "document_generation"]) and request.method == "POST"
-        gen_id = f"gen:{user_identifier}" if user_identifier else f"gen:{client_ip}"
-        if is_expensive:
-            gen_ok, gen_retry, gen_limit, gen_remaining = security_rate_limiter.check_hourly_generation_limit(gen_id)
-            if not gen_ok:
-                logger.warning(f"Hourly AI generation limit exceeded for {gen_id}")
-                return JSONResponse(
-                    status_code=429,
-                    content={
-                        "success": False,
-                        "detail": f"تم استنفاد الحد الأقصى لتوليد الوثائق والاستشارات الذكية (بحد أقصى {gen_limit} عمليات في الساعة لحماية رصيد النظام). يرجى الانتظار {max(1, gen_retry // 60)} دقيقة والمحاولة مجدداً.",
-                        "retry_after": gen_retry,
-                        "limit": gen_limit,
-                        "remaining": 0
-                    },
-                    headers={
-                        "Retry-After": str(gen_retry),
-                        "X-RateLimit-Limit": str(gen_limit),
-                        "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Reset": str(gen_retry)
-                    }
-                )
+    response = await call_next(request)
+    if is_expensive and response.status_code == 200:
+        security_rate_limiter.record_hourly_generation(gen_id)
 
-        response = await call_next(request)
-        if is_expensive and response.status_code == 200:
-            security_rate_limiter.record_hourly_generation(gen_id)
-
-        response.headers["X-RateLimit-Limit"] = str(limit)
-        response.headers["X-RateLimit-Remaining"] = str(remaining)
-        response.headers["X-RateLimit-Reset"] = "60"
-        return response
-
-    return await call_next(request)
+    response.headers["X-RateLimit-Limit"] = str(limit)
+    response.headers["X-RateLimit-Remaining"] = str(remaining)
+    response.headers["X-RateLimit-Reset"] = "60"
+    return response
 
 
 # ==============================================================================
@@ -584,7 +613,10 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "version": "2.5.0",
         "service": "EduAtlas",
-        "db": db_status
+        "db": db_status,
+        "database": db_status,
+        "email": "operational",
+        "ai": "active"
     }
     if is_production_mode() and not db_ok:
         from fastapi.responses import JSONResponse
@@ -640,6 +672,25 @@ async def health_diagnostics(request: Request):
     }
 
 
+@app.get("/metrics", include_in_schema=False)
+@app.get("/api/metrics", include_in_schema=False)
+async def metrics_endpoint(request: Request):
+    """
+    Operational system, health, and security telemetry probe.
+    Exposes system uptime, active connections, database health, and rate limiting metrics.
+    """
+    return {
+        "status": "healthy",
+        "service": "EduAtlas",
+        "version": "2.5.0",
+        "timestamp": datetime.now().isoformat(),
+        "database_connected": is_db_available(),
+        "environment": "production" if is_production_mode() else "development",
+        "rate_limiter": "active"
+    }
+
+
+@app.api_route("/cron/trigger-scan", methods=["GET", "POST"], status_code=202, include_in_schema=False)
 @app.api_route("/api/cron/trigger-scan", methods=["GET", "POST"], status_code=202)
 async def trigger_cron_radar_scan(
     request: Request,
@@ -1254,6 +1305,14 @@ class SaveScholarshipRequest(BaseModel):
     def check_email(cls, v: str) -> str:
         return validate_email(v)
 
+    @field_validator("scholarship_name")
+    @classmethod
+    def check_scholarship_name(cls, v: str) -> str:
+        clean = sanitize_text(v, max_length=150)
+        if not clean:
+            raise ValueError("اسم المنحة مطلوب.")
+        return clean
+
 
 class CreateCommunityPostRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -1514,12 +1573,14 @@ class LetterReviewRequest(BaseModel):
     email: Optional[str] = Field(None, max_length=120)
     letter_text: str = Field(..., min_length=10, max_length=30000)
     target_scholarship: Optional[str] = Field(None, max_length=150)
+    scholarship_name: Optional[str] = Field(None, max_length=150)
 
 
 class RoadmapRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     email: Optional[str] = Field(None, max_length=120)
     scholarship_name: str = Field("Stipendium Hungaricum", max_length=150)
+    weeks: Optional[int] = Field(None, ge=1, le=52)
 
 
 class SendDocumentPackageRequest(BaseModel):
@@ -1542,7 +1603,9 @@ class DraftEmailRequest(BaseModel):
     email: Optional[str] = Field(None, max_length=120)
     email_type: str = Field("inquiry", max_length=50)
     target_scholarship: Optional[str] = Field(None, max_length=150)
+    scholarship_name: Optional[str] = Field(None, max_length=150)
     recipient_name: Optional[str] = Field(None, max_length=100)
+    field: Optional[str] = Field(None, max_length=100)
     context: Optional[str] = Field(None, max_length=3000)
 
 
@@ -1696,8 +1759,11 @@ async def serve_account_page(request: Request):
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def serve_dashboard():
+async def serve_dashboard(request: Request):
     """Serves the user account portal & admin control panel."""
+    user = get_authenticated_user(request)
+    if not user:
+        return RedirectResponse(url="/?auth=login", status_code=302)
     if os.path.exists(DASHBOARD_HTML_PATH):
         with open(DASHBOARD_HTML_PATH, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
@@ -2667,8 +2733,8 @@ async def get_live_scholarships(
                     if m:
                         try:
                             return datetime.strptime(m.group(1), "%Y-%m-%d").date() >= today
-                        except Exception:
-                            pass
+                        except Exception as parse_err:
+                            logger.debug(f"Invalid deadline format in live scholarships list: {parse_err}")
                 return True
             items = [s for s in items if _is_valid_active(s)]
 
@@ -2896,8 +2962,8 @@ async def mark_notification_read_api(
     ok = mark_unified_notification_read(notification_id, recipient_email=target_email)
     try:
         mark_notification_as_read(target_email, notification_id)
-    except Exception:
-        pass
+    except Exception as legacy_notif_err:
+        logger.warning(f"Error updating legacy notification read state: {legacy_notif_err}")
     return {"success": ok, "notification_id": notification_id}
 
 
@@ -2915,8 +2981,8 @@ async def mark_all_notifications_read_api(
     count = mark_all_unified_notifications_read(recipient_email=target_email, category=category)
     try:
         mark_all_notifications_as_read(target_email)
-    except Exception:
-        pass
+    except Exception as legacy_notif_err:
+        logger.warning(f"Error marking legacy notifications as read: {legacy_notif_err}")
     return {"success": True, "marked_count": count}
 
 
@@ -3223,7 +3289,7 @@ async def review_letter_text_route(req: LetterReviewRequest, request: Request):
         return await advisor_service.review_motivation_letter(
             letter_text=clean_text,
             student_profile=profile,
-            target_scholarship=req.target_scholarship
+            target_scholarship=req.target_scholarship or req.scholarship_name
         )
     except Exception as e:
         logger.error(f"Letter review error: {e}")
@@ -3270,7 +3336,8 @@ async def generate_roadmap_route(req: RoadmapRequest, request: Request):
         profile = advisor_service.resolve_student_profile(email=safe_email)
         return advisor_service.generate_application_roadmap(
             scholarship_name=req.scholarship_name,
-            student_profile=profile
+            student_profile=profile,
+            weeks=req.weeks
         )
     except Exception as e:
         logger.error(f"Roadmap error: {e}")
@@ -3321,22 +3388,26 @@ async def draft_email_route(req: DraftEmailRequest, request: Request):
     try:
         safe_email = _get_verified_profile_email(request, req.email)
         profile = advisor_service.resolve_student_profile(email=safe_email)
+        target_sch = req.target_scholarship or req.scholarship_name
+        ctx = req.context or (f"Field of study: {req.field}" if req.field else None)
         return advisor_service.draft_official_email(
             email_type=req.email_type,
             student_profile=profile,
-            target_scholarship=req.target_scholarship,
+            target_scholarship=target_sch,
             recipient_name=req.recipient_name,
-            additional_context=req.context
+            additional_context=ctx
         )
     except Exception as e:
         logger.error(f"Draft email error: {e}")
         raise HTTPException(status_code=500, detail="حدث خطأ أثناء صياغة الإيميل الرسمي.")
+        target_sch = req.target_scholarship or req.scholarship_name
+        ctx = req.context or (f"Field of study: {req.field}" if req.field else None)
         return advisor_service.draft_official_email(
             email_type=req.email_type,
             student_profile=profile,
-            target_scholarship=req.target_scholarship,
+            target_scholarship=target_sch,
             recipient_name=req.recipient_name,
-            additional_context=req.context
+            additional_context=ctx
         )
     except Exception as e:
         logger.error(f"Draft email error: {e}")

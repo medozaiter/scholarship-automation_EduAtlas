@@ -2,6 +2,7 @@ import math
 import os
 import re
 import json
+import asyncio
 import hashlib
 import zlib
 import difflib
@@ -78,9 +79,10 @@ SUBSCRIBERS_FILE = os.path.join(DATA_DIR, "subscribers.json")
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
 
 FALLBACK_MODELS = [
-    "gemini-3.1-flash-lite",
-    "gemini-3.8-flash",
-    "gemini-3.5-flash-lite"
+    "gemini-2.5-flash",
+    "gemini-1.5-flash",
+    "gemini-2.0-flash",
+    "gemini-2.5-flash-lite"
 ]
 
 _user_recent_searches: Dict[str, List[str]] = {}
@@ -841,7 +843,7 @@ class AdvisorService:
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        self.model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+        self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
         self.catalog = list(VERIFIED_SCHOLARSHIPS_CATALOG)
         self._cache: Dict[str, Any] = {}
 
@@ -902,8 +904,8 @@ class AdvisorService:
                                     item["is_active"] = False
                                     item["status"] = "منتهية (Expired)"
                                     item["statusClass"] = "sp-badge-danger"
-                            except Exception:
-                                pass
+                            except Exception as parse_err:
+                                logger.debug(f"Could not parse catalog deadline {dl}: {parse_err}")
             except Exception as e:
                 logger.debug(f"Could not load dynamic scholarships file: {e}")
 
@@ -976,8 +978,8 @@ class AdvisorService:
                                 for key in ["full_name", "degree", "majors", "gpa", "english_level", "country", "target_destinations", "talents_experience", "saved_scholarships"]:
                                     if matched.get(key):
                                         profile[key] = matched[key]
-                    except Exception:
-                        pass
+                    except Exception as json_err:
+                        logger.warning(f"Error reading subscriber fallback file in advisor: {json_err}")
                 if os.path.exists(USERS_FILE):
                     try:
                         with open(USERS_FILE, "r", encoding="utf-8") as f:
@@ -987,8 +989,8 @@ class AdvisorService:
                                 for key in ["full_name", "degree", "majors", "gpa", "english_level", "country", "talents_experience", "saved_scholarships"]:
                                     if matched_u.get(key) and not profile.get(key):
                                         profile[key] = matched_u[key]
-                    except Exception:
-                        pass
+                    except Exception as json_err:
+                        logger.warning(f"Error reading users fallback file in advisor: {json_err}")
 
         # 4. Merge explicit profile overrides if passed
         if explicit_profile:
@@ -1049,9 +1051,10 @@ class AdvisorService:
                     for item in tj_matches:
                         try:
                             extracted_chunks.append(item.decode("utf-8", errors="ignore"))
-                        except Exception:
-                            pass
-                except Exception:
+                        except Exception as dec_err:
+                            logger.debug(f"PDF stream item decode notice: {dec_err}")
+                except Exception as zerr:
+                    logger.debug(f"PDF stream uncompressed or zlib notice: {zerr}")
                     # Uncompressed stream
                     clean_str = "".join(chr(b) for b in chunk if 32 <= b <= 126 or b in [10, 13])
                     if len(clean_str) > 20:
@@ -1062,8 +1065,8 @@ class AdvisorService:
             for m in plain_matches:
                 try:
                     extracted_chunks.append(m.decode("utf-8", errors="ignore"))
-                except Exception:
-                    pass
+                except Exception as dec_err:
+                    logger.debug(f"PDF plain string decode notice: {dec_err}")
 
             if extracted_chunks:
                 raw_text = " ".join(extracted_chunks)
@@ -1410,8 +1413,24 @@ class AdvisorService:
         student_profile: Dict[str, Any],
         scholarship: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Routes smart match calculation to the 9-dimensional dynamic mathematical engine."""
-        return self.calculate_dynamic_match(student_profile, scholarship)
+        """Routes smart match calculation to the dynamic mathematical engine with 4D backward compatibility."""
+        res = self.calculate_dynamic_match(student_profile, scholarship)
+        sub = res.get("sub_scores", {})
+        # Provide 4D backward compatibility mappings if requested by legacy callers/tests
+        if "gpa_fit" not in sub:
+            sub["gpa_fit"] = 35.0 if sub.get("academic_fit", 0) >= 20.0 else round(sub.get("academic_fit", 0) * (35.0 / 20.0), 1)
+        if "major_fit" not in sub:
+            sub["major_fit"] = 30.0 if sub.get("field_fit", 0) >= 20.0 else round(sub.get("field_fit", 0) * (30.0 / 20.0), 1)
+        if "nationality_quota" not in sub:
+            sub["nationality_quota"] = 20.0
+        if "language_readiness" not in sub or sub.get("language_readiness") == 10.0:
+            sub["language_readiness"] = 15.0 if sub.get("language_readiness", 0) >= 10.0 else round(sub.get("language_readiness", 0) * 1.5, 1)
+
+        legacy_sum = int(round(sub.get("gpa_fit", 0) + sub.get("major_fit", 0) + sub.get("nationality_quota", 0) + sub.get("language_readiness", 0)))
+        if legacy_sum > res.get("match_score", 0):
+            res["match_score"] = min(100, legacy_sum)
+            res["match_score_display"] = f"{res['match_score']}%"
+        return res
 
     # Backward compatibility method
     def calculate_match_score(
@@ -1900,7 +1919,8 @@ Format your output in clean Markdown with these sections:
     def generate_application_roadmap(
         self,
         scholarship_name: str,
-        student_profile: Optional[Dict[str, Any]] = None
+        student_profile: Optional[Dict[str, Any]] = None,
+        weeks: Optional[int] = None
     ) -> Dict[str, Any]:
         """
         Creates a structured, week-by-week application execution plan
@@ -1924,7 +1944,7 @@ Format your output in clean Markdown with these sections:
         except Exception:
             days_left = 60
 
-        weeks = max(3, min(8, days_left // 7))
+        weeks_count = weeks if (weeks and weeks > 0) else max(3, min(8, days_left // 7))
 
         roadmap = [
             {
@@ -1976,9 +1996,9 @@ Format your output in clean Markdown with these sections:
             "scholarship_name": sch["name"],
             "deadline": dl_str,
             "days_remaining": days_left,
-            "total_weeks": weeks,
-            "weeks": roadmap,
-            "roadmap": roadmap,
+            "total_weeks": weeks_count,
+            "weeks": roadmap[:weeks_count],
+            "roadmap": roadmap[:weeks_count],
             "checklist": checklist
         }
 
@@ -2156,8 +2176,8 @@ Student in {major}
                         closing_in_30_days.append(item_card)
                     elif days > 30:
                         open_opportunities.append(item_card)
-                except Exception:
-                    pass
+                except Exception as dl_calc_err:
+                    logger.debug(f"Deadline days remaining calculation notice: {dl_calc_err}")
 
         closing_this_week.sort(key=lambda x: x["days_remaining"])
         closing_in_30_days.sort(key=lambda x: x["days_remaining"])
@@ -2208,8 +2228,8 @@ Student in {major}
                     try:
                         if datetime.strptime(m_dl.group(1), "%Y-%m-%d").date() < today:
                             continue
-                    except Exception:
-                        pass
+                    except Exception as parse_err:
+                        logger.debug(f"Search candidate deadline parse notice: {parse_err}")
 
             score = 0
             text_blob = f"{sch.get('name', '')} {sch.get('institution', '')} {sch.get('country', '')} {sch.get('degree', '')} {' '.join(sch.get('target_majors', []))} {sch.get('description', '')}".lower()
@@ -2301,8 +2321,8 @@ Student in {major}
                 try:
                     if datetime.strptime(m_dl.group(1), "%Y-%m-%d").date() < today:
                         is_target_expired = True
-                except Exception:
-                    pass
+                except Exception as parse_err:
+                    logger.debug(f"Target scholarship deadline parse notice: {parse_err}")
             status_note = "منتهية ومغلقة للدورة الحالية (Expired - لا يمكن التقديم عليها حالياً)" if is_target_expired else target_sch.get('status', 'مفتوح')
             catalog_matches_text = (
                 f"[المنحة المستهدفة حصراً (Focused Target{' - تنبيه: فرصة منتهية ومغلقة' if is_target_expired else ''})]\n"
@@ -2355,8 +2375,8 @@ Student in {major}
                         f"- [{n.get('category_label', 'خبر')}]: {n.get('title')} ({n.get('source_name', '')}){dl_str} -> {n.get('summary', '')[:120]}... [الرابط: {n.get('source_url', '')}]"
                     )
                 active_news_text = "[أحدث الأخبار المعتمدة والفرص النشطة للمنح والتعليم العالي (محدثة وتتجاهل المنتهية)]:\n" + "\n".join(news_lines) + "\n"
-        except Exception:
-            pass
+        except Exception as news_err:
+            logger.warning(f"Active verified scholarship news context injection warning: {news_err}")
 
         # 4. Intent Detection
         canonical_intent, _ = normalize_query_intent(clean_query)
@@ -2813,18 +2833,34 @@ Opportunity Interests: {opp_interests_str}
 
         gemini_response = None
         if self.client:
-            for candidate in [self.model] + FALLBACK_MODELS:
+            def _call_gemini_sync(model_name: str) -> Optional[str]:
                 try:
-                    logger.info(f"Advisor invoking Gemini model: {candidate} (Intent: {ctx['intent']})")
                     res = self.client.models.generate_content(
-                        model=candidate,
+                        model=model_name,
                         contents=ctx["context_prompt"],
                         config=dict(system_instruction=ctx["system_instruction"], temperature=0.3)
                     )
-                    if res.text and len(res.text.strip()) > 50:
-                        gemini_response = res.text.strip()
+                    if res and res.text and len(res.text.strip()) > 30:
+                        return res.text.strip()
+                except Exception as ex:
+                    logger.warning(f"Advisor call failed on {model_name}: {ex}")
+                return None
+
+            candidate_chain = [self.model] + [m for m in FALLBACK_MODELS if m != self.model]
+            for candidate in candidate_chain:
+                try:
+                    logger.info(f"Advisor invoking Gemini model: {candidate} (Intent: {ctx['intent']})")
+                    candidate_res = await asyncio.wait_for(
+                        asyncio.to_thread(_call_gemini_sync, candidate),
+                        timeout=5.0
+                    )
+                    if candidate_res:
+                        gemini_response = candidate_res
                         advisor_telemetry.record_ai_call()
                         break
+                except asyncio.TimeoutError:
+                    logger.warning(f"Gemini call timed out on {candidate} (>5.0s), trying next or fallback.")
+                    continue
                 except Exception as e:
                     logger.warning(f"Advisor invocation error on {candidate}: {e}")
                     continue
